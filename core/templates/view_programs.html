@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+  <h5>Programs <span style="background:rgba(26,138,124,.12); color:#14633f; padding:2px 10px; border-radius:999px; font-size:.78rem; font-weight:700;">Tourism Programs</span></h5>
+  <ul class="list-group">
+    {% for p in programs %}
+    <li class="list-group-item">
+      <strong>{{ p.title }}</strong>
+      {% if not p.send_to_all %}
+        <span style="background:#fff1dc; color:#9a5b05; padding:2px 10px; border-radius:999px; font-size:.72rem; font-weight:700; margin-left:.35rem;">Sent to your resort</span>
+      {% endif %}
+      <p class="mb-0 small text-muted">{{ p.description }}</p>
+      <p class="mb-0 small text-muted">Posted {{ p.date_posted|date:"M j, Y" }}</p>
+    </li>
+    {% empty %}
+    <li class="list-group-item text-muted">Wala pang na-post na programs.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

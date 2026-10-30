@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Report{% endblock %}</title>
+  <style>
+    @page { size: A4 landscape; margin: 6mm; }
+    * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { margin: 0; background: #e9ecef; font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #000; }
+
+        /* ---- screen-only toolbar ---- */
+    .toolbar { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; align-items: center; gap: 10px 12px; padding: 10px 18px;
+               background: linear-gradient(135deg, #0b3d4c 0%, #146b68 100%); color: #fff; box-shadow: 0 4px 14px rgba(0,0,0,.2); }
+    .toolbar .tb-form { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 4px 6px 4px 12px; border-radius: 12px;
+                        background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.22); }
+    .toolbar label { font-size: 11px; letter-spacing: .06em; text-transform: uppercase; opacity: .85; font-weight: 700; }
+    .toolbar select, .toolbar input { height: 32px; padding: 0 10px; border: 0; border-radius: 8px; font-size: 13px; font-weight: 600; background: #fff; color: #0b3d4c; }
+    .toolbar .spacer { flex: 1; }
+    .toolbar a, .toolbar button { display: inline-flex; align-items: center; justify-content: center; height: 36px; padding: 0 14px; border: 1px solid rgba(255,255,255,.35);
+                                  border-radius: 10px; background: rgba(255,255,255,.08); color: #fff; font-size: 13px; font-weight: 600;
+                                  text-decoration: none; cursor: pointer; transition: background .12s, transform .12s; }
+    .toolbar a:hover, .toolbar button:hover { background: rgba(255,255,255,.2); transform: translateY(-1px); }
+    .toolbar button.primary { background: #d9a441; border-color: #d9a441; color: #3a2a00; font-weight: 800; box-shadow: 0 4px 12px rgba(0,0,0,.22); }
+    .toolbar button.primary:hover { background: #e6b255; }
+    @media (max-width: 720px) {
+      .toolbar { padding: 10px 12px; }
+      .toolbar .spacer { display: none; }
+      .toolbar .tb-form { flex: 1 1 100%; }
+      .toolbar a, .toolbar button { flex: 1 1 calc(50% - 8px); }
+    }
+    /* ---- the "paper" ---- */
+    .paper { width: 297mm; max-width: calc(100% - 24px); margin: 14px auto; padding: 10mm; background: #fff; box-shadow: 0 1px 6px rgba(0,0,0,.25); overflow-x: auto; }
+    h1 { margin: 0; font-size: 16px; text-align: center; text-transform: uppercase; letter-spacing: .3px; }
+    .sub { margin: 2px 0 10px; text-align: center; font-size: 11px; }
+    .meta { display: flex; flex-wrap: wrap; gap: 6px 26px; margin-bottom: 8px; }
+    .meta b { display: inline-block; min-width: 110px; padding: 0 6px; border-bottom: 1px solid #000; font-weight: 700; }
+
+    table.sheet { width: 100%; border-collapse: collapse; }
+    table.sheet th, table.sheet td { border: 1px solid #555; padding: 4px 5px; text-align: center; font-size: 11.5px; line-height: 1.2; }
+    table.sheet thead th { background: #f4e3c1; font-weight: 700; }
+    table.sheet td.left { text-align: left; }
+    table.sheet tr.total td { background: #c9de9e; font-weight: 700; }
+    table.sheet.compact th, table.sheet.compact td { font-size: 8px; padding: 1px 2px; }
+
+    .notes { margin-top: 8px; font-size: 10.5px; line-height: 1.5; }
+    .sign { display: flex; gap: 40px; margin-top: 26px; }
+    .sign > div { flex: 1; text-align: center; }
+    .sign .line { margin-top: 26px; padding-top: 3px; border-top: 1px solid #000; font-size: 10.5px; }
+
+    /* ---- printing: one clean A4 landscape sheet, no screen furniture ---- */
+    @media print {
+      body { background: #fff; font-size: 10px; }
+      .toolbar, .no-print { display: none !important; }
+      .paper { width: auto; max-width: none; margin: 0; padding: 0; box-shadow: none; overflow: visible; }
+      h1 { font-size: 14px; }
+      .sub { margin-bottom: 4px; }
+      .meta { margin-bottom: 4px; }
+      table.sheet th, table.sheet td { padding: 1px 3px; font-size: 9.5px; }
+      table.sheet.compact th, table.sheet.compact td { font-size: 7px; padding: 0 1px; }
+      thead { display: table-header-group; }
+      tr { page-break-inside: avoid; }
+      .notes { margin-top: 4px; font-size: 9px; line-height: 1.35; }
+      .sign { margin-top: 12px; }
+      .sign .line { margin-top: 14px; font-size: 9px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="toolbar no-print">
+    {% block toolbar %}{% endblock %}
+    <span class="spacer"></span>
+    <button type="button" class="primary" onclick="window.print()">Print</button>
+  </div>
+  <div class="paper">
+    {% block sheet %}{% endblock %}
+  </div>
+</body>
+</html>

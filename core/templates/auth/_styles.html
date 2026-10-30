@@ -1,0 +1,21 @@
+<style>
+  .ac-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem;
+             background: linear-gradient(135deg, #072a35 0%, #0b3d4c 40%, #1a8a7c 100%); position: relative; overflow: hidden; }
+  .ac-page::before { content: ""; position: absolute; top: -100px; right: -100px; width: 380px; height: 380px; background: rgba(217,164,65,.14); border-radius: 50%; }
+  .ac-card { position: relative; z-index: 1; width: 100%; max-width: 440px; background: #fff; color: #1c2b2e; border-radius: 18px; padding: 2.2rem 2rem 1.8rem; box-shadow: 0 30px 80px rgba(0,0,0,.35); }
+  .ac-card h1 { margin: 0 0 .35rem; font-size: 1.45rem; font-weight: 800; color: #0b3d4c; }
+  .ac-card p { color: #4b5b5d; font-size: .92rem; }
+  .ac-card label { display: block; font-weight: 600; font-size: .85rem; color: #0b3d4c; margin: 1rem 0 .35rem; }
+  .ac-card input[type=text], .ac-card input[type=password], .ac-card input[type=email] { width: 100%; box-sizing: border-box; padding: .7rem .9rem; border: 1.5px solid #d9e2e1; border-radius: 12px; background: #f6f9f9; font-size: .95rem; }
+  .ac-card input:focus { outline: none; border-color: #1a8a7c; background: #fff; box-shadow: 0 0 0 4px rgba(26,138,124,.15); }
+  .ac-btn { display: block; width: 100%; margin-top: 1.3rem; padding: .8rem; border: 0; border-radius: 12px; cursor: pointer; text-align: center; text-decoration: none;
+            font-weight: 700; font-size: 1rem; color: #fff !important; background: linear-gradient(135deg, #1a8a7c, #0b3d4c); box-shadow: 0 10px 22px rgba(11,61,76,.3); }
+  .ac-note { margin: 1rem 0 0; padding: .65rem .85rem; border-radius: 10px; font-size: .85rem; }
+  .ac-note.warn { background: #fff7e0; border: 1px solid #f0d28a; color: #7a5200; }
+  .ac-note.bad { background: #fdecec; border: 1px solid #f2b9b9; color: #9b1c1c; }
+  .ac-note.ok { background: #e7f6ef; border: 1px solid #a8dcc2; color: #14633f; }
+  .ac-help { font-size: .8rem; color: #6b7a79; margin-top: .4rem; }
+  .ac-help ul { padding-left: 1.1rem; margin: .3rem 0 0; }
+  .ac-links { margin-top: 1.2rem; text-align: center; font-size: .85rem; }
+  .ac-errors { color: #b42323; font-size: .82rem; margin: .3rem 0 0; padding: 0; list-style: none; }
+</style>

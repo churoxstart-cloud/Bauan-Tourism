@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .df-card { background: #fff; border: 1px solid #e3e8ec; border-radius: 14px; padding: 1.4rem 1.5rem; box-shadow: 0 2px 10px rgba(15,50,60,.06); }
+  .df-sec { font-size: .78rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: #1a8a7c; margin: 1.4rem 0 .6rem; padding-bottom: .35rem; border-bottom: 1px solid #e8eef0; }
+  .df-sec:first-of-type { margin-top: 0; }
+  .df-card .help-text, .df-help { font-size: .78rem; color: #6b7674; margin-top: .25rem; }
+  .df-card label { font-weight: 600; font-size: .88rem; margin-bottom: .25rem; }
+</style>
+<div class="container mt-4" style="max-width: 860px;">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">{{ title }}</h5>
+    <a href="{% url 'manage_destinations' %}" class="btn btn-sm btn-outline-secondary">&larr; Back</a>
+  </div>
+  <form method="post" class="df-card" novalidate>
+    {% csrf_token %}
+    {% if form.errors %}<div class="alert alert-danger py-2">Please fix the highlighted fields.</div>{% endif %}
+
+    <div class="df-sec">The basics</div>
+    <div class="row g-3">
+      <div class="col-md-8"><label>Name</label>{{ form.name }}{{ form.name.errors }}</div>
+      <div class="col-md-4"><label>Category</label>{{ form.category }}</div>
+      <div class="col-12"><label>Description (English)</label>{{ form.description }}<div class="df-help">{{ form.description.help_text }}</div></div>
+      <div class="col-12"><label>Description (Tagalog) <span class="text-muted fw-normal">- optional</span></label>{{ form.description_tl }}<div class="df-help">Used when the visitor chats in Tagalog. Leave blank to show the English one.</div></div>
+    </div>
+
+    <div class="df-sec">Visit info <span class="text-muted fw-normal text-lowercase" style="letter-spacing:0">- leave blank if unknown</span></div>
+    <div class="row g-3">
+      <div class="col-md-4"><label>Entrance fee</label>{{ form.entrance_fee }}<div class="df-help">{{ form.entrance_fee.help_text }}</div></div>
+      <div class="col-md-4"><label>Opening hours</label>{{ form.opening_hours }}<div class="df-help">{{ form.opening_hours.help_text }}</div></div>
+      <div class="col-md-4"><label>Best time to visit</label>{{ form.best_time }}<div class="df-help">{{ form.best_time.help_text }}</div></div>
+      <div class="col-md-6"><label>Things to do</label>{{ form.activities }}<div class="df-help">{{ form.activities.help_text }}</div></div>
+      <div class="col-md-6"><label>Good for</label>{{ form.good_for }}<div class="df-help">{{ form.good_for.help_text }}</div></div>
+      <div class="col-12"><label>Tips &amp; reminders</label>{{ form.tips }}<div class="df-help">{{ form.tips.help_text }}</div></div>
+    </div>
+
+    <div class="df-sec">Photo &amp; map</div>
+    <div class="row g-3">
+      <div class="col-12"><label>Photo link</label>{{ form.photo_url }}{{ form.photo_url.errors }}<div class="df-help">A direct image link. Shown on the card in the chat.</div></div>
+      <div class="col-md-8"><label>Map search</label>{{ form.map_query }}<div class="df-help">{{ form.map_query.help_text }}</div></div>
+      <div class="col-md-2"><label>Status</label>{{ form.status }}</div>
+      <div class="col-md-2"><label>Order</label>{{ form.sort_order }}</div>
+    </div>
+
+    <div class="d-flex gap-2 mt-4">
+      <button type="submit" class="btn btn-primary">Save destination</button>
+      <a href="{% url 'manage_destinations' %}" class="btn btn-outline-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

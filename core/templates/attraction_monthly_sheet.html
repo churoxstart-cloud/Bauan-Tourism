@@ -1,0 +1,74 @@
+{% extends "print_base.html" %}
+{% block title %}VAR-1 - {{ attraction.name }} - {{ month_name }} {{ year }}{% endblock %}
+
+{% block toolbar %}
+  <form method="get" class="tb-form">
+    <label for="m">Month</label>
+    <select id="m" name="month" onchange="this.form.submit()">
+      {% for num, name in months %}
+        <option value="{{ num }}" {% if num == month %}selected{% endif %}>{{ name }}</option>
+      {% endfor %}
+    </select>
+    <label for="y">Year</label>
+    <input id="y" type="number" name="year" value="{{ year }}" style="width:84px" onchange="this.form.submit()">
+  </form>
+  <a href="{% url 'attraction_visitor_log' attraction.id %}?date={{ year }}-{{ month|stringformat:'02d' }}-01">Back to Visitor Log</a>
+{% endblock %}
+
+{% block sheet %}
+  <h1>Tourism Attraction Visitor Record</h1>
+  <div class="sub">Form: VAR-1</div>
+
+  <div class="meta">
+    <span>Month/Year: <b>{{ month_name }} {{ year }}</b></span>
+    <span>Name of City/Municipality: <b>Bauan, Batangas</b></span>
+    <span>Name of attraction/event: <b>{{ attraction.name }}</b></span>
+    <span>Type of Tourism Attraction: <b>{{ attraction.get_attraction_type_display }}</b></span>
+  </div>
+
+  <table class="sheet">
+    <thead>
+      <tr>
+        <th rowspan="4">Day</th>
+        <th rowspan="4">Week Day (Mon-Sun)</th>
+        <th colspan="12">Place of Residence</th>
+        <th colspan="3" rowspan="3">Grand Total Number of Visitors</th>
+      </tr>
+      <tr>
+        <th colspan="9">Philippines</th>
+        <th colspan="3" rowspan="2">Foreign Country Residence</th>
+      </tr>
+      <tr>
+        <th colspan="3">This Municipality</th>
+        <th colspan="3">This Province</th>
+        <th colspan="3">Other Province</th>
+      </tr>
+      <tr>
+        {% for h in subheaders %}<th>{{ h }}</th>{% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>{{ row.day }}</td>
+        <td>{{ row.weekday }}</td>
+        {% for c in row.cells %}<td>{{ c }}</td>{% endfor %}
+      </tr>
+      {% endfor %}
+      <tr class="total">
+        <td colspan="2">Total of this Month</td>
+        {% for t in total_cells %}<td>{{ t }}</td>{% endfor %}
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="notes">
+    Note: Total number must be recorded. Sex and residence entries are optional. Total number of this month must be reported.
+  </div>
+
+  <div class="sign">
+    <div><div class="line">Prepared by: {{ prepared_by }}</div></div>
+    <div><div class="line">Position / Date</div></div>
+    <div><div class="line">Noted by: Municipal Tourism Office</div></div>
+  </div>
+{% endblock %}

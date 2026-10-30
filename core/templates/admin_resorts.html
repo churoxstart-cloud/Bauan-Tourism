@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+    <div>
+      <h4 class="mb-1">Manage resorts</h4>
+      <p class="text-muted mb-0">{{ resorts|length }} establishment{{ resorts|length|pluralize }}</p>
+    </div>
+    <a href="{% url 'resort_add' %}" class="btn btn-primary btn-sm">+ Add resort</a>
+  </div>
+
+  <form method="get" class="d-flex gap-2 mb-3" style="max-width:440px;">
+    <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search name, barangay, or owner">
+    <button class="btn btn-outline-secondary btn-sm" type="submit">Search</button>
+  </form>
+
+  <div class="table-responsive">
+    <table class="table table-sm">
+      <thead class="table-light">
+        <tr><th>Resort</th><th>Barangay</th><th>Owner</th><th>Contact</th><th>Rooms</th><th>Status</th><th></th></tr>
+      </thead>
+      <tbody>
+        {% for r in resorts %}
+        <tr>
+          <td>{{ r.name }}</td>
+          <td>{{ r.barangay }}</td>
+          <td>{{ r.owner_name|default:"-" }}</td>
+          <td>{{ r.contact_number|default:"-" }}</td>
+          <td>{{ r.room_count }}</td>
+          <td>
+            {% if r.status == 'active' %}<span class="badge bg-secondary">Active</span>
+            {% else %}<span class="badge bg-warning text-dark">Inactive</span>{% endif %}
+          </td>
+          <td class="text-end text-nowrap">
+            <a href="{% url 'resort_edit' r.id %}" class="btn btn-outline-secondary btn-sm">Edit</a>
+            <form method="post" action="{% url 'resort_toggle' r.id %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-secondary btn-sm">
+                {% if r.status == 'active' %}Deactivate{% else %}Activate{% endif %}
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="7" class="text-muted">No resorts found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

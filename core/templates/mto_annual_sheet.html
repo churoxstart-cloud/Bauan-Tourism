@@ -1,0 +1,75 @@
+{% extends "print_base.html" %}
+{% block title %}Tourist Arrival - {{ year }}{% endblock %}
+
+{% block toolbar %}
+  <form method="get" class="tb-form">
+    <label for="y">Year</label>
+    <input id="y" type="number" name="year" value="{{ year }}" style="width:84px" onchange="this.form.submit()">
+    <label for="r">Establishment</label>
+    <select id="r" name="resort" onchange="this.form.submit()">
+      <option value="">All resorts (municipality-wide)</option>
+      {% for r in resorts %}
+        <option value="{{ r.id }}" {% if selected_resort and r.id == selected_resort.id %}selected{% endif %}>{{ r.name }}</option>
+      {% endfor %}
+    </select>
+    <label for="t">Type</label>
+    <select id="t" name="type" onchange="this.form.submit()">
+      <option value="">All types</option>
+      {% for value, label in type_choices %}
+        <option value="{{ value }}" {% if value == attraction_type %}selected{% endif %}>{{ label }}</option>
+      {% endfor %}
+    </select>
+    <label for="s">Residence from</label>
+    <select id="s" name="source" onchange="this.form.submit()">
+      <option value="attractions" {% if source == "attractions" %}selected{% endif %}>Attraction logs</option>
+      <option value="accommodation" {% if source == "accommodation" %}selected{% endif %}>Accommodation logs</option>
+    </select>
+  </form>
+  <a href="{% url 'export_mto_summary' %}?year={{ year }}&resort={{ selected_resort_id|default_if_none:'' }}&type={{ attraction_type }}&source={{ source }}">Download Excel</a>
+  <a href="{% url 'mto_annual_summary' %}?year={{ year }}&resort={{ selected_resort_id|default_if_none:'' }}&type={{ attraction_type }}&source={{ source }}">Back to Annual Summary</a>
+{% endblock %}
+
+{% block sheet %}
+  <style>
+    .ta-table { border-collapse: collapse; width: 100%; font-size: 10px; }
+    .ta-table th, .ta-table td { border: 1px solid #333; padding: 3px 3px; text-align: center; line-height: 1.15; }
+    .ta-table .ta-yellow th { background: #ffff00; font-weight: 700; }
+    .ta-table .ta-blue th { background: #9dc3e6; font-weight: 700; font-size: 9px; }
+    .ta-table .ta-year span { font-size: 15px; }
+    .ta-table td.ta-month { text-align: left; font-weight: 600; white-space: nowrap; }
+    .ta-table tr.ta-total td { background: #d9d9d9; font-weight: 700; }
+    .ta-head { margin: 0 0 8px; }
+    .ta-head h1 { text-align: left; font-size: 15px; text-transform: none; margin: 0; }
+    .ta-head .hint { font-size: 10px; margin: 0 0 8px; }
+    .ta-head dl { display: grid; grid-template-columns: 170px 1fr; gap: 3px 10px; max-width: 520px; margin: 0; font-size: 11px; }
+    .ta-head dt { font-weight: 700; margin: 0; }
+    .ta-head dd { margin: 0; border-bottom: 1px solid #000; min-height: 1.3em; padding: 0 4px; }
+  </style>
+
+  <div class="ta-head">
+    <h1>Tourist Arrival</h1>
+    <p class="hint">( This recording form can be used instead of just counting the visitors )</p>
+    <dl>
+      <dt>Month/Year:</dt><dd>{{ year }}</dd>
+      <dt>Name of Establishment:</dt><dd>{{ establishment }}</dd>
+      <dt>Barangay:</dt><dd>{{ barangay }}</dd>
+      <dt>Type of Tourist Attraction:</dt><dd>{{ type_label }}</dd>
+    </dl>
+  </div>
+
+  {% include "_arrival_table.html" with print_blank=True %}
+
+  <div class="notes">
+    {% if source == "accommodation" %}
+      Place of Residence figures are totals from the resorts' daily logs (not recorded by sex, shown as -). Grand Total Male/Female are the guests counted by sex.
+    {% else %}
+      Place of Residence (Male/Female) is from the attraction visitor logs. Overnight Visitor Arrivals are from the daily room logs (archived days excluded).
+    {% endif %}
+  </div>
+
+  <div class="sign">
+    <div><div class="line">Prepared by: {{ prepared_by }}</div></div>
+    <div><div class="line">Position / Date</div></div>
+    <div><div class="line">Approved by: Municipal Tourism Officer</div></div>
+  </div>
+{% endblock %}

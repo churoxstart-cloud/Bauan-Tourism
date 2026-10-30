@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4" style="max-width: 480px;">
+  <h5 class="mb-3">Add attraction</h5>
+  <form method="post">
+    {% csrf_token %}
+    <div class="mb-3"><label class="form-label">Resort</label>{{ form.resort }}</div>
+    <div class="mb-3"><label class="form-label">Attraction/event name</label>{{ form.name }}</div>
+    <div class="mb-3"><label class="form-label">Type</label>{{ form.attraction_type }}</div>
+    <div class="mb-3"><label class="form-label">Status</label>{{ form.status }}</div>
+    <button type="submit" class="btn btn-primary btn-sm">Save attraction</button>
+  </form>
+</div>
+{% endblock %}

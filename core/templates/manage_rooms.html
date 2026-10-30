@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+  <h4 class="mb-1">Manage rooms — {{ resort.name }}</h4>
+  <p class="text-muted mb-4">Add or archive rooms. Archived rooms are hidden but not deleted.</p>
+
+  <form method="post" class="d-flex gap-2 mb-4" style="max-width:400px;">
+    {% csrf_token %}
+    {{ form.room_number }}
+    {{ form.capacity }}
+    <button type="submit" class="btn btn-primary btn-sm">Add Room</button>
+  </form>
+
+  <h6>Active rooms</h6>
+  <ul class="list-group mb-4" style="max-width:400px;">
+    {% for room in rooms %}
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      Room {{ room.room_number }} <span class="text-muted small">(capacity: {{ room.capacity }})</span>
+      <form method="post" class="mb-0 d-inline" onsubmit="return confirm('Archive this room?')">
+        {% csrf_token %}
+        <input type="hidden" name="archive_room_id" value="{{ room.id }}">
+        <button type="submit" class="btn btn-outline-secondary btn-sm">Archive</button>
+      </form>
+      <form method="post" class="mb-0 d-inline" onsubmit="return confirm('Delete this room permanently? This cannot be undone.')">
+        {% csrf_token %}
+        <input type="hidden" name="delete_room_id" value="{{ room.id }}">
+        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+      </form>
+    </li>
+    {% empty %}
+    <li class="list-group-item text-muted">Wala pang rooms. Magdagdag sa itaas.</li>
+    {% endfor %}
+  </ul>
+
+  {% if archived_rooms %}
+  <h6>Archived rooms</h6>
+  <ul class="list-group" style="max-width:400px;">
+    {% for room in archived_rooms %}
+    <li class="list-group-item d-flex justify-content-between align-items-center text-muted">
+      Room {{ room.room_number }}
+      <form method="post" class="mb-0 d-inline" onsubmit="return confirm('Restore this room?')">
+        {% csrf_token %}
+        <input type="hidden" name="restore_room_id" value="{{ room.id }}">
+        <button type="submit" class="btn btn-outline-primary btn-sm">Restore</button>
+      </form>
+      <form method="post" class="mb-0 d-inline" onsubmit="return confirm('Delete this room permanently? This cannot be undone.')">
+        {% csrf_token %}
+        <input type="hidden" name="delete_room_id" value="{{ room.id }}">
+        <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+      </form>
+    </li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+</div>
+{% endblock %}

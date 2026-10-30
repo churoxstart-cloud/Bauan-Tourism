@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .mu-card { background: #fff; border: 1px solid #e3e8ec; border-radius: 14px; box-shadow: 0 2px 10px rgba(15, 50, 60, 0.06); overflow: hidden; }
+  .mu-table { margin: 0; }
+  .mu-table th { white-space: nowrap; padding: .85rem 1rem; font-weight: 600; letter-spacing: .2px; }
+  .mu-table td { padding: .8rem 1rem; vertical-align: middle; }
+  .mu-table tbody tr:hover { background: #f4f9f9; }
+  .mu-table td:nth-child(2) { white-space: nowrap; }   /* keep "Resort Staff" on one line */
+  .mu-user { font-weight: 600; color: #0f766e; text-decoration: none; word-break: break-word; }
+  .mu-user:hover { text-decoration: underline; }
+
+  /* status pill */
+  .mu-status { display: inline-flex; align-items: center; gap: .4rem; padding: .28rem .7rem; border-radius: 999px; font-size: .78rem; font-weight: 600; white-space: nowrap; }
+  .mu-status::before { content: ""; width: .5rem; height: .5rem; border-radius: 50%; background: currentColor; }
+  .mu-status.approved { background: #e6f6ef; color: #137a4b; }
+  .mu-status.pending  { background: #fff4db; color: #9a6700; }
+  .mu-status.disabled { background: #fde8e8; color: #b42318; }
+
+  /* actions: always ONE tidy row, same-size buttons, Edit pinned to the right */
+  .mu-actions { display: flex; align-items: center; justify-content: flex-end; gap: .4rem; flex-wrap: nowrap; white-space: nowrap; }
+  .mu-actions form { display: contents; margin: 0; }
+  .mu-btn { min-width: 82px; padding: .38rem .8rem; font-size: .83rem; font-weight: 600; border-radius: 8px; line-height: 1.3; }
+  .mu-btn.btn-success { background: #1f9d6b; border-color: #1f9d6b; }
+  .mu-btn.btn-success:hover { background: #178057; border-color: #178057; }
+  .mu-th-actions { width: 1%; text-align: right; }
+  .mu-icon { width: 36px; height: 34px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 8px; flex: 0 0 auto; }
+  .mu-icon svg { width: 16px; height: 16px; }
+  .mu-icon-slot { width: 36px; flex: 0 0 36px; }          /* keeps rows aligned on your own row, where there is no delete button */
+  .mu-modal .mu-warn { width: 56px; height: 56px; margin: 0 auto 14px; border-radius: 50%; background: #fde8e8; color: #b42318; display: flex; align-items: center; justify-content: center; }
+  .mu-modal .mu-warn svg { width: 28px; height: 28px; }
+  .mu-modal .modal-content { border: 0; border-radius: 16px; box-shadow: 0 24px 60px rgba(0, 0, 0, .3); }
+  .mu-modal .mu-who { background: #f4f7f7; border-radius: 10px; padding: .6rem .8rem; margin: .9rem 0 .6rem; font-size: .92rem; }
+</style>
+
+<div class="container mt-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">Manage Users</h5>
+    <a href="{% url 'dashboard' %}" class="btn btn-sm btn-outline-secondary">← Dashboard</a>
+  </div>
+
+  {% if messages %}
+    {% for m in messages %}
+      <div class="alert alert-{{ m.tags|default:'info' }} py-2">{{ m }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <div class="mu-card">
+    <div class="table-responsive">
+      <table class="table mu-table align-middle">
+        <thead class="table-light">
+          <tr>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Resort</th>
+            <th>Status</th>
+            <th class="mu-th-actions">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for u in users %}
+          <tr>
+            <td><a class="mu-user" href="{% url 'user_profile' u.id %}">{{ u.username }}</a></td>
+            <td>{{ u.get_role_display }}</td>
+            <td>{{ u.resort.name|default:"-" }}</td>
+            <td><span class="mu-status {{ u.status }}">{{ u.get_status_display }}</span></td>
+            <td>
+              <div class="mu-actions">
+                <form method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="user_id" value="{{ u.id }}">
+                  {% if u.status != 'approved' %}
+                    <button name="action" value="approve" class="btn btn-success mu-btn">{% if u.status == 'disabled' %}Enable{% else %}Approve{% endif %}</button>
+                  {% endif %}
+                  {% if u.status != 'disabled' and u.id != request.user.id %}
+                    <button name="action" value="disable" class="btn btn-outline-danger mu-btn">Disable</button>
+                  {% endif %}
+                </form>
+                <a href="{% url 'user_profile' u.id %}" class="btn btn-outline-primary mu-btn">Edit</a>
+                {% if u.id != request.user.id %}
+                  <button type="button" class="btn btn-outline-danger mu-icon" title="Delete user" aria-label="Delete {{ u.username }}"
+                          data-bs-toggle="modal" data-bs-target="#deleteUserModal"
+                          data-user-id="{{ u.id }}" data-username="{{ u.username }}" data-resort="{{ u.resort.name|default:'' }}" data-role="{{ u.get_role_display }}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+                  </button>
+                {% else %}
+                  <span class="mu-icon-slot"></span>
+                {% endif %}
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Delete confirmation -->
+<div class="modal fade mu-modal" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserTitle" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered" style="max-width:440px;">
+    <div class="modal-content">
+      <form method="post">
+        {% csrf_token %}
+        <input type="hidden" name="action" value="delete">
+        <input type="hidden" name="user_id" id="delUserId" value="">
+        <div class="modal-body text-center p-4">
+          <div class="mu-warn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4a1 1 0 0 1 1-1h6a1 1 0 0 1 1 1v2"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg></div>
+          <h5 id="deleteUserTitle" class="mb-1">Delete this user?</h5>
+          <div class="mu-who"><strong id="delUserName"></strong><div class="text-muted small" id="delUserMeta"></div></div>
+          <p class="small text-muted mb-3">The account will be permanently removed and can no longer log in. This can't be undone. Past activity log entries are kept.</p>
+          <div class="d-flex gap-2 justify-content-center">
+            <button type="button" class="btn btn-outline-secondary mu-btn" data-bs-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-danger mu-btn">Delete user</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+  document.getElementById('deleteUserModal').addEventListener('show.bs.modal', function (e) {
+    var b = e.relatedTarget; if (!b) return;
+    document.getElementById('delUserId').value = b.dataset.userId;
+    document.getElementById('delUserName').textContent = b.dataset.username;
+    document.getElementById('delUserMeta').textContent = [b.dataset.role, b.dataset.resort].filter(Boolean).join(' \u00b7 ');
+  });
+</script>
+{% endblock %}

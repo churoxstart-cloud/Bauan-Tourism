@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "_dash_styles.html" %}
+{% include "_dash_icons.html" %}
+<div class="dash">
+  <header class="dash-head">
+    <div>
+      <div class="dash-eyebrow">Resort staff{% if resort.barangay %} &middot; Brgy. {{ resort.barangay }}{% endif %}</div>
+      <h1 class="dash-title">{{ resort.name|default:"No resort assigned" }}</h1>
+      <p class="dash-sub">Signed in as {{ request.user.get_full_name|default:request.user.username }}</p>
+    </div>
+    <div class="dash-date"><b>{% now "l" %}</b><span>{% now "F j, Y" %}</span></div>
+  </header>
+
+  {% if stats %}
+    {% if stats.logged_today %}
+      <div class="dash-note ok"><span>Today's accommodation log already has entries.</span><a href="{% url 'resort_daily_log' %}">Review the log</a></div>
+    {% else %}
+      <div class="dash-note"><span>No guests recorded for today yet.</span><a href="{% url 'resort_daily_log' %}">Record today's log</a></div>
+    {% endif %}
+    <section class="kpis">
+      <div class="kpi"><div class="kpi-label">Active rooms</div><div class="kpi-value">{{ stats.rooms }}</div></div>
+      <div class="kpi"><div class="kpi-label">Check-ins today</div><div class="kpi-value">{{ stats.today_checked_in }}</div></div>
+      <div class="kpi"><div class="kpi-label">Guest nights</div><div class="kpi-value">{{ stats.month_guest_nights }}</div><div class="kpi-hint">this month</div></div>
+      <div class="kpi"><div class="kpi-label">Occupancy</div><div class="kpi-value">{{ stats.month_occupancy }}<small>%</small></div><div class="kpi-hint">this month</div></div>
+    </section>
+  {% elif not resort %}
+    <div class="dash-note"><span>No resort is linked to your account yet. Please ask the Admin to assign one.</span></div>
+  {% endif %}
+
+  <div class="dash-grid">
+    <section class="panel">
+      <div class="panel-head"><span class="panel-title">Quick access</span></div>
+      <div class="links">
+        <a class="link-row" href="{% url 'resort_daily_log' %}"><svg class="ic"><use href="#i-bed"/></svg><span><span class="link-title">Daily accommodation log</span><span class="link-desc">Record check-ins and room occupancy (DAE-1A).</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
+        <a class="link-row" href="{% url 'resort_monthly_sheet' %}"><svg class="ic"><use href="#i-calendar"/></svg><span><span class="link-title">Monthly report</span><span class="link-desc">View, print or download the monthly form.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
+        <a class="link-row" href="{% url 'resort_attractions' %}"><svg class="ic"><use href="#i-pin"/></svg><span><span class="link-title">Attraction visitor log</span><span class="link-desc">Record visitors to your attractions (VAR-1).</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
+        <a class="link-row" href="{% url 'manage_rooms' %}"><svg class="ic"><use href="#i-door"/></svg><span><span class="link-title">Manage rooms</span><span class="link-desc">Add, archive or remove rooms in your log.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
+        <a class="link-row" href="{% url 'view_programs' %}"><svg class="ic"><use href="#i-megaphone"/></svg><span><span class="link-title">Programs <span style="background:rgba(26,138,124,.12); color:#14633f; padding:1px 8px; border-radius:999px; font-size:.72rem; font-weight:700;">Tourism Programs</span></span><span class="link-desc">Programs posted by the MTO office.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
+        <a class="link-row" href="{% url 'edit_resort_details' %}"><svg class="ic"><use href="#i-doc"/></svg><span><span class="link-title">My resort details</span><span class="link-desc">Address, owner and room count.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
+        <a class="link-row" href="{% url 'recycle_bin' %}"><svg class="ic"><use href="#i-trash"/></svg><span><span class="link-title">Recycle bin</span><span class="link-desc">Restore or permanently delete archived items.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><span class="panel-title">Programs <span style="background:rgba(26,138,124,.12); color:#14633f; padding:1px 8px; border-radius:999px; font-size:.72rem; font-weight:700;">Tourism Programs</span></span><a href="{% url 'view_programs' %}">All programs</a></div>
+      {% if programs %}
+        <ul class="feed">
+          {% for p in programs %}
+          <li><span class="f-main">{{ p.title }}</span><span class="f-meta">{% if not p.send_to_all %}Sent to your resort &middot; {% endif %}Posted {{ p.date_posted|date:"M j, Y" }}</span></li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="feed-empty">No programs have been posted yet.</div>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

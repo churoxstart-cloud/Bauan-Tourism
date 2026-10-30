@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+  <h4 class="mb-1">Manage attractions</h4>
+  <p class="text-muted mb-4">Attractions and events listed under each resort. Deactivating hides it from the resort's visitor log.</p>
+
+  <div class="card p-3 mb-4">
+    <h6 class="mb-3">Add an attraction</h6>
+    {% if form.errors %}
+      <div class="alert alert-danger py-2">
+        {% for field, errs in form.errors.items %}{{ errs|join:", " }} {% endfor %}
+      </div>
+    {% endif %}
+    <form method="post" class="row g-2 align-items-end">
+      {% csrf_token %}
+      <div class="col-md-3"><label class="form-label">Resort</label>{{ form.resort }}</div>
+      <div class="col-md-3"><label class="form-label">Name</label>{{ form.name }}</div>
+      <div class="col-md-2"><label class="form-label">Type</label>{{ form.attraction_type }}</div>
+      <div class="col-md-2"><label class="form-label">Status</label>{{ form.status }}</div>
+      <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Add</button></div>
+    </form>
+  </div>
+
+  <form method="get" class="d-flex gap-2 mb-3" style="max-width:440px;">
+    <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Search attraction or resort">
+    <button class="btn btn-outline-secondary btn-sm" type="submit">Search</button>
+  </form>
+
+  <div class="table-responsive">
+    <table class="table table-sm">
+      <thead class="table-light"><tr><th>Attraction</th><th>Resort</th><th>Type</th><th>Status</th><th></th></tr></thead>
+      <tbody>
+        {% for a in attractions %}
+        <tr>
+          <td>{{ a.name }}</td>
+          <td>{{ a.resort.name }}</td>
+          <td>{{ a.get_attraction_type_display }}</td>
+          <td>
+            {% if a.status == 'active' %}<span class="badge bg-secondary">Active</span>
+            {% else %}<span class="badge bg-warning text-dark">Inactive</span>{% endif %}
+          </td>
+          <td class="text-end text-nowrap">
+            <a href="{% url 'attraction_edit' a.id %}" class="btn btn-outline-secondary btn-sm">Edit</a>
+            <form method="post" action="{% url 'attraction_toggle' a.id %}" class="d-inline">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-outline-secondary btn-sm">
+                {% if a.status == 'active' %}Deactivate{% else %}Activate{% endif %}
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-muted">No attractions found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

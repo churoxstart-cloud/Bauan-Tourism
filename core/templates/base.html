@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bauan Integrated Tourism Portal</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/static/css/portal.css" rel="stylesheet">
+</head>
+<body>
+  {% if user.is_authenticated %}
+  {% with current=request.resolver_match.url_name %}
+  <nav class="topbar">
+    <button class="sidebar-toggle d-md-none" onclick="toggleSidebar()">&#9776;</button>
+    <a class="navbar-brand" href="{% url 'dashboard' %}">
+      <!-- MTO logo: looks for static/img/mto-logo.png first, then the logo already used on the public site; falls back to the old icon if neither loads -->
+      <img src="/static/img/mto-logo.png" alt="Municipal Tourism Office of Bauan" class="brand-logo"
+           onerror="if(!this.dataset.f){this.dataset.f='1';this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStfb1LD4WvgZ2qoeMg55h-DRWd53v5XGky3ucEhBZlXJflc1r1-LQKTEM&amp;s=10';}else{this.style.display='none';this.nextElementSibling.style.display='inline-block';}">
+      <span class="brand-fallback" aria-hidden="true">&#9969;</span>
+      <span class="brand-text">Bauan Tourism Portal</span>
+    </a>
+    <div class="topbar-right">
+      <button id="theme-toggle" onclick="toggleTheme()">&#9790;</button>
+      <span class="text-white-50 d-none d-sm-inline">{{ user.username }} ({{ user.role }})</span>
+      <a href="{% url 'logout' %}" class="nav-link">Logout</a>
+    </div>
+  </nav>
+
+  <div class="app-layout">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-section">Menu</div>
+      <a href="{% url 'dashboard' %}" class="sidebar-link {% if current == 'dashboard' %}active{% endif %}">Dashboard</a>
+      <a href="{% url 'my_profile' %}" class="sidebar-link {% if current == 'my_profile' or current == 'user_profile' %}active{% endif %}">My Profile</a>
+
+      {% if user.role == 'resort' %}
+        <a href="{% url 'resort_daily_log' %}" class="sidebar-link {% if current == 'resort_daily_log' %}active{% endif %}">Daily Log</a>
+        <a href="{% url 'resort_monthly_sheet' %}" class="sidebar-link">Monthly Report (Print)</a>
+        <a href="{% url 'resort_attractions' %}" class="sidebar-link {% if current == 'resort_attractions' or current == 'attraction_visitor_log' %}active{% endif %}">Attractions</a>
+        <a href="{% url 'view_programs' %}" class="sidebar-link {% if current == 'view_programs' %}active{% endif %}">Programs</a>
+        <a href="{% url 'edit_resort_details' %}" class="sidebar-link {% if current == 'edit_resort_details' %}active{% endif %}">My Resort</a>
+        <a href="{% url 'manage_rooms' %}" class="sidebar-link {% if current == 'manage_rooms' %}active{% endif %}">Manage Rooms</a>
+                <a href="{% url 'recycle_bin' %}" class="sidebar-link {% if current == 'recycle_bin' %}active{% endif %}"> Recycle Bin</a>
+      {% elif user.role == 'mto' or user.role == 'admin' %}
+        <a href="{% url 'mto_annual_summary' %}" class="sidebar-link {% if current == 'mto_annual_summary' %}active{% endif %}">Annual Summary</a>
+        <a href="{% url 'manage_programs' %}" class="sidebar-link {% if current == 'manage_programs' %}active{% endif %}">Programs</a>
+        <a href="{% url 'contact_inbox' %}" class="sidebar-link {% if current == 'contact_inbox' %}active{% endif %}">Contact Inbox</a>
+        <a href="{% url 'add_attraction' %}" class="sidebar-link {% if current == 'add_attraction' %}active{% endif %}">Add Attraction</a>
+        <a href="{% url 'manage_destinations' %}" class="sidebar-link {% if current == 'manage_destinations' or current == 'destination_add' or current == 'destination_edit' %}active{% endif %}">Destinations (Bot)</a>
+        <a href="{% url 'bot_questions' %}" class="sidebar-link {% if current == 'bot_questions' %}active{% endif %}">Bot Questions</a>
+      {% endif %}
+
+      {% if user.role == 'admin' %}
+        <div class="sidebar-section">Admin</div>
+        <a href="{% url 'manage_users' %}" class="sidebar-link {% if current == 'manage_users' %}active{% endif %}">Manage Users</a>
+        <a href="{% url 'activity_log' %}" class="sidebar-link {% if current == 'activity_log' %}active{% endif %}">Activity Log</a>
+        <a href="{% url 'admin_resorts' %}" class="sidebar-link {% if current == 'admin_resorts' or current == 'resort_add' or current == 'resort_edit' %}active{% endif %}">Manage Resorts</a>
+        <a href="{% url 'admin_rooms' %}" class="sidebar-link {% if current == 'admin_rooms' %}active{% endif %}">Manage Rooms</a>
+        <a href="{% url 'admin_attractions' %}" class="sidebar-link {% if current == 'admin_attractions' or current == 'attraction_edit' %}active{% endif %}">Manage Attractions</a>
+      {% endif %}
+    </aside>
+
+    <main class="main-content">
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  {% endwith %}
+  {% else %}
+  <main>
+    {% block content_public %}{% endblock %}
+  </main>
+  {% endif %}
+
+  {% if not user.is_authenticated %}
+  <footer class="portal-footer">
+    Bauan Integrated Tourism Portal &middot; Municipal Tourism Office, Bauan, Batangas &middot;
+    <a href="{% url 'terms' %}">Terms and conditions</a>
+  </footer>
+  {% endif %}
+
+  <div id="cookie-banner" style="display:none; position:fixed; bottom:0; left:0; right:0; background:var(--brand-navy); color:white; padding:14px 20px; z-index:1000; font-size:14px;">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <span>Gumagamit ang site na ito ng cookies para sa session/login lamang. Sa pagpapatuloy, sumasang-ayon ka sa aming <a href="{% url 'terms' %}" style="color:var(--brand-gold);">Terms and Conditions</a>.</span>
+      <button onclick="acceptCookies()" class="btn btn-sm" style="background:var(--brand-gold); color:var(--brand-navy); border:none;">Accept</button>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    if (!localStorage.getItem('cookiesAccepted')) {
+      document.getElementById('cookie-banner').style.display = 'block';
+    }
+    function acceptCookies() {
+      localStorage.setItem('cookiesAccepted', 'true');
+      document.getElementById('cookie-banner').style.display = 'none';
+    }
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('theme', next);
+    }
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+    }
+
+window.addEventListener('pageshow', function (e) { if (e.persisted) { window.location.reload(); } });
+  </script>
+
+  {% if user.is_authenticated %}
+  <div id="idle-modal" role="alertdialog" aria-modal="true" aria-labelledby="idle-title" style="display:none; position:fixed; inset:0; z-index:5000; align-items:center; justify-content:center; padding:16px; background:rgba(5,8,14,.6);">
+    <div style="width:100%; max-width:400px; background:#fff; color:#1c2b2e; border-radius:14px; padding:24px; box-shadow:0 20px 60px rgba(0,0,0,.4);">
+      <h5 id="idle-title" style="margin:0 0 8px; color:#0b3d4c; font-weight:800;">Are you still there?</h5>
+      <p style="margin:0 0 16px; font-size:.92rem; color:#4b5b5d;">For your security you will be signed out in <b id="idle-count">2:00</b> because there was no activity. Unsaved changes will be lost.</p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap;">
+        <button type="button" id="idle-stay" class="btn btn-primary" style="flex:1;">Stay signed in</button>
+        <a id="idle-out" class="btn btn-outline-secondary" style="flex:1;" href="{% url 'logout' %}">Sign out now</a>
+      </div>
+    </div>
+  </div>
+  <script>
+    (function () {
+      var STATUS_URL = "{% url 'session_status' %}", PING_URL = "{% url 'session_ping' %}", LOGOUT_URL = "{% url 'logout' %}?timeout=1";
+      var modal = document.getElementById('idle-modal'), count = document.getElementById('idle-count');
+      var limit = 0, deadline = 0, lastPing = Date.now(), active = false, warnAt = 0;
+
+      function setRemaining(sec, lim) {
+        limit = lim || limit || sec;
+        deadline = Date.now() + sec * 1000;
+        warnAt = Math.min(120, Math.floor(limit / 4));      // warn 2 minutes before (or sooner for very short timeouts)
+      }
+      function call(url) { return fetch(url, { credentials: 'same-origin', headers: { 'X-Requested-With': 'fetch' } }); }
+      function ping() {
+        lastPing = Date.now(); active = false;
+        return call(PING_URL).then(function (r) {
+          if (r.redirected || !r.ok) { location.href = LOGOUT_URL; return; }
+          return r.json().then(function (j) { setRemaining(j.remaining, j.limit); hide(); });
+        }).catch(function () { /* offline: try again on the next tick */ });
+      }
+      function sync() {
+        call(STATUS_URL).then(function (r) {
+          if (r.redirected || !r.ok) { location.href = LOGOUT_URL; return; }
+          return r.json().then(function (j) { setRemaining(j.remaining, j.limit); if (j.remaining <= 0) location.href = LOGOUT_URL; });
+        }).catch(function () {});
+      }
+      function show() { modal.style.display = 'flex'; document.getElementById('idle-stay').focus(); }
+      function hide() { modal.style.display = 'none'; }
+      function fmt(left) { return Math.floor(left / 60) + ':' + ('0' + (left % 60)).slice(-2); }
+
+      ['mousemove', 'keydown', 'click', 'scroll', 'touchstart'].forEach(function (ev) {
+        window.addEventListener(ev, function () { if (modal.style.display !== 'flex') active = true; }, { passive: true });
+      });
+      document.getElementById('idle-stay').addEventListener('click', ping);
+      document.addEventListener('visibilitychange', function () { if (!document.hidden) sync(); });
+
+      setInterval(function () {
+        if (!deadline) return;
+        var left = Math.round((deadline - Date.now()) / 1000);
+        if (left <= 0) { location.href = LOGOUT_URL; return; }
+        if (modal.style.display === 'flex') {
+          count.textContent = fmt(left);
+        } else if (active && (Date.now() - lastPing) / 1000 >= Math.min(300, Math.max(1, Math.floor(limit / 4)))) {
+          ping();                                              // they are working: keep the session alive quietly
+        } else if (left <= warnAt) {
+          count.textContent = fmt(left);
+          show();
+        }
+      }, 1000);
+      sync();
+    })();
+  </script>
+  {% endif %}
+</body>
+</html>

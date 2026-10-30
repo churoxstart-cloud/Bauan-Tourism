@@ -1,0 +1,611 @@
+{
+ "_about": "Rooms per establishment from the MTO 'Tourism Establishment 2026' list (Resorts_Profile_updated.PDF). 'rooms' = AC, Non-AC, Kubo Rm and plain 'Room' counts. 'maybe' = other units that may or may not be guest rooms (plain Kubo, Tent, Cabana...). Open cottages, pools, halls, gyms are not rooms. Edit counts here if the list changes.",
+ "establishments": [
+  {
+   "name": "Buena Herencia",
+   "aliases": [
+    "Buena Herencia"
+   ],
+   "barangay": "Sampaguita",
+   "address": "Sampaguita, Bauan, Batangas",
+   "rooms": {
+    "AC": 4,
+    "Non-AC": 4
+   },
+   "maybe": {},
+   "facilities": "AC Rooms-4, Non AC rooms-4, Open Cottages-4"
+  },
+  {
+   "name": "CRC Beach Resort",
+   "aliases": [],
+   "barangay": "Sampaguita",
+   "address": "Sampaguita, Bauan, Batangas",
+   "rooms": {
+    "Non-AC": 2
+   },
+   "maybe": {},
+   "facilities": "Non AC-2"
+  },
+  {
+   "name": "Dalawampu Beach Resort",
+   "aliases": [],
+   "barangay": "Sampaguita",
+   "address": "Sampaguita, Bauan, Batangas",
+   "rooms": {
+    "AC": 7,
+    "Kubo Rm": 4
+   },
+   "maybe": {
+    "Kubo": 4
+   },
+   "facilities": "AC-7, Kubo rms-4, Kubo-4, Open cottages-22"
+  },
+  {
+   "name": "Debbie & Krys Beach Resort",
+   "aliases": [
+    "Debbie and Khrys Beach Resort"
+   ],
+   "barangay": "Sampaguita",
+   "address": "Sampaguita, Bauan, Batangas",
+   "rooms": {
+    "AC": 3
+   },
+   "maybe": {},
+   "facilities": "AC-3, Open Cottages-17"
+  },
+  {
+   "name": "Endless Summer Beach Resort",
+   "aliases": [],
+   "barangay": "Sampaguita",
+   "address": "Sampaguita, Bauan, Batangas",
+   "rooms": {
+    "AC": 2
+   },
+   "maybe": {},
+   "facilities": "AC-2"
+  },
+  {
+   "name": "Feliza Beach Resort",
+   "aliases": [],
+   "barangay": "Sampaguita",
+   "address": "Sampaguita, Bauan, Batangas",
+   "rooms": {
+    "AC": 6
+   },
+   "maybe": {},
+   "facilities": "AC-6, Open Cottages-8"
+  },
+  {
+   "name": "Nueva Villa De Nakubong Beach Resort",
+   "aliases": [],
+   "barangay": "Sampaguita",
+   "address": "Sampaguita, Bauan, Batangas",
+   "rooms": {
+    "AC": 5
+   },
+   "maybe": {},
+   "facilities": "AC-5, Open Cottages-10"
+  },
+  {
+   "name": "Pamana Beach Resort",
+   "aliases": [],
+   "barangay": "Sampaguita",
+   "address": "Sampaguita, Bauan, Batangas",
+   "rooms": {},
+   "maybe": {},
+   "facilities": "Open Cottages-10"
+  },
+  {
+   "name": "Rosemund Beach Resort",
+   "aliases": [],
+   "barangay": "Sampaguita",
+   "address": "Sampaguita, Bauan, Batangas",
+   "rooms": {
+    "AC": 10
+   },
+   "maybe": {},
+   "facilities": "AC-10, Pool(adult)-1, Pool(kids)-1"
+  },
+  {
+   "name": "Sampaguita Beach Resort",
+   "aliases": [],
+   "barangay": "Sampaguita",
+   "address": "Sampaguita, Bauan, Batangas",
+   "rooms": {
+    "AC": 8
+   },
+   "maybe": {},
+   "facilities": "AC-8, Open Cottages-10"
+  },
+  {
+   "name": "Senora Elena",
+   "aliases": [
+    "Señora Elena Beach Resort"
+   ],
+   "barangay": "Sampaguita",
+   "address": "Sampaguita, Bauan, Batangas",
+   "rooms": {
+    "AC": 2
+   },
+   "maybe": {},
+   "facilities": "AC-2, Open Cottages-10"
+  },
+  {
+   "name": "Sheik & Grace Beach Resort",
+   "aliases": [
+    "Sheik and Grace Beach Resort"
+   ],
+   "barangay": "Sampaguita",
+   "address": "Sampaguita, Bauan, Batangas",
+   "rooms": {},
+   "maybe": {},
+   "facilities": "Open Cottages (no rooms listed)"
+  },
+  {
+   "name": "Verandah Resort",
+   "aliases": [
+    "Verandah Resort Hotel"
+   ],
+   "barangay": "Sampaguita",
+   "address": "Sampaguita, Bauan, Batangas",
+   "rooms": {
+    "AC": 8
+   },
+   "maybe": {},
+   "facilities": "AC-8"
+  },
+  {
+   "name": "Alexis Beach Resort",
+   "aliases": [],
+   "barangay": "Locloc",
+   "address": "Locloc, Bauan, Batangas",
+   "rooms": {
+    "AC": 12,
+    "Kubo Rm": 4
+   },
+   "maybe": {},
+   "facilities": "AC-12, Kubo Rms-4, Open Cottages-17"
+  },
+  {
+   "name": "Ara Beach Resort",
+   "aliases": [],
+   "barangay": "Sampaguita",
+   "address": "Sampaguita, Bauan, Batangas",
+   "rooms": {
+    "AC": 4
+   },
+   "maybe": {},
+   "facilities": "AC-4"
+  },
+  {
+   "name": "Destino Beach Club Dive Resort & Hotel",
+   "aliases": [
+    "Destino Beach Club Resort"
+   ],
+   "barangay": "Locloc",
+   "address": "Sitio Nangkaan, Brgy. Locloc, Bauan, Batangas",
+   "rooms": {
+    "AC": 28
+   },
+   "maybe": {},
+   "facilities": "AC-28, Pool-3"
+  },
+  {
+   "name": "Dinoy's Beach Resort",
+   "aliases": [],
+   "barangay": "Locloc",
+   "address": "Sitio Bubuyan, Locloc, Bauan, Batangas",
+   "rooms": {
+    "AC": 2,
+    "Kubo Rm": 4
+   },
+   "maybe": {},
+   "facilities": "AC-2, Kubo rms-4, Open Cottages-11"
+  },
+  {
+   "name": "IL Sogno Beach Resort",
+   "aliases": [
+    "Il Sogno Beach Resort"
+   ],
+   "barangay": "Locloc",
+   "address": "Nangkaan, Locloc, Bauan, Batangas",
+   "rooms": {
+    "AC": 6
+   },
+   "maybe": {
+    "Kubo": 2
+   },
+   "facilities": "AC-6, Kubo-2, Open Cottages-1"
+  },
+  {
+   "name": "La Thalia Beach Resort",
+   "aliases": [],
+   "barangay": "Locloc",
+   "address": "Sitio Bubuyan, Locloc, Bauan, Batangas",
+   "rooms": {
+    "AC": 31
+   },
+   "maybe": {},
+   "facilities": "AC-31, Cottages-13, Pool(adult)-1, Pool(kid)-1"
+  },
+  {
+   "name": "Nangkaan Seaside Hotel & Resort",
+   "aliases": [
+    "Nangkaan Seaside Hotel Beach Resort"
+   ],
+   "barangay": "Locloc",
+   "address": "Nangkaan, Locloc, Bauan, Batangas",
+   "rooms": {
+    "AC": 8
+   },
+   "maybe": {
+    "Kubo": 2
+   },
+   "facilities": "AC-8, Kubo-2"
+  },
+  {
+   "name": "Mendoza Beach Resort",
+   "aliases": [],
+   "barangay": "Locloc",
+   "address": "Locloc, Bauan, Batangas",
+   "rooms": {},
+   "maybe": {
+    "Kubo": 1
+   },
+   "facilities": "Kubo-1"
+  },
+  {
+   "name": "OIA",
+   "aliases": [
+    "OIA Hotel and Beach Resort"
+   ],
+   "barangay": "Locloc",
+   "address": "Locloc, Bauan, Batangas",
+   "rooms": {
+    "AC": 16
+   },
+   "maybe": {},
+   "facilities": "AC-16"
+  },
+  {
+   "name": "N' Yorker's Beach Resort",
+   "aliases": [
+    "N-Yorker's Beach Resort"
+   ],
+   "barangay": "Locloc",
+   "address": "Sitio Bubuyan, Locloc, Bauan, Batangas",
+   "rooms": {
+    "AC": 10
+   },
+   "maybe": {
+    "Kubo": 4
+   },
+   "facilities": "AC-10, Kubo-4, Open Cottages-19"
+  },
+  {
+   "name": "Sadayo Beach Resort",
+   "aliases": [],
+   "barangay": "Locloc",
+   "address": "Sitio Bubuyan, Locloc, Bauan, Batangas",
+   "rooms": {
+    "Room": 3
+   },
+   "maybe": {},
+   "facilities": "no. of rooms-3"
+  },
+  {
+   "name": "Salacia Beach Resort",
+   "aliases": [],
+   "barangay": "Locloc",
+   "address": "Sitio Nangkaan, Brgy. Locloc, Bauan, Batangas",
+   "rooms": {
+    "AC": 22
+   },
+   "maybe": {},
+   "facilities": "AC-22, Pool-2"
+  },
+  {
+   "name": "Arcadia Beach Resort",
+   "aliases": [],
+   "barangay": "San Pablo",
+   "address": "San Pablo, Bauan, Batangas",
+   "rooms": {
+    "AC": 3
+   },
+   "maybe": {},
+   "facilities": "AC-3, Pool-1"
+  },
+  {
+   "name": "Binukbok View Point",
+   "aliases": [
+    "Binukbok View Point Beach Resort"
+   ],
+   "barangay": "San Pablo",
+   "address": "San Pablo, Bauan, Batangas",
+   "rooms": {
+    "AC": 4,
+    "Non-AC": 4,
+    "Kubo Rm": 2
+   },
+   "maybe": {
+    "Cabana": 2
+   },
+   "facilities": "AC-4, Non AC-4, Kubo Rms-2, Open Cottages-2, Cabana-2, Pool(adult)-1"
+  },
+  {
+   "name": "Dive & Trek Hotel Beach Resort",
+   "aliases": [
+    "Dive and Trek Hotel and Beach Resort"
+   ],
+   "barangay": "San Pablo",
+   "address": "San Pablo, Bauan, Batangas",
+   "rooms": {
+    "AC": 20
+   },
+   "maybe": {},
+   "facilities": "AC-20, Cottage-5, Pool-1"
+  },
+  {
+   "name": "I-Jam Glam and Dive Resort",
+   "aliases": [
+    "I Jam Glam and Dive Resort"
+   ],
+   "barangay": "San Pablo",
+   "address": "San Pablo, Bauan, Batangas",
+   "rooms": {},
+   "maybe": {
+    "Kubo": 6
+   },
+   "facilities": "Kubo-6"
+  },
+  {
+   "name": "Natstep Divers Resort & Hotel Inc.",
+   "aliases": [
+    "Natstep Beach Resort"
+   ],
+   "barangay": "San Pablo",
+   "address": "San Pablo, Bauan, Batangas",
+   "rooms": {
+    "AC": 29
+   },
+   "maybe": {
+    "Kubo": 5
+   },
+   "facilities": "ac-29, Kubo-5, Pool(adult)-2"
+  },
+  {
+   "name": "Penta Bros Incorporated / Tortuga Park & Dive Resort",
+   "aliases": [
+    "Penta Bros Incorporated"
+   ],
+   "barangay": "San Pablo",
+   "address": "San Pablo, Bauan, Batangas",
+   "rooms": {
+    "AC": 19
+   },
+   "maybe": {},
+   "facilities": "AC-19, Pool-1"
+  },
+  {
+   "name": "Portulano Hotel and Beach Resort",
+   "aliases": [],
+   "barangay": "San Pablo",
+   "address": "San Pablo, Bauan, Batangas",
+   "rooms": {
+    "AC": 8,
+    "Non-AC": 4
+   },
+   "maybe": {},
+   "facilities": "AC-8, Non AC-4, Pool-1"
+  },
+  {
+   "name": "Sikaeom Camp and Dive Resort",
+   "aliases": [],
+   "barangay": "San Pablo",
+   "address": "San Pablo, Bauan, Batangas",
+   "rooms": {
+    "AC": 4
+   },
+   "maybe": {},
+   "facilities": "AC-4"
+  },
+  {
+   "name": "Sunset View Dive and Beach Resort",
+   "aliases": [
+    "Sunsetview Dive and Beach Resort"
+   ],
+   "barangay": "San Pablo",
+   "address": "San Pablo, Bauan, Batangas",
+   "rooms": {
+    "AC": 2
+   },
+   "maybe": {
+    "AC Kubo": 1,
+    "Tent": 11
+   },
+   "facilities": "AC-2, Tent-11, AC Kubo-1, Big Kubo-1"
+  },
+  {
+   "name": "Tranquility Dive and Beach Resort",
+   "aliases": [
+    "Tranquility Camp Private Resort"
+   ],
+   "barangay": "San Pablo",
+   "address": "San Pablo, Bauan, Batangas",
+   "rooms": {},
+   "maybe": {},
+   "facilities": "(no facilities listed)"
+  },
+  {
+   "name": "Alegria Hotel",
+   "aliases": [],
+   "barangay": "Sta. Maria Itaas",
+   "address": "Sta. Maria Itaas, Bauan, Batangas",
+   "rooms": {
+    "Room": 11
+   },
+   "maybe": {},
+   "facilities": "Rooms-11"
+  },
+  {
+   "name": "Honoria's Resort, Events & Training Center",
+   "aliases": [
+    "Honoria's Resort, Events And Training Center"
+   ],
+   "barangay": "As-is",
+   "address": "As-is, Bauan, Batangas",
+   "rooms": {
+    "AC": 5
+   },
+   "maybe": {},
+   "facilities": "AC-5, Pool(adult)-1, Pool(kids)-1"
+  },
+  {
+   "name": "Macpan Seascape Property Resort Corp.",
+   "aliases": [],
+   "barangay": "Sta. Maria Itaas",
+   "address": "Sta. Maria Itaas, Bauan, Batangas",
+   "rooms": {
+    "AC": 32
+   },
+   "maybe": {
+    "Kubo": 1
+   },
+   "facilities": "AC-32, Kubo-1, Open Cottages-4, Pool(adult)-1, Pool(kids)-1, Restaurant-1, Function hall(indoor, 30-150 cap)-2"
+  },
+  {
+   "name": "Maranan Resort",
+   "aliases": [],
+   "barangay": "Durungao",
+   "address": "Durungao, Bauan, Batangas",
+   "rooms": {
+    "Non-AC": 5
+   },
+   "maybe": {},
+   "facilities": "Non AC-5, Open Cottages-28, Pool-3"
+  },
+  {
+   "name": "Rosana Beach Resort",
+   "aliases": [],
+   "barangay": "Sto. Domingo",
+   "address": "#2 Sto. Domingo, Bauan, Batangas",
+   "rooms": {
+    "AC": 10,
+    "Non-AC": 2
+   },
+   "maybe": {},
+   "facilities": "AC-10, Non AC-2, Open Cottages-7, Pool(adult)-2, Pool(kids)-2, Function hall(indoor, 25 cap)-1, Function hall(outdoor, 100-150 cap)-2"
+  },
+  {
+   "name": "Tampisaw Resort",
+   "aliases": [],
+   "barangay": "Inicbulan",
+   "address": "Purok Almasiga, Inicbulan, Bauan, Batangas",
+   "rooms": {
+    "AC": 4,
+    "Kubo Rm": 5
+   },
+   "maybe": {
+    "Kubo": 10
+   },
+   "facilities": "AC-4, Kubo Rms-5, Kubo-10"
+  },
+  {
+   "name": "Villa Ferlin Resort Company",
+   "aliases": [],
+   "barangay": "Manghinao Proper",
+   "address": "Manghinao Proper, Bauan, Batangas",
+   "rooms": {
+    "AC": 10
+   },
+   "maybe": {},
+   "facilities": "AC-10, Pool(adult)-1, Pool(kids)-1, Function hall(indoor, 15-30 cap)-1"
+  },
+  {
+   "name": "Bauan Lodge",
+   "aliases": [
+    "Bauan-Lodge"
+   ],
+   "barangay": "Poblacion 4",
+   "address": "#2 Kap. Ponso St., Pob. 4, Bauan, Batangas",
+   "rooms": {
+    "Non-AC": 8
+   },
+   "maybe": {},
+   "facilities": "Non AC-8"
+  },
+  {
+   "name": "Good Morning Lodge",
+   "aliases": [],
+   "barangay": "Poblacion 1",
+   "address": "Villa Florentina Subd., Pob. 1, Bauan, Batangas",
+   "rooms": {
+    "AC": 19,
+    "Non-AC": 8
+   },
+   "maybe": {},
+   "facilities": "AC-19, Non AC-8"
+  },
+  {
+   "name": "Bauan Plaza Hotel Resort & Leisure Corp.",
+   "aliases": [
+    "Bauan Plaza Hotel Resort And Leisure Corporation"
+   ],
+   "barangay": "Poblacion 2",
+   "address": "J.P. Rizal cor. Kap. Ponso St., Pob. 2, Bauan, Batangas",
+   "rooms": {
+    "AC": 15
+   },
+   "maybe": {},
+   "facilities": "AC-15, Gym"
+  },
+  {
+   "name": "Bauan Traveler's Hotel Corporation",
+   "aliases": [],
+   "barangay": "Manghinao I",
+   "address": "Manghinao I, Bauan, Batangas",
+   "rooms": {
+    "AC": 27
+   },
+   "maybe": {},
+   "facilities": "AC-27"
+  },
+  {
+   "name": "D' Midland Pacific Hotel Batangas Corporation",
+   "aliases": [
+    "D Midland Pacific Hotel Batangas Corporation"
+   ],
+   "barangay": "Poblacion 1",
+   "address": "Villa Florentina Subd., Pob. 1, Bauan, Batangas",
+   "rooms": {
+    "AC": 22,
+    "Non-AC": 12
+   },
+   "maybe": {},
+   "facilities": "AC-22, Non AC-12"
+  },
+  {
+   "name": "Lavander Inn",
+   "aliases": [],
+   "barangay": "Manghinao Proper",
+   "address": "Manghinao Proper, Bauan, Batangas",
+   "rooms": {
+    "AC": 13,
+    "Non-AC": 4
+   },
+   "maybe": {},
+   "facilities": "AC-13, Non AC-4"
+  },
+  {
+   "name": "Sotogrande Batangas Hotel",
+   "aliases": [],
+   "barangay": "Manghinao I",
+   "address": "Catalina Lake Residences, Brgy. Manghinao I, Bauan, Batangas",
+   "rooms": {
+    "AC": 142
+   },
+   "maybe": {},
+   "facilities": "AC-142, Pool(adult)-1, Pool(kids)-1, Restaurant-3, Function Hall(indoor, 30-1000 cap)-4, Function Hall(outdoor, 100-150 cap)-1, spa massage, gym"
+  }
+ ]
+}

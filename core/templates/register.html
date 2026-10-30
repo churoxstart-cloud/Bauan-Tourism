@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content_public %}
+<style>
+  .reg-wrap { min-height: 90vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #072a35, #1a8a7c 70%); padding: 1.5rem; }
+  .reg-card { width: 100%; max-width: 440px; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); border-radius: 16px; padding: 2.5rem 2rem; box-shadow: 0 8px 32px rgba(0,0,0,.08); border: 1px solid rgba(0,0,0,0.06); }
+  .reg-card h4 { color: var(--brand-navy); font-weight: 800; font-size: 1.5rem; letter-spacing: -.01em; overflow: hidden; white-space: nowrap; width: 0; display: inline-block; border-right: 2px solid var(--brand-teal); animation: typing 2s steps(30,end) forwards, blink .75s step-end infinite; }
+  @keyframes typing { from { width: 0 } to { width: 100% } }
+  @keyframes blink { 50% { border-color: transparent } }
+  .reg-card .form-label { font-weight: 600; font-size: .85rem; color: #444; margin-bottom: .35rem; }
+  .reg-card input, .reg-card select { border: 1px solid #ccc; border-radius: 8px; padding: .6rem .8rem; font-size: .9rem; width: 100%; transition: border-color .15s, box-shadow .15s; }
+  .reg-card input:focus, .reg-card select:focus { outline: none; border-color: var(--brand-teal); box-shadow: 0 0 0 3px rgba(26,138,124,.15); }
+  .reg-btn { background: linear-gradient(135deg, var(--brand-navy), var(--brand-teal)); color: #fff; border: none; font-weight: 700; padding: .65rem 1.5rem; font-size: .95rem; cursor: pointer; border-radius: 8px; box-shadow: 0 3px 12px rgba(11,61,76,.25); transition: box-shadow .15s, transform .15s; }
+  .reg-btn:hover { box-shadow: 0 5px 18px rgba(11,61,76,.32); transform: translateY(-1px); }
+  .reg-btn:disabled { background: #bbb; box-shadow: none; cursor: not-allowed; transform: none; }
+</style>
+<div class="reg-wrap">
+  <div class="reg-card">
+    <div style="display:flex; align-items:center; gap:12px; justify-content:center; margin-bottom:10px;">
+      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStfb1LD4WvgZ2qoeMg55h-DRWd53v5XGky3ucEhBZlXJflc1r1-LQKTEM&s=10" alt="Bauan Logo" style="width:46px; height:46px; border-radius:50%; background:#fff; padding:4px; box-shadow:0 6px 16px rgba(11,61,76,.12);">
+    </div>
+    <h4 class="mb-1 text-center">Bauan Integrated Tourism Portal</h4>
+    <p class="text-center text-muted small mb-4">Create a staff account</p>
+    {% if submitted %}
+      <div class="alert alert-success py-2 small">Account created. Please wait for admin approval before logging in.</div>
+    {% endif %}
+    <form method="post">
+      {% csrf_token %}
+      <div class="mb-3"><label class="form-label">Username</label>{{ form.username }}</div>
+      <div class="mb-3"><label class="form-label">Email</label>{{ form.email }}</div>
+      <div class="mb-3"><label class="form-label">Role</label>{{ form.role }}</div>
+      <div class="mb-3"><label class="form-label">Resort (if resort staff)</label>{{ form.resort }}</div>
+      <div class="mb-3"><label class="form-label">Password</label>{{ form.password }}</div>
+      {% if terms_error %}
+        <div class="alert alert-danger py-2 small">Please read and tick the Terms and Conditions checkbox to create an account.</div>
+      {% endif %}
+      <div class="d-flex align-items-center gap-2 mb-3">
+        <input class="form-check-input" type="checkbox" name="agree_terms" id="agreeTerms" {% if terms_checked %}checked{% endif %} style="width:14px; height:14px; border-radius:3px; margin:0;">
+        <label class="form-check-label small mb-0" for="agreeTerms" style="font-size:0.8rem;">
+          I have read and agree to the <a href="{% url 'terms' %}" target="_blank" rel="noopener">Terms and Conditions</a> and <a href="{% url 'terms' %}" target="_blank" rel="noopener">Privacy Notice</a>.
+        </label>
+      </div>
+      <button type="submit" id="registerBtn" class="btn reg-btn w-100">Create staff account</button>
+    </form>
+    <script>
+      (function () {
+        var box = document.getElementById('agreeTerms'), btn = document.getElementById('registerBtn');
+        if (!box || !btn) return;
+        function sync() { btn.disabled = !box.checked; }
+        box.addEventListener('change', sync); sync();
+      })();
+    </script>
+    <p class="text-center mt-3 small"><a href="{% url 'login' %}">Back to login</a></p>
+  </div>
+</div>
+{% endblock %}

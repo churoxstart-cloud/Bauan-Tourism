@@ -1,0 +1,165 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .dl-head { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 16px; }
+  .dl-head h5 { margin: 0 0 2px; font-weight: 800; }
+  .dl-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 16px; }
+  .dl-chip { display: inline-flex; align-items: center; gap: 8px; padding: 8px 14px; border-radius: 12px; font-size: .85rem;
+             background: rgba(26,138,124,.1); border: 1px solid rgba(26,138,124,.25); }
+  .dl-chip b { font-weight: 700; }
+  .dl-chip input[type=date] { border: 0; background: transparent; font: inherit; font-weight: 700; padding: 0; }
+  .dl-table th { vertical-align: middle; }
+
+  /* action bar: day actions on the left, save on the right */
+  .day-bar { position: sticky; bottom: 12px; z-index: 5; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px;
+             margin-top: 18px; padding: 14px 16px; border-radius: 14px;
+             background: rgba(244,248,248,.92); backdrop-filter: blur(6px); border: 1px solid rgba(11,61,76,.14);
+             box-shadow: 0 8px 24px rgba(11,61,76,.12); }
+  .day-bar-left, .day-bar-right { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+  .day-bar form { margin: 0; }
+  .day-btn { display: inline-flex; align-items: center; justify-content: center; height: 42px; padding: 0 20px; border-radius: 12px; border: 1.5px solid transparent;
+             font-weight: 700; font-size: .9rem; cursor: pointer; text-decoration: none; transition: transform .12s, box-shadow .12s, background .12s; }
+  .day-btn:hover { transform: translateY(-1px); }
+  .day-btn-save { background: linear-gradient(135deg, #1a8a7c, #0b3d4c); color: #fff; box-shadow: 0 6px 14px rgba(11,61,76,.25); }
+  .day-btn-ghost { background: #fff; color: #0b3d4c; border-color: #cfd8d8; }
+  .day-btn-archive { background: #fff7e0; color: #8a5a00; border-color: #f0d28a; }
+  .day-btn-archive:hover { background: #ffefbf; }
+  .day-btn-delete { background: #fdecec; color: #b42323; border-color: #f2b9b9; }
+  .day-btn-delete:hover { background: #fadada; }
+  .day-hint { font-size: .78rem; opacity: .7; margin: 8px 2px 0; text-align: right; }
+  @media (max-width: 640px) {
+    .day-bar { flex-direction: column; align-items: stretch; }
+    .day-bar-left, .day-bar-right { justify-content: stretch; }
+    .day-bar-left > *, .day-bar-right > * { flex: 1; }
+    .day-btn { width: 100%; }
+  }
+</style>
+
+<div class="container-fluid">
+  <div class="dl-head">
+    <div>
+      <h5>Monthly recording format for accommodation establishment</h5>
+      <p class="text-muted small mb-0">Form: DAE-1A</p>
+    </div>
+    <a href="{% url 'export_daily_log' %}?year={{ log_date|slice:':4' }}&month={{ log_date|slice:'5:7' }}" class="btn btn-primary btn-sm">Export to Excel</a>
+  </div>
+
+  <div class="dl-chips">
+    <span class="dl-chip">Resort: <b>{{ resort.name }}</b></span>
+    <span class="dl-chip">Total number of rooms: <b>{{ formset.total_form_count }}</b></span>
+    <form method="get" class="dl-chip m-0">
+      <label for="date" class="mb-0">Date:</label>
+      <input type="date" id="date" name="date" value="{{ log_date }}" onchange="this.form.submit()">
+    </form>
+  </div>
+
+  {% if day_archived %}
+    <div class="alert alert-warning py-2 d-flex justify-content-between align-items-center flex-wrap gap-2">
+      <span>This day is <strong>archived</strong>. It is not counted in the monthly report or the annual summary.</span>
+      <form method="post" action="{% url 'resort_daily_log_action' %}" class="m-0">
+        {% csrf_token %}
+        <input type="hidden" name="date" value="{{ log_date }}">
+        <input type="hidden" name="action" value="restore">
+        <button type="submit" class="btn btn-sm btn-outline-dark">Restore this day</button>
+      </form>
+    </div>
+  {% endif %}
+
+  {% if not formset.forms %}
+    <div class="alert alert-danger py-2">No rooms yet. Add your rooms first under <a href="{% url 'manage_rooms' %}">Manage Rooms</a>.</div>
+  {% endif %}
+
+  <form method="post" id="logForm">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <fieldset {% if day_archived %}disabled{% endif %} style="border:0;padding:0;margin:0;min-width:0;">
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm align-middle dl-table">
+        <thead class="table-light">
+          <tr>
+            <th>Room no.</th>
+            <th>Guests check in<br><small>(visitors)</small></th>
+            <th>Guests overnight<br><small>(guest nights)</small></th>
+            <th>Occupied<br><small>(rooms)</small></th>
+            <th>Male</th>
+            <th>Female</th>
+            <th>This municipality</th>
+            <th>This province</th>
+            <th>Other province</th>
+            <th>Foreign country</th>
+            <th>Nationality</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for form in formset %}
+          <tr>
+            <td>{{ form.instance.room.room_number }}{{ form.id }}</td>
+            <td>{{ form.guests_checked_in }}</td>
+            <td>{{ form.guests_overnight }}</td>
+            <td class="text-center">{{ form.rooms_occupied }}</td>
+            <td>{{ form.male }}</td>
+            <td>{{ form.female }}</td>
+            <td>{{ form.this_municipality }}</td>
+            <td>{{ form.this_province }}</td>
+            <td>{{ form.other_province }}</td>
+            <td>{{ form.foreign_country }}</td>
+            <td>{{ form.nationality }}</td>
+          </tr>
+          {% endfor %}
+          <tr class="table-secondary fw-semibold">
+            <td>Total of this month</td>
+            <td>{{ totals.total_checked_in }}</td>
+            <td>{{ totals.total_overnight }}</td>
+            <td>{{ totals.total_rooms_occupied }}</td>
+            <td colspan="7" class="text-muted fw-normal">see averages below</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    </fieldset>
+
+    <div class="small text-muted mb-1">
+      <p class="mb-0">Average guest-night = <strong>{{ totals.avg_guest_night }}</strong></p>
+      <p class="mb-0">Average room occupancy rate = <strong>{{ totals.avg_occupancy_rate }}%</strong></p>
+      <p class="mb-0">Average number of guest per room = <strong>{{ totals.avg_guest_per_room }}</strong></p>
+    </div>
+  </form>
+
+  <div class="day-bar">
+    <div class="day-bar-left">
+      {% if not day_archived %}
+      <form method="post" action="{% url 'resort_daily_log_action' %}"
+            onsubmit="return confirm('Archive this day? It will be left out of the monthly report and annual summary, and you can restore it later.');">
+        {% csrf_token %}
+        <input type="hidden" name="date" value="{{ log_date }}">
+        <input type="hidden" name="action" value="archive">
+        <button type="submit" class="day-btn day-btn-archive">Archive day</button>
+      </form>
+      {% endif %}
+      <form method="post" action="{% url 'resort_daily_log_action' %}"
+            onsubmit="return confirm('Permanently delete ALL records for this day? This cannot be undone. (Use Archive if you may need them later.)');">
+        {% csrf_token %}
+        <input type="hidden" name="date" value="{{ log_date }}">
+        <input type="hidden" name="action" value="delete">
+        <button type="submit" class="day-btn day-btn-delete">Delete day</button>
+      </form>
+    </div>
+    <div class="day-bar-right">
+      <a href="?date={{ log_date }}" class="day-btn day-btn-ghost">Clear</a>
+      {% if not day_archived %}
+        <button type="submit" form="logForm" class="day-btn day-btn-save">Save daily log</button>
+      {% endif %}
+    </div>
+  </div>
+  <p class="day-hint">Archive hides the day from reports (you can restore it). Delete removes it for good.</p>
+
+  {% if archived_days %}
+  <div class="mt-4 small">
+    <strong>Archived days this month:</strong>
+    {% for d in archived_days %}
+      <a href="?date={{ d|date:'Y-m-d' }}" class="ms-2">{{ d|date:'M j' }}</a>
+    {% endfor %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

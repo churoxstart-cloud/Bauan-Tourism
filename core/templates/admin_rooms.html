@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+  <h4 class="mb-1">Manage rooms</h4>
+  <p class="text-muted mb-4">Add rooms to any resort. Archived rooms are hidden from the Daily Log but never deleted.</p>
+
+  <div class="card p-3 mb-4">
+    <h6 class="mb-3">Add a room</h6>
+    {% if form.errors %}
+      <div class="alert alert-danger py-2">
+        {% for field, errs in form.errors.items %}{{ errs|join:", " }} {% endfor %}
+      </div>
+    {% endif %}
+    <form method="post" class="row g-2 align-items-end">
+      {% csrf_token %}
+      <div class="col-md-5"><label class="form-label">Resort</label>{{ form.resort }}</div>
+      <div class="col-md-3"><label class="form-label">Room number</label>{{ form.room_number }}</div>
+      <div class="col-md-2"><label class="form-label">Capacity</label>{{ form.capacity }}</div>
+      <div class="col-md-2"><button type="submit" class="btn btn-primary w-100">Add room</button></div>
+    </form>
+  </div>
+
+  <form method="get" class="row g-2 align-items-end mb-3">
+    <div class="col-md-5">
+      <label class="form-label">Filter by resort</label>
+      <select name="resort" class="form-select" onchange="this.form.submit()">
+        <option value="">All resorts</option>
+        {% for r in resorts %}
+        <option value="{{ r.id }}" {% if r.id == selected_resort_id %}selected{% endif %}>{{ r.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div class="col-md-4">
+      <label class="form-label">Show</label>
+      <select name="archived" class="form-select" onchange="this.form.submit()">
+        <option value="0" {% if not show_archived %}selected{% endif %}>Active rooms</option>
+        <option value="1" {% if show_archived %}selected{% endif %}>Archived rooms</option>
+      </select>
+    </div>
+  </form>
+
+  <div class="table-responsive">
+    <table class="table table-sm">
+      <thead class="table-light"><tr><th>Resort</th><th>Room</th><th>Capacity</th><th></th></tr></thead>
+      <tbody>
+        {% for room in rooms %}
+        <tr>
+          <td>{{ room.resort.name }}</td>
+          <td>Room {{ room.room_number }}</td>
+          <td>{{ room.capacity }}</td>
+          <td class="text-end">
+            <form method="post" class="d-inline">
+              {% csrf_token %}
+              {% if show_archived %}
+                <input type="hidden" name="restore_room_id" value="{{ room.id }}">
+                <button type="submit" class="btn btn-outline-primary btn-sm">Restore</button>
+              {% else %}
+                <input type="hidden" name="archive_room_id" value="{{ room.id }}">
+                <button type="submit" class="btn btn-outline-secondary btn-sm">Archive</button>
+              {% endif %}
+            </form>
+          </td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" class="text-muted">No rooms found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

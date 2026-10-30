@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .ta-wrap { overflow-x: auto; }
+  .ta-table { border-collapse: collapse; width: 100%; min-width: 1180px; font-size: 0.82rem; background: #fff; color: #111; }
+  .ta-table th, .ta-table td { border: 1px solid #555; padding: 5px 6px; text-align: center; }
+  .ta-table .ta-yellow th { background: #ffff00; font-weight: 700; }
+  .ta-table .ta-blue th { background: #9dc3e6; font-weight: 700; font-size: 0.74rem; }
+  .ta-table .ta-year { font-size: 0.9rem; min-width: 96px; }
+  .ta-table .ta-year span { font-size: 1.3rem; }
+  .ta-table td.ta-month { text-align: left; font-weight: 600; white-space: nowrap; }
+  .ta-table tr.ta-total td { background: #d9d9d9; font-weight: 700; }
+  .ta-meta { display: grid; grid-template-columns: auto 1fr; gap: 2px 14px; font-size: 0.9rem; margin: 0 0 14px; max-width: 640px; }
+  .ta-meta dt { font-weight: 600; margin: 0; }
+  .ta-meta dd { margin: 0; border-bottom: 1px solid #888; padding: 0 6px; min-height: 1.4em; }
+</style>
+
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+    <div>
+      <h5 class="mb-1">Tourist Arrival</h5>
+      <p class="text-muted small mb-0">
+        {% if selected_resort %}Showing: single resort - <a href="?year={{ year }}">back to all resorts</a>
+        {% else %}Showing: all resorts (municipality-wide){% endif %}
+      </p>
+      <p class="text-muted small mb-0">This recording form can be used instead of just counting the visitors.</p>
+    </div>
+    <div class="d-flex gap-2 flex-wrap">
+      <a href="{% url 'export_mto_summary' %}?year={{ year }}&resort={{ selected_resort_id|default_if_none:'' }}&type={{ attraction_type }}&source={{ source }}" class="btn btn-primary btn-sm">Export report</a>
+      <a href="{% url 'mto_annual_sheet' %}?year={{ year }}&resort={{ selected_resort_id|default_if_none:'' }}&type={{ attraction_type }}&source={{ source }}" class="btn btn-outline-secondary btn-sm">Print form</a>
+      <a href="{% url 'add_attraction' %}" class="btn btn-outline-secondary btn-sm">Add attraction</a>
+    </div>
+  </div>
+
+  <form method="get" class="d-flex gap-2 mb-3 align-items-end flex-wrap">
+    <div class="search-wrap" style="min-width:260px;">
+      <label class="form-label small mb-0 d-block">Search establishment</label>
+      <input type="search" name="q" value="{{ search_q|default:'' }}" list="resort-list"
+        class="form-control form-control-sm" placeholder="Type establishment name..."
+        onchange="this.form.submit()">
+      <datalist id="resort-list">
+        {% for r in resorts %}
+        <option value="{{ r.name }}">{{ r.name }}</option>
+        {% endfor %}
+      </datalist>
+    </div>
+    <div>
+      <label class="form-label small mb-0 d-block">Year</label>
+      <input type="number" name="year" value="{{ year }}" class="form-control form-control-sm"
+        onchange="this.form.submit()">
+    </div>
+    <div>
+      <label class="form-label small mb-0 d-block">Name of establishment</label>
+      <select name="resort" class="form-select form-select-sm" onchange="this.form.submit()">
+        <option value="">-- All resorts --</option>
+        {% for r in resorts %}
+        <option value="{{ r.id }}" {% if r.id == selected_resort_id %}selected{% endif %}>{{ r.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="form-label small mb-0 d-block">Type of tourist attraction</label>
+      <select name="type" class="form-select form-select-sm" onchange="this.form.submit()">
+        <option value="">-- All types --</option>
+        {% for value, label in type_choices %}
+        <option value="{{ value }}" {% if value == attraction_type %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="form-label small mb-0 d-block">Place of residence counted from</label>
+      <select name="source" class="form-select form-select-sm" onchange="this.form.submit()">
+        <option value="attractions" {% if source == "attractions" %}selected{% endif %}>Attraction visitor logs (with Male / Female)</option>
+        <option value="accommodation" {% if source == "accommodation" %}selected{% endif %}>Accommodation daily logs (totals only)</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary btn-sm">Apply</button>
+  </form>
+
+  <dl class="ta-meta">
+    <dt>Month/Year:</dt><dd>{{ year }}</dd>
+    <dt>Name of Establishment:</dt><dd>{{ establishment }}</dd>
+    <dt>Barangay:</dt><dd>{{ barangay }}</dd>
+    <dt>Type of Tourist Attraction:</dt><dd>{{ type_label }}</dd>
+  </dl>
+
+  <div class="ta-wrap">
+    {% include "_arrival_table.html" %}
+  </div>
+
+  <p class="text-muted small mt-2">
+    {% if source == "accommodation" %}
+      Place of residence shows totals only because the daily room log does not record sex per residence (shown as &ndash;).
+      Grand total Male/Female are the guests counted by sex.
+    {% else %}
+      Place of residence (Male / Female) comes from the attraction visitor logs. Overnight arrivals come from the daily room logs;
+      archived days are not counted. Total Foreign Visitor Arrivals = foreign-country guests in those room logs.
+    {% endif %}
+  </p>
+</div>
+{% endblock %}

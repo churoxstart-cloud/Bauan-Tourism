@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content_public %}
+<style>
+  .terms-page { max-width: 820px; }
+  .terms-body h5 { font-size: 1.02rem; margin: 1.4rem 0 .4rem; }
+  .terms-body p, .terms-body li { color: #3d4a4c; }
+  .terms-body ul { padding-left: 1.2rem; }
+  .terms-body .terms-meta { color: #6b7674; font-size: .85rem; }
+  .terms-body .terms-summary { background: #eaf7f4; border-left: 4px solid var(--brand-teal); padding: .75rem 1rem; border-radius: 6px; }
+  [data-theme="dark"] .terms-body p, [data-theme="dark"] .terms-body li { color: #d3dad9; }
+  [data-theme="dark"] .terms-body .terms-summary { background: #1a3d3a; }
+</style>
+<div class="container terms-page mt-5 mb-5">
+  <h4>Terms and Conditions</h4>
+  {% include "_terms_content.html" %}
+  <p class="mt-4"><a href="{% url 'landing' %}">&larr; Back to home</a> &middot; <a href="{% url 'login' %}">Go to login</a></p>
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+  .terms-page { max-width: 820px; }
+  .terms-body h5 { font-size: 1.02rem; margin: 1.4rem 0 .4rem; }
+  .terms-body p, .terms-body li { color: #3d4a4c; }
+  .terms-body ul { padding-left: 1.2rem; }
+  .terms-body .terms-meta { color: #6b7674; font-size: .85rem; }
+  .terms-body .terms-summary { background: #eaf7f4; border-left: 4px solid var(--brand-teal); padding: .75rem 1rem; border-radius: 6px; }
+  [data-theme="dark"] .terms-body p, [data-theme="dark"] .terms-body li { color: #d3dad9; }
+  [data-theme="dark"] .terms-body .terms-summary { background: #1a3d3a; }
+</style>
+<div class="terms-page">
+  <h4>Terms and Conditions</h4>
+  {% include "_terms_content.html" %}
+  <p class="mt-4"><a href="{% url 'dashboard' %}">&larr; Back to dashboard</a></p>
+</div>
+{% endblock %}

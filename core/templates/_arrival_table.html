@@ -1,0 +1,40 @@
+{# The DOT "Tourist Arrival" form table. Needs: rows, total_cells, year. #}
+<table class="ta-table">
+  <thead>
+    <tr class="ta-yellow">
+      <th rowspan="3" class="ta-year">Year<br><span>{{ year }}</span></th>
+      <th colspan="12">Place of Residence<br><small>Philippines</small></th>
+      <th colspan="3" rowspan="2">Grand Total Number of Visitors</th>
+      <th colspan="4" rowspan="2">OVERNIGHT VISITOR ARRIVALS</th>
+    </tr>
+    <tr class="ta-yellow">
+      <th colspan="3">This Municipality</th>
+      <th colspan="3">This Province</th>
+      <th colspan="3">Other Province</th>
+      <th colspan="3">Foreign Country Residence</th>
+    </tr>
+    <tr class="ta-blue">
+      <th>Male</th><th>Female</th><th>Total</th>
+      <th>Male</th><th>Female</th><th>Total</th>
+      <th>Male</th><th>Female</th><th>Total</th>
+      <th>Male</th><th>Female</th><th>Total</th>
+      <th>Male</th><th>Female</th><th>Total</th>
+      <th>Total Guest Checked-in</th>
+      <th>Total Guest Night</th>
+      <th>Total No. of Rooms Occupied</th>
+      <th>Total Foreign Visitor Arrivals</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for row in rows %}
+    <tr>
+      <td class="ta-month">{{ row.month_name }}</td>
+      {% for c in row.cells %}<td>{% if row.empty and print_blank %}{% elif c is None %}&ndash;{% else %}{{ c }}{% endif %}</td>{% endfor %}
+    </tr>
+    {% endfor %}
+    <tr class="ta-total">
+      <td class="ta-month">Total of the Year</td>
+      {% for t in total_cells %}<td>{% if t is None %}&ndash;{% else %}{{ t }}{% endif %}</td>{% endfor %}
+    </tr>
+  </tbody>
+</table>

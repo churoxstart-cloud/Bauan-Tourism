@@ -1,0 +1,94 @@
+{% extends "print_base.html" %}
+{% block title %}DAE-1A - {{ resort.name }} - {{ month_name }} {{ year }}{% endblock %}
+
+{% block toolbar %}
+  <form method="get" class="tb-form">
+    <label for="m">Month</label>
+    <select id="m" name="month" onchange="this.form.submit()">
+      {% for num, name in months %}
+        <option value="{{ num }}" {% if num == month %}selected{% endif %}>{{ name }}</option>
+      {% endfor %}
+    </select>
+    <label for="y">Year</label>
+    <input id="y" type="number" name="year" value="{{ year }}" style="width:84px" onchange="this.form.submit()">
+  </form>
+  <a href="{% url 'export_daily_log' %}?year={{ year }}&month={{ month }}">Download Excel</a>
+  <a href="{% url 'resort_daily_log' %}?date={{ year }}-{{ month|stringformat:'02d' }}-01">Back to Daily Log</a>
+  <a href="{% url 'manage_rooms' %}" class="btn btn-outline-secondary btn-sm">Manage Rooms (Add / Delete)</a>
+{% endblock %}
+
+{% block sheet %}
+  <h1>Monthly Recording Format for Accommodation Establishment</h1>
+  <div class="sub">Form: DAE-1A</div>
+
+  <div class="meta">
+    <span>Name of Establishment: <b>{{ resort.name }}</b></span>
+    <span>Barangay: <b>{{ resort.barangay }}</b></span>
+    <span>Month of: <b>{{ month_name }} {{ year }}</b></span>
+    <span>(4) Total Number of Rooms: <b>{{ rooms|length }}</b></span>
+  </div>
+
+  {% if not rooms %}
+    <p class="no-print" style="color:#b00020">No rooms yet. Add your rooms under Manage Rooms so they appear as columns in this form.</p>
+  {% endif %}
+
+  <table class="sheet {% if rooms|length > 12 %}compact{% endif %}">
+    <thead>
+      <tr>
+        <th rowspan="2">Day</th>
+        <th rowspan="2">Day of the week</th>
+        {% if rooms %}<th colspan="{{ rooms|length }}">Room Identification</th>{% endif %}
+        <th rowspan="2"> Number of Guests Check IN<br>(unit: visitors)</th>
+        <th rowspan="2"> Number of Guests staying over-night<br>(Guest Nights)</th>
+        <th rowspan="2"> Number of Rooms Occupied by Guests<br>(unit: rooms)</th>
+        <th rowspan="2">Male</th>
+        <th rowspan="2">Female</th>
+        <th rowspan="2">Nationality</th>
+      </tr>
+      {% if rooms %}
+      <tr>
+        {% for r in rooms %}<th>Room No. {{ r.room_number }}</th>{% endfor %}
+      </tr>
+      {% endif %}
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>{{ row.day }}</td>
+        <td>{{ row.weekday }}</td>
+        {% for c in row.room_cells %}<td>{{ c }}</td>{% endfor %}
+        <td>{% if row.has_data %}{{ row.checked }}{% endif %}</td>
+        <td>{% if row.has_data %}{{ row.overnight }}{% endif %}</td>
+        <td>{% if row.has_data %}{{ row.occupied }}{% endif %}</td>
+        <td>{% if row.has_data %}{{ row.male }}{% endif %}</td>
+        <td>{% if row.has_data %}{{ row.female }}{% endif %}</td>
+        <td class="left">{% if row.has_data %}{{ row.nationality }}{% endif %}</td>
+      </tr>
+      {% endfor %}
+      <tr class="total">
+        <td colspan="2">Total of this Month</td>
+        {% for t in room_totals %}<td>{{ t }}</td>{% endfor %}
+        <td>{{ totals.checked }}</td>
+        <td>{{ totals.overnight }}</td>
+        <td>{{ totals.occupied }}</td>
+        <td>{{ totals.male }}</td>
+        <td>{{ totals.female }}</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="notes">
+    <div>Average Guest-Night = Total Number of Guests Nights / Total Number of Guests Check IN = <b>{{ avg.guest_night }}</b></div>
+    <div>Average Room Occupancy Rate = Total No. of Rooms Occupied by the Guests during the month / Total No. of Rooms Available during the month
+      = {{ totals.occupied }} / {{ available }} = <b>{{ avg.occupancy_rate }}%</b></div>
+    <div>Average Number of Guest per room = Total Number of Guests Nights / Total Number of Rooms Occupied by the Guests = <b>{{ avg.guests_per_room }}</b></div>
+    <div>Room columns show the number of guests staying over-night in that room on that day (a check mark if the room was occupied but no guest count was entered).</div>
+  </div>
+
+  <div class="sign">
+    <div><div class="line">Prepared by: {{ prepared_by }}</div></div>
+    <div><div class="line">Position / Date</div></div>
+    <div><div class="line">Noted by: Municipal Tourism Office</div></div>
+  </div>
+{% endblock %}

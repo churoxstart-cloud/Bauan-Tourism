@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .at-head { display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .at-head h5 { margin: 0; font-weight: 800; }
+  .at-list { display: grid; gap: 12px; }
+  .at-card { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; padding: 16px 18px; border-radius: 16px;
+             background: #fff; color: #123; border: 1px solid #e3ebea; box-shadow: 0 4px 14px rgba(11,61,76,.07); }
+  .at-name { font-weight: 800; color: #0b3d4c; }
+  .at-type { display: inline-block; margin-left: 8px; font-size: .72rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: #eef4f3; color: #46605f; }
+  .at-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .at-actions form { margin: 0; }
+  .at-btn { display: inline-flex; align-items: center; height: 38px; padding: 0 16px; border-radius: 10px; border: 1.5px solid transparent; font-weight: 700; font-size: .85rem; cursor: pointer; text-decoration: none; transition: .12s; }
+  .at-btn:hover { transform: translateY(-1px); }
+  .at-log { background: linear-gradient(135deg, #1a8a7c, #0b3d4c); color: #fff; }
+  .at-archive { background: #fff7e0; color: #8a5a00; border-color: #f0d28a; }
+  .at-archive:hover { background: #ffefbf; }
+  .at-empty { padding: 28px 20px; text-align: center; border-radius: 16px; background: #fff; border: 1px dashed #c5d4d2; color: #5d6b6a; }
+  .at-note { margin-top: 14px; font-size: .82rem; opacity: .7; }
+  @media (max-width: 560px) { .at-actions { width: 100%; } .at-actions > *, .at-actions form, .at-actions .at-btn { flex: 1; justify-content: center; } .at-actions form .at-btn { width: 100%; } }
+</style>
+
+<div class="container mt-4 mb-5">
+  <div class="at-head">
+    <h5>Attractions</h5>
+  </div>
+
+  <div class="at-list">
+    {% for a in attractions %}
+    <div class="at-card">
+      <div><span class="at-name">{{ a.name }}</span><span class="at-type">{{ a.get_attraction_type_display }}</span></div>
+      <div class="at-actions">
+        <a href="{% url 'attraction_visitor_log' a.id %}" class="at-btn at-log">Log visitors</a>
+        <form method="post" action="{% url 'attraction_archive' a.id %}"
+              onsubmit="return confirm('Archive {{ a.name|escapejs }}?\n\nIt will be hidden from your list and left out of the annual summary. You can restore it from the Recycle Bin.');">
+          {% csrf_token %}
+          <button type="submit" class="at-btn at-archive">Archive</button>
+        </form>
+      </div>
+    </div>
+    {% empty %}
+    <div class="at-empty">No attractions added for your resort yet.</div>
+    {% endfor %}
+  </div>
+
+  <p class="at-note">Archived attractions are kept in the <a href="{% url 'recycle_bin' %}">Recycle Bin</a>, where you can restore or permanently delete them.</p>
+</div>
+{% endblock %}

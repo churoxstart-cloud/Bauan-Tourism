@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+  <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+    <div>
+      <h5 class="mb-1">Tourism attraction visitor record</h5>
+      <p class="text-muted small mb-0">Form: VAR-1</p>
+    </div>
+    <a href="{% url 'attraction_monthly_sheet' attraction.id %}?year={{ log_date|slice:':4' }}&month={{ log_date|slice:'5:7' }}" class="btn btn-primary btn-sm">Print monthly report</a>
+  </div>
+
+  <div class="d-flex gap-4 mb-3 small flex-wrap align-items-center">
+    <span>Name of attraction/event: <strong>{{ attraction.name }}</strong></span>
+    <span>Type: <strong>{{ attraction.get_attraction_type_display }}</strong></span>
+    <form method="get" class="d-flex align-items-center gap-2">
+      <label for="date" class="mb-0">Date:</label>
+      <input type="date" id="date" name="date" value="{{ log_date }}" class="form-control form-control-sm" onchange="this.form.submit()">
+    </form>
+  </div>
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="table-responsive">
+      <table class="table table-bordered table-sm text-center align-middle">
+        <thead class="table-warning">
+          <tr>
+            <th colspan="2">This municipality</th>
+            <th colspan="2">This province</th>
+            <th colspan="2">Other province</th>
+            <th colspan="2" class="var-blue">Foreign country</th>
+          </tr>
+          <tr>
+            <th>Male</th><th>Female</th>
+            <th>Male</th><th>Female</th>
+            <th>Male</th><th>Female</th>
+            <th class="var-blue">Male</th><th class="var-blue">Female</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>{{ form.male_this_municipality }}</td>
+            <td>{{ form.female_this_municipality }}</td>
+            <td>{{ form.male_this_province }}</td>
+            <td>{{ form.female_this_province }}</td>
+            <td>{{ form.male_other_province }}</td>
+            <td>{{ form.female_other_province }}</td>
+            <td>{{ form.male_foreign }}</td>
+            <td>{{ form.female_foreign }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="small text-muted">Total number must be recorded. Sex and residence entries are optional.</p>
+    <p class="small">Total of this month so far: <strong>{{ month_total }}</strong></p>
+    <div class="d-flex justify-content-end gap-2">
+      <a href="?date={{ log_date }}" class="btn btn-outline-secondary btn-sm">Clear</a>
+      <button type="submit" class="btn btn-primary btn-sm">Save visitor log</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

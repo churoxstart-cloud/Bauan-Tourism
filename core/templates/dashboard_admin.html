@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+{% include "_dash_styles.html" %}
+{% include "_dash_icons.html" %}
+<div class="dash">
+  <header class="dash-head">
+    <div>
+      <div class="dash-eyebrow">System administration</div>
+      <h1 class="dash-title">Admin dashboard</h1>
+      <p class="dash-sub">Manage user accounts, system configuration and data &middot; {{ request.user.get_full_name|default:request.user.username }}</p>
+    </div>
+    <div class="dash-date"><b>{% now "l" %}</b><span>{% now "F j, Y" %}</span></div>
+  </header>
+
+  {% if stats.pending %}
+    <div class="dash-note"><span>{{ stats.pending }} staff account{{ stats.pending|pluralize }} waiting for approval.</span><a href="{% url 'manage_users' %}">Review accounts</a></div>
+  {% endif %}
+
+  <section class="kpis">
+    <div class="kpi"><div class="kpi-label">Pending approval</div><div class="kpi-value">{{ stats.pending }}</div></div>
+    <div class="kpi"><div class="kpi-label">Staff accounts</div><div class="kpi-value">{{ stats.users }}</div><div class="kpi-hint">approved</div></div>
+    <div class="kpi"><div class="kpi-label">Active resorts</div><div class="kpi-value">{{ stats.resorts }}</div></div>
+    <div class="kpi"><div class="kpi-label">Active rooms</div><div class="kpi-value">{{ stats.rooms }}</div></div>
+  </section>
+
+  <div class="dash-grid">
+    <section class="panel">
+      <div class="panel-head"><span class="panel-title">Manage</span></div>
+      <div class="links">
+        <a class="link-row" href="{% url 'manage_users' %}"><svg class="ic"><use href="#i-users"/></svg><span><span class="link-title">Users</span><span class="link-desc">Approve or disable staff accounts.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
+        <a class="link-row" href="{% url 'admin_resorts' %}"><svg class="ic"><use href="#i-building"/></svg><span><span class="link-title">Resorts</span><span class="link-desc">Add or edit resort records.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
+        <a class="link-row" href="{% url 'admin_rooms' %}"><svg class="ic"><use href="#i-bed"/></svg><span><span class="link-title">Rooms</span><span class="link-desc">Add and archive rooms per resort.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
+        <a class="link-row" href="{% url 'admin_attractions' %}"><svg class="ic"><use href="#i-pin"/></svg><span><span class="link-title">Attractions</span><span class="link-desc">Attractions and events per resort.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
+        <a class="link-row" href="{% url 'mto_annual_summary' %}"><svg class="ic"><use href="#i-chart"/></svg><span><span class="link-title">Annual summary</span><span class="link-desc">Consolidated tourism data across resorts.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
+        <a class="link-row" href="{% url 'contact_inbox' %}"><svg class="ic"><use href="#i-mail"/></svg><span><span class="link-title">Contact inbox</span><span class="link-desc">Messages from the public website.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
+        <a class="link-row" href="{% url 'activity_log' %}"><svg class="ic"><use href="#i-clock"/></svg><span><span class="link-title">Activity log</span><span class="link-desc">Who did what, and when.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
+        <a class="link-row" href="{% url 'recycle_bin' %}"><svg class="ic"><use href="#i-trash"/></svg><span><span class="link-title">Recycle bin</span><span class="link-desc">Restore or permanently delete archived items.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
+      </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><span class="panel-title">Recent activity</span><a href="{% url 'activity_log' %}">View all</a></div>
+      {% if activity %}
+        <ul class="feed">
+          {% for a in activity %}
+          <li><span class="f-main">{{ a.action }}{% if a.detail %}: {{ a.detail }}{% endif %}</span><span class="f-meta">{{ a.user.username|default:"deleted user" }} &middot; {{ a.created_at|timesince }} ago</span></li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="feed-empty">Nothing recorded yet.</div>
+      {% endif %}
+    </section>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .rb-hero { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; padding: 24px 28px; border-radius: 20px; color: #fff;
+             background: linear-gradient(135deg, #3d4f55 0%, #0b3d4c 100%); box-shadow: 0 12px 30px rgba(11,61,76,.25); }
+  .rb-hero h4 { margin: 0 0 4px; font-weight: 800; color: #fff; }
+  .rb-hero p { margin: 0; color: rgba(255,255,255,.85); font-size: .92rem; max-width: 560px; }
+  .rb-count { min-width: 84px; text-align: center; padding: 10px 16px; border-radius: 16px; background: rgba(255,255,255,.15); border: 1px solid rgba(255,255,255,.25); }
+  .rb-count b { display: block; font-size: 1.7rem; line-height: 1.1; }
+  .rb-count span { font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; opacity: .85; }
+
+  .rb-card { margin-top: 20px; border-radius: 18px; background: #fff; color: #123; border: 1px solid #e3ebea; box-shadow: 0 4px 14px rgba(11,61,76,.07); overflow: hidden; }
+  .rb-card h6 { margin: 0; padding: 16px 20px; font-weight: 800; color: #0b3d4c; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #edf2f1; }
+  .rb-card h6 .n { margin-left: auto; font-size: .75rem; font-weight: 700; padding: 3px 10px; border-radius: 999px; background: #eef4f3; color: #46605f; }
+  .rb-table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  .rb-table th { text-align: left; font-size: .72rem; letter-spacing: .08em; text-transform: uppercase; color: #6b7a79; padding: 10px 20px; background: #f7fafa; }
+  .rb-table td { padding: 12px 20px; border-top: 1px solid #edf2f1; vertical-align: middle; }
+  .rb-table .act { white-space: nowrap; text-align: right; }
+  .rb-table form { display: inline; margin: 0; }
+  .rb-btn { display: inline-flex; align-items: center; gap: 6px; height: 34px; padding: 0 14px; border-radius: 10px; border: 1.5px solid transparent; font-weight: 700; font-size: .8rem; cursor: pointer; transition: .12s; }
+  .rb-btn:hover { transform: translateY(-1px); }
+  .rb-restore { background: #e7f6f3; color: #136b60; border-color: #b8e2da; }
+  .rb-restore:hover { background: #d3efe9; }
+  .rb-delete { background: #fdecec; color: #b42323; border-color: #f2b9b9; margin-left: 6px; }
+  .rb-delete:hover { background: #fadada; }
+  .rb-empty { padding: 22px 20px; color: #7b8a89; font-size: .9rem; }
+  .rb-clear { margin-top: 20px; padding: 34px 20px; text-align: center; border-radius: 18px; background: #fff; border: 1px dashed #c5d4d2; color: #5d6b6a; }
+  .rb-clear .big { font-size: 2.4rem; }
+  @media (max-width: 640px) {
+    .rb-table th, .rb-table td { padding: 10px 12px; }
+    .rb-table .act { white-space: normal; }
+    .rb-delete { margin: 6px 0 0; }
+  }
+</style>
+
+<div class="container mt-4 mb-5">
+  <div class="rb-hero">
+    <div>
+      <h4>🗑️ Recycle bin</h4>
+      <p>Everything you archived is kept here. Restore it to bring it back, or delete it permanently. Archived days are not counted in any report.</p>
+    </div>
+    <div class="rb-count"><b>{{ total }}</b><span>item{{ total|pluralize }}</span></div>
+  </div>
+
+  {% if total == 0 %}
+    <div class="rb-clear"><div class="big">✨</div><b>The recycle bin is empty</b><br>Archived rooms, days and programs will show up here.</div>
+  {% endif %}
+
+  {% if days %}
+  <div class="rb-card">
+    <h6>🗓️ Archived days <span class="n">{{ days|length }}</span></h6>
+    <div style="overflow-x:auto">
+    <table class="rb-table">
+      <thead><tr>
+        <th>Date</th>{% if show_resort %}<th>Resort</th>{% endif %}<th>Rooms logged</th><th>Check-ins</th><th>Guest nights</th><th></th>
+      </tr></thead>
+      <tbody>
+      {% for d in days %}
+        <tr>
+          <td><b>{{ d.log_date|date:"M j, Y" }}</b></td>
+          {% if show_resort %}<td>{{ d.room__resort__name }}</td>{% endif %}
+          <td>{{ d.entries }}</td>
+          <td>{{ d.checked_in|default:0 }}</td>
+          <td>{{ d.nights|default:0 }}</td>
+          <td class="act">
+            <form method="post" action="{% url 'recycle_bin_action' %}">
+              {% csrf_token %}
+              <input type="hidden" name="kind" value="day"><input type="hidden" name="action" value="restore">
+              <input type="hidden" name="resort_id" value="{{ d.room__resort_id }}"><input type="hidden" name="date" value="{{ d.log_date|date:'Y-m-d' }}">
+              <button type="submit" class="rb-btn rb-restore">↩ Restore</button>
+            </form>
+            <form method="post" action="{% url 'recycle_bin_action' %}"
+                  onsubmit="return confirm('Permanently delete all records for {{ d.log_date|date:'M j, Y' }}? This cannot be undone.');">
+              {% csrf_token %}
+              <input type="hidden" name="kind" value="day"><input type="hidden" name="action" value="delete">
+              <input type="hidden" name="resort_id" value="{{ d.room__resort_id }}"><input type="hidden" name="date" value="{{ d.log_date|date:'Y-m-d' }}">
+              <button type="submit" class="rb-btn rb-delete">Delete permanently</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if rooms %}
+  <div class="rb-card">
+    <h6>🚪 Archived rooms <span class="n">{{ rooms|length }}</span></h6>
+    <div style="overflow-x:auto">
+    <table class="rb-table">
+      <thead><tr><th>Room</th>{% if show_resort %}<th>Resort</th>{% endif %}<th></th></tr></thead>
+      <tbody>
+      {% for room in rooms %}
+        <tr>
+          <td><b>Room {{ room.room_number }}</b></td>
+          {% if show_resort %}<td>{{ room.resort.name }}</td>{% endif %}
+          <td class="act">
+            <form method="post" action="{% url 'recycle_bin_action' %}">
+              {% csrf_token %}
+              <input type="hidden" name="kind" value="room"><input type="hidden" name="action" value="restore"><input type="hidden" name="id" value="{{ room.id }}">
+              <button type="submit" class="rb-btn rb-restore">↩ Restore</button>
+            </form>
+            <form method="post" action="{% url 'recycle_bin_action' %}"
+                  onsubmit="return confirm('Permanently delete room {{ room.room_number|escapejs }}?\n\nIts records in every daily log and report are deleted too. This cannot be undone.');">
+              {% csrf_token %}
+              <input type="hidden" name="kind" value="room"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="{{ room.id }}">
+              <button type="submit" class="rb-btn rb-delete">Delete permanently</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </div>
+  {% endif %}
+  {% if attractions %}
+  <div class="rb-card">
+    <h6>Archived attractions <span class="n">{{ attractions|length }}</span></h6>
+    <div style="overflow-x:auto">
+    <table class="rb-table">
+      <thead><tr><th>Attraction</th>{% if show_resort %}<th>Resort</th>{% endif %}<th>Type</th><th></th></tr></thead>
+      <tbody>
+      {% for a in attractions %}
+        <tr>
+          <td><b>{{ a.name }}</b></td>
+          {% if show_resort %}<td>{{ a.resort.name }}</td>{% endif %}
+          <td>{{ a.get_attraction_type_display }}</td>
+          <td class="act">
+            <form method="post" action="{% url 'recycle_bin_action' %}">
+              {% csrf_token %}
+              <input type="hidden" name="kind" value="attraction"><input type="hidden" name="action" value="restore"><input type="hidden" name="id" value="{{ a.id }}">
+              <button type="submit" class="rb-btn rb-restore">Restore</button>
+            </form>
+            <form method="post" action="{% url 'recycle_bin_action' %}"
+                  onsubmit="return confirm('Permanently delete {{ a.name|escapejs }}?\n\nAll visitor logs of this attraction are deleted too. This cannot be undone.');">
+              {% csrf_token %}
+              <input type="hidden" name="kind" value="attraction"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="{{ a.id }}">
+              <button type="submit" class="rb-btn rb-delete">Delete permanently</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </div>
+  {% endif %}
+  
+  {% if programs %}
+  <div class="rb-card">
+    <h6>📣 Archived programs <span class="n">{{ programs|length }}</span></h6>
+    <div style="overflow-x:auto">
+    <table class="rb-table">
+      <thead><tr><th>Program</th><th>Posted</th><th></th></tr></thead>
+      <tbody>
+      {% for p in programs %}
+        <tr>
+          <td><b>{{ p.title }}</b></td>
+          <td>{{ p.date_posted|date:"M j, Y" }}</td>
+          <td class="act">
+            <form method="post" action="{% url 'recycle_bin_action' %}">
+              {% csrf_token %}
+              <input type="hidden" name="kind" value="program"><input type="hidden" name="action" value="restore"><input type="hidden" name="id" value="{{ p.id }}">
+              <button type="submit" class="rb-btn rb-restore">↩ Restore</button>
+            </form>
+            <form method="post" action="{% url 'recycle_bin_action' %}"
+                  onsubmit="return confirm('Permanently delete this program? This cannot be undone.');">
+              {% csrf_token %}
+              <input type="hidden" name="kind" value="program"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="{{ p.id }}">
+              <button type="submit" class="rb-btn rb-delete">Delete permanently</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

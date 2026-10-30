@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+  <h4 class="mb-1">Activity log</h4>
+  <p class="text-muted mb-4">Recent actions across all users (latest 200).</p>
+  <div class="table-responsive">
+    <table class="table table-sm">
+      <thead class="table-light">
+        <tr><th>Date/Time</th><th>User</th><th>Role</th><th>Action</th><th>Detail</th></tr>
+      </thead>
+      <tbody>
+        {% for log in logs %}
+        <tr>
+          <td>{{ log.created_at|date:"Y-m-d H:i" }}</td>
+          <td>{{ log.user.username|default:"(deleted user)" }}</td>
+          <td>{{ log.user.role|default:"-" }}</td>
+          <td>{{ log.action }}</td>
+          <td class="text-muted">{{ log.detail }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="5" class="text-muted">Wala pang activity.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

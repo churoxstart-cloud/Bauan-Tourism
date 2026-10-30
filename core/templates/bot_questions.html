@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .bq-card { background: #fff; border: 1px solid #e3e8ec; border-radius: 14px; box-shadow: 0 2px 10px rgba(15,50,60,.06); overflow: hidden; }
+  .bq-row { display: flex; align-items: center; gap: 1rem; padding: .8rem 1.1rem; border-bottom: 1px solid #eef2f4; }
+  .bq-row:last-child { border-bottom: 0; }
+  .bq-count { min-width: 44px; text-align: center; font-weight: 700; color: #b45309; background: #fff1dc; border-radius: 10px; padding: .3rem .5rem; }
+  .bq-row.done { opacity: .55; }
+  .bq-row.done .bq-count { color: #137a4b; background: #e6f6ef; }
+  .bq-main { flex: 1; min-width: 0; }
+  .bq-q { font-weight: 600; word-break: break-word; }
+  .bq-meta { font-size: .76rem; color: #6b7674; }
+  .bq-actions { display: flex; gap: .4rem; }
+  .bq-actions form { display: contents; }
+  .bq-actions .btn { font-size: .82rem; font-weight: 600; border-radius: 8px; white-space: nowrap; }
+</style>
+<div class="container mt-4" style="max-width: 900px;">
+  <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+    <div>
+      <h5 class="mb-1">Bot Questions <span style="background:rgba(26,138,124,.12); color:#14633f; padding:2px 10px; border-radius:999px; font-size:.78rem; font-weight:700;">What visitors asked that the bot couldn't answer</span></h5>
+      <p class="text-muted small mb-0">Questions the bot didn't understand, or where the answer isn't posted yet (for example a fee or opening hours). Add the missing info under <a href="{% url 'manage_destinations' %}">Destinations</a>, then mark the question as done. Only the typed question is saved: no name, IP address or location.</p>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2 my-3 flex-wrap align-items-center">
+    <a href="?show=open" class="btn btn-sm {% if show == 'open' %}btn-primary{% else %}btn-outline-secondary{% endif %}">To review ({{ counts.open }})</a>
+    <a href="?show=resolved" class="btn btn-sm {% if show == 'resolved' %}btn-primary{% else %}btn-outline-secondary{% endif %}">Done ({{ counts.resolved }})</a>
+    <a href="?show=all" class="btn btn-sm {% if show == 'all' %}btn-primary{% else %}btn-outline-secondary{% endif %}">All</a>
+    {% if counts.resolved %}
+    <form method="post" class="ms-auto" onsubmit="return confirm('Remove all questions marked done?');">{% csrf_token %}<input type="hidden" name="action" value="clear_resolved"><button class="btn btn-sm btn-outline-danger">Clear done</button></form>
+    {% endif %}
+  </div>
+
+  <div class="bq-card">
+    {% for q in questions %}
+    <div class="bq-row {% if q.resolved %}done{% endif %}">
+      <div class="bq-count" title="Times asked">&times;{{ q.count }}</div>
+      <div class="bq-main">
+        <div class="bq-q">{{ q.question }}</div>
+        <div class="bq-meta">{{ q.reason_label }} &middot; {{ q.lang|upper }} &middot; last asked {{ q.last_asked|date:"M j, Y g:i A" }}</div>
+      </div>
+      <div class="bq-actions">
+        <form method="post">{% csrf_token %}<input type="hidden" name="question_id" value="{{ q.id }}">
+          <button name="action" value="resolve" class="btn btn-outline-success btn-sm">{% if q.resolved %}Reopen{% else %}Mark done{% endif %}</button>
+          <button name="action" value="delete" class="btn btn-outline-danger btn-sm">Delete</button>
+        </form>
+      </div>
+    </div>
+    {% empty %}
+    <div class="p-4 text-center text-muted">{% if show == 'open' %}Nothing to review. Tourist Bot hasn't missed anything lately. 🎉{% else %}No questions here.{% endif %}</div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

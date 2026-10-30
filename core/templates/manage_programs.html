@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .pg-audience { display: flex; gap: .6rem; flex-wrap: wrap; }
+  .pg-audience label { display: flex; align-items: center; gap: .55rem; cursor: pointer; margin: 0; padding: .6rem 1rem; border: 1px solid #ccd6d5; border-radius: 10px; background: #fff; font-weight: 600; font-size: .92rem; transition: border-color .2s, background .2s; }
+  .pg-audience label:hover { border-color: #1a8a7c; }
+  .pg-audience label:has(input:checked) { border-color: #1a8a7c; background: #eaf6f4; color: #0f5e54; }
+  .pg-audience input { accent-color: #1a8a7c; width: 1.05rem; height: 1.05rem; }
+
+  .pg-picker { margin-top: .75rem; border: 1px solid #ccd6d5; border-radius: 12px; background: #fff; padding: .85rem; }
+  .pg-picker[hidden] { display: none; }
+  .pg-picker-top { display: flex; gap: .5rem; align-items: center; flex-wrap: wrap; margin-bottom: .6rem; }
+  .pg-picker-top input[type=search] { flex: 1 1 220px; }
+  .pg-count { font-size: .82rem; font-weight: 700; color: #0f5e54; background: #e1f3f0; padding: .25rem .7rem; border-radius: 999px; white-space: nowrap; }
+  .pg-list { max-height: 260px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: .35rem .75rem; padding-right: .25rem; }
+  .pg-item { display: flex; align-items: center; gap: .55rem; margin: 0; padding: .4rem .6rem; border-radius: 8px; cursor: pointer; font-size: .9rem; font-weight: 500; }
+  .pg-item:hover { background: #f1f7f6; }
+  .pg-item:has(input:checked) { background: #e1f3f0; }
+  .pg-item input { accent-color: #1a8a7c; width: 1rem; height: 1rem; flex: 0 0 auto; }
+  .pg-item small { color: #b45309; font-weight: 600; margin-left: auto; white-space: nowrap; }
+  .pg-item[hidden] { display: none; }
+  .pg-empty { color: #6b7674; font-size: .9rem; padding: .5rem; }
+
+  .pg-to { display: inline-flex; align-items: center; gap: .35rem; font-size: .75rem; font-weight: 700; padding: .15rem .6rem; border-radius: 999px; margin-left: .35rem; vertical-align: middle; }
+  .pg-to.all { background: #e1f3f0; color: #0f5e54; }
+  .pg-to.some { background: #fff1dc; color: #9a5b05; }
+  .pg-to-names { font-size: .8rem; color: #6b7674; margin: .25rem 0 0; }
+</style>
+
+<div class="container mt-4">
+  <h5>Programs <span style="background:rgba(26,138,124,.12); color:#14633f; padding:2px 10px; border-radius:999px; font-size:.78rem; font-weight:700;">Tourism Programs</span></h5>
+
+  {% if messages %}
+    {% for m in messages %}
+      <div class="alert alert-{{ m.tags|default:'info' }} py-2">{{ m }}</div>
+    {% endfor %}
+  {% endif %}
+
+  <form method="post" class="mb-4" id="programForm" novalidate>
+    {% csrf_token %}
+    <div class="mb-2">
+      <label class="form-label fw-semibold">Title</label>
+      {{ form.title }}
+    </div>
+    <div class="mb-2">
+      <label class="form-label fw-semibold">Description</label>
+      {{ form.description }}
+    </div>
+
+    <div class="mb-2">
+      <label class="form-label fw-semibold">Send to</label>
+      <div class="pg-audience">
+        {% for r in form.audience %}
+          <label>{{ r.tag }} {{ r.choice_label }}</label>
+        {% endfor %}
+      </div>
+
+      <div class="pg-picker" id="pgPicker" {% if form.audience.value != 'selected' %}hidden{% endif %}>
+        <div class="pg-picker-top">
+          <input type="search" id="pgSearch" class="form-control form-control-sm" placeholder="Search resort..." autocomplete="off">
+          <button type="button" class="btn btn-sm btn-outline-secondary" id="pgAll">Select shown</button>
+          <button type="button" class="btn btn-sm btn-outline-secondary" id="pgNone">Clear</button>
+          <span class="pg-count" id="pgCount">0 selected</span>
+        </div>
+        <div class="pg-list" id="pgList">
+          {% for c in form.recipients %}
+            <label class="pg-item" data-name="{{ c.choice_label|lower }}">
+              {{ c.tag }} <span>{{ c.choice_label }}</span>
+              {% if c.data.value.instance.staff_count == 0 %}<small title="No approved resort staff account yet, so nobody will see it">no staff yet</small>{% endif %}
+            </label>
+          {% empty %}
+            <div class="pg-empty">No active resorts yet.</div>
+          {% endfor %}
+        </div>
+        <div class="pg-empty" id="pgNoMatch" hidden>No resort matches your search.</div>
+        {% if form.recipients.errors %}
+          <div class="text-danger small mt-2" id="pgError">{{ form.recipients.errors.0 }}</div>
+        {% else %}
+          <div class="text-danger small mt-2" id="pgError" hidden></div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="mb-2">
+      <label class="form-label fw-semibold">Status</label>
+      {{ form.status }}
+    </div>
+    <button type="submit" class="btn btn-primary btn-sm">Post program</button>
+  </form>
+
+  <ul class="list-group">
+    {% for p in programs %}
+    <li class="list-group-item d-flex justify-content-between align-items-start">
+      <div>
+        <strong>{{ p.title }}</strong>
+        <span class="badge {% if p.status == 'active' %}bg-success{% else %}bg-secondary{% endif %}">{{ p.status }}</span>
+        {% if p.send_to_all %}
+          <span class="pg-to all">All resort staff</span>
+        {% else %}
+          <span class="pg-to some">{{ p.recipients.all|length }} resort{{ p.recipients.all|length|pluralize }}</span>
+        {% endif %}
+        <p class="mb-0 small text-muted">{{ p.description }}</p>
+        {% if not p.send_to_all %}
+          <p class="pg-to-names">To: {% for r in p.recipients.all %}{{ r.name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+        {% endif %}
+      </div>
+
+      <div class="d-flex gap-2">
+        <form method="post" action="{% url 'program_toggle_archive' p.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-outline-secondary">
+            {% if p.status == 'active' %}Archive{% else %}Restore{% endif %}
+          </button>
+        </form>
+        <form method="post" action="{% url 'program_delete' p.pk %}"
+              onsubmit="return confirm('Delete this program permanently?');">
+          {% csrf_token %}
+          <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+        </form>
+      </div>
+    </li>
+    {% empty %}
+    <li class="list-group-item text-muted">Wala pang programs.</li>
+    {% endfor %}
+  </ul>
+</div>
+
+<script>
+(function () {
+  var form = document.getElementById('programForm'),
+      picker = document.getElementById('pgPicker'),
+      search = document.getElementById('pgSearch'),
+      count = document.getElementById('pgCount'),
+      err = document.getElementById('pgError'),
+      noMatch = document.getElementById('pgNoMatch'),
+      items = Array.prototype.slice.call(document.querySelectorAll('#pgList .pg-item')),
+      boxes = function () { return items.map(function (l) { return l.querySelector('input'); }); };
+
+  function audience() { var r = form.querySelector('input[name="audience"]:checked'); return r ? r.value : 'all'; }
+  function refresh() {
+    var n = boxes().filter(function (b) { return b.checked; }).length;
+    count.textContent = n + ' selected';
+    if (n > 0) { err.hidden = true; }
+  }
+  function applyAudience() { picker.hidden = audience() !== 'selected'; }
+  function filter() {
+    var q = search.value.trim().toLowerCase(), shown = 0;
+    items.forEach(function (l) { var ok = !q || l.dataset.name.indexOf(q) !== -1; l.hidden = !ok; if (ok) shown++; });
+    noMatch.hidden = shown > 0 || items.length === 0;
+  }
+
+  form.querySelectorAll('input[name="audience"]').forEach(function (r) { r.addEventListener('change', applyAudience); });
+  items.forEach(function (l) { l.querySelector('input').addEventListener('change', refresh); });
+  search.addEventListener('input', filter);
+  document.getElementById('pgAll').addEventListener('click', function () {
+    items.forEach(function (l) { if (!l.hidden) l.querySelector('input').checked = true; }); refresh();
+  });
+  document.getElementById('pgNone').addEventListener('click', function () {
+    items.forEach(function (l) { l.querySelector('input').checked = false; }); refresh();
+  });
+  // stop an empty "specific resorts" send before it leaves the browser (server checks too)
+  form.addEventListener('submit', function (e) {
+    if (audience() === 'selected' && !boxes().some(function (b) { return b.checked; })) {
+      e.preventDefault(); err.textContent = 'Pick at least one resort, or choose "All resort staff".'; err.hidden = false;
+      picker.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  });
+  applyAudience(); refresh();
+})();
+</script>
+{% endblock %}

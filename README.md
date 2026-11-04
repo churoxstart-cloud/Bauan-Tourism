@@ -105,6 +105,17 @@ Recommended hosting approaches:
 - VPS / cloud hosting (for full custom deployment)
 - Hostinger VPS (possible, but requires Django + MySQL + Gunicorn + Nginx setup)
 
+After migrating the database, seed the initial data and accounts:
+
+```bash
+python manage.py load_resorts
+python manage.py load_rooms
+python manage.py create_resort_accounts
+python manage.py createsuperuser
+```
+
+`create_resort_accounts` creates one approved resort-staff account per Resort (default password: `Bauan@2026`, username = slug of the resort name). `createsuperuser` creates the MTO/admin account.
+
 ## Database
 
 The project is configured to use MySQL with Django via PyMySQL. The default settings in `bauan_portal/settings.py` expect database environment variables such as:

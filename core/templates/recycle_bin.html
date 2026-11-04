@@ -36,14 +36,14 @@
 <div class="container mt-4 mb-5">
   <div class="rb-hero">
     <div>
-      <h4>🗑️ Recycle bin</h4>
+      <h4>Recycle bin</h4>
       <p>Everything you archived is kept here. Restore it to bring it back, or delete it permanently. Archived days are not counted in any report.</p>
     </div>
     <div class="rb-count"><b>{{ total }}</b><span>item{{ total|pluralize }}</span></div>
   </div>
 
   {% if total == 0 %}
-    <div class="rb-clear"><div class="big">✨</div><b>The recycle bin is empty</b><br>Archived rooms, days and programs will show up here.</div>
+    <div class="rb-clear"><b>The recycle bin is empty</b><br>Archived rooms, days and programs will show up here.</div>
   {% endif %}
 
   {% if days %}

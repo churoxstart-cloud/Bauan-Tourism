@@ -1,6 +1,8 @@
 # Bauan Tourism
 
-A feature-rich, fully responsive tourism guide web application for Bauan, Batangas, Philippines. Designed to help travelers discover local culture, attractions, and marine sanctuaries, this project provides an engaging and informative experience through a modern web interface powered by Python-based functionality.
+A feature-rich, fully responsive tourism guide web application for Bauan, Batangas, Philippines. Designed to help travelers discover local culture, attractions, and marine sanctuaries, this project[...]
+
+Website: https://bauantourism.com/
 
 ## Features
 
@@ -96,7 +98,7 @@ Visit `http://127.0.0.1:8000/` to access the application.
 
 ## Production Deployment Notes
 
-This repository is a Django application, not a static HTML site. It requires a Python runtime and a database. Because of this, standard static hosting platforms such as Vercel are not the best deployment target for this project.
+This repository is a Django application, not a static HTML site. It requires a Python runtime and a database. Because of this, standard static hosting platforms such as Vercel are not the best dep[...]
 
 Recommended hosting approaches:
 
@@ -117,7 +119,7 @@ The project is configured to use MySQL with Django via PyMySQL. The default sett
 
 ## Admin and User Features
 
-The project includes Django admin integration, system users, dashboard flows, and content management functionality. If you are making changes to the app logic or database models, run migrations and test the admin workflow after updates.
+The project includes Django admin integration, system users, dashboard flows, and content management functionality. If you are making changes to the app logic or database models, run migrations a[...]
 
 ## License
 

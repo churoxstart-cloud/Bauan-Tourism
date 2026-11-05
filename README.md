@@ -130,7 +130,13 @@ The project is configured to use MySQL with Django via PyMySQL. The default sett
 
 The project includes Django admin integration, system users, dashboard flows, and content management functionality. If you are making changes to the app logic or database models, run migrations and test the admin workflow after updates.
 
-## License
+## Recent Updates
+
+- UI refresh across landing, login, register, get-started, public home, bot questions, and recycle bin pages.
+- Removed emoji decorations from recycle bin UI.
+- Simplified monthly report room-count label.
+- Added deployment seed commands documentation.
+- User/account management and form updates in `core/forms.py` and `core/views.py`.
 
 This project is intended for educational and tourism-related use. Please check the repository status or project owner for explicit licensing terms before commercial deployment.
 

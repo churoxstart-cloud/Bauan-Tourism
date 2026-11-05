@@ -48,7 +48,7 @@
 
   {% if days %}
   <div class="rb-card">
-    <h6>🗓️ Archived days <span class="n">{{ days|length }}</span></h6>
+    <h6>Archived days <span class="n">{{ days|length }}</span></h6>
     <div style="overflow-x:auto">
     <table class="rb-table">
       <thead><tr>
@@ -67,7 +67,7 @@
               {% csrf_token %}
               <input type="hidden" name="kind" value="day"><input type="hidden" name="action" value="restore">
               <input type="hidden" name="resort_id" value="{{ d.room__resort_id }}"><input type="hidden" name="date" value="{{ d.log_date|date:'Y-m-d' }}">
-              <button type="submit" class="rb-btn rb-restore">↩ Restore</button>
+              <button type="submit" class="rb-btn rb-restore">Restore</button>
             </form>
             <form method="post" action="{% url 'recycle_bin_action' %}"
                   onsubmit="return confirm('Permanently delete all records for {{ d.log_date|date:'M j, Y' }}? This cannot be undone.');">
@@ -87,7 +87,7 @@
 
   {% if rooms %}
   <div class="rb-card">
-    <h6>🚪 Archived rooms <span class="n">{{ rooms|length }}</span></h6>
+    <h6>Archived rooms <span class="n">{{ rooms|length }}</span></h6>
     <div style="overflow-x:auto">
     <table class="rb-table">
       <thead><tr><th>Room</th>{% if show_resort %}<th>Resort</th>{% endif %}<th></th></tr></thead>
@@ -100,7 +100,7 @@
             <form method="post" action="{% url 'recycle_bin_action' %}">
               {% csrf_token %}
               <input type="hidden" name="kind" value="room"><input type="hidden" name="action" value="restore"><input type="hidden" name="id" value="{{ room.id }}">
-              <button type="submit" class="rb-btn rb-restore">↩ Restore</button>
+              <button type="submit" class="rb-btn rb-restore">Restore</button>
             </form>
             <form method="post" action="{% url 'recycle_bin_action' %}"
                   onsubmit="return confirm('Permanently delete room {{ room.room_number|escapejs }}?\n\nIts records in every daily log and report are deleted too. This cannot be undone.');">
@@ -151,7 +151,7 @@
   
   {% if programs %}
   <div class="rb-card">
-    <h6>📣 Archived programs <span class="n">{{ programs|length }}</span></h6>
+    <h6>Archived programs <span class="n">{{ programs|length }}</span></h6>
     <div style="overflow-x:auto">
     <table class="rb-table">
       <thead><tr><th>Program</th><th>Posted</th><th></th></tr></thead>
@@ -164,7 +164,7 @@
             <form method="post" action="{% url 'recycle_bin_action' %}">
               {% csrf_token %}
               <input type="hidden" name="kind" value="program"><input type="hidden" name="action" value="restore"><input type="hidden" name="id" value="{{ p.id }}">
-              <button type="submit" class="rb-btn rb-restore">↩ Restore</button>
+              <button type="submit" class="rb-btn rb-restore">Restore</button>
             </form>
             <form method="post" action="{% url 'recycle_bin_action' %}"
                   onsubmit="return confirm('Permanently delete this program? This cannot be undone.');">

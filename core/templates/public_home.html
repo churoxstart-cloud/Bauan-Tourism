@@ -292,9 +292,7 @@
         .contact-info li span {
           font-size: 0.9rem !important;
           letter-spacing: -0.2px;
-          white-space: normal !important;
-          word-break: break-word !important;
-          overflow-wrap: anywhere !important;
+          white-space: nowrap; 
         }
 
         h1 {
@@ -1012,6 +1010,20 @@
         .chat-dcard-btns button { border: 0; cursor: pointer; font: 600 0.72rem 'Poppins', sans-serif; padding: 5px 9px; border-radius: 999px; background: #2a9d8f; color: #fff; transition: background 0.2s; white-space: nowrap; }
         .chat-dcard-btns button:hover { background: #1f7f74; }
         .chat-dcard-btns button:nth-child(3) { background: #eef3f3; color: #14434b; }
+
+        /* Tourist Bot: can be dragged anywhere; the chat window and bubbles open toward the free side */
+        .chat-widget { bottom: calc(30px + var(--bot-lift, 0px)); transition: bottom 0.3s ease; }
+        .chat-btn { cursor: grab; touch-action: none; user-select: none; -webkit-user-select: none; }
+        .chat-widget.dragging, .chat-widget.dragging .chat-btn { transition: none !important; cursor: grabbing; }
+        .chat-widget.dragging .chat-btn { animation: none; transform: scale(1.06); }
+        .chat-window { width: min(360px, calc(100vw - 24px)); }
+        .chat-widget.pos-left .chat-window { right: auto; left: 0; }
+        .chat-widget.pos-top .chat-window { bottom: auto; top: 85px; transform-origin: top center; }
+        .chat-widget.pos-left .chat-greet { right: auto; left: 0; border-radius: 18px 18px 18px 4px; transform-origin: bottom left; }
+        .chat-widget.pos-top .chat-greet { bottom: auto; top: 92px; transform-origin: top right; }
+        .chat-widget.pos-left.pos-top .chat-greet { transform-origin: top left; }
+        .chat-widget.pos-left .chat-label { right: auto; left: calc(100% + 14px); transform: translate(-10px, -50%); }
+        .chat-widget.pos-left .chat-btn:hover .chat-label, .chat-widget.pos-left .chat-btn:focus-visible .chat-label { transform: translate(0, -50%); }
     </style>
 </head>
 <body>
@@ -2256,14 +2268,11 @@
 
       // eyes look toward the cursor (desktop only)
       if (!reduce && window.matchMedia && matchMedia('(hover: hover)').matches) {
-        if (!face.style.getPropertyValue('--lx')) { face.style.setProperty('--lx', '0px'); face.style.setProperty('--ly', '0px'); }
         document.addEventListener('pointermove', function (e) {
-          if (!btn) return;
           var r = btn.getBoundingClientRect(), dx = e.clientX - (r.left + r.width / 2), dy = e.clientY - (r.top + r.height / 2);
           var d = Math.hypot(dx, dy) || 1, k = Math.min(1, d / 260) * 2.2;
-          var lx = (dx / d * k).toFixed(2) + 'px', ly = (dy / d * k * 0.8).toFixed(2) + 'px';
-          face.style.setProperty('--lx', lx);
-          face.style.setProperty('--ly', ly);
+          face.style.setProperty('--lx', (dx / d * k).toFixed(2) + 'px');
+          face.style.setProperty('--ly', (dy / d * k * 0.8).toFixed(2) + 'px');
         }, { passive: true });
       }
 
@@ -2283,6 +2292,94 @@
         greet.addEventListener('click', function () { hide(); if (win && !win.classList.contains('open')) btn.click(); });
         btn.addEventListener('click', hide);
       }
+    })();
+    </script>
+
+    <!-- Tourist Bot: drag to move (position is remembered), opens toward the free side, stays clear of the cookie banner -->
+    <script>
+    (function () {
+      var widget = document.querySelector('.chat-widget'), btn = document.getElementById('chatBtn'),
+          win = document.getElementById('chatWindow'), banner = document.getElementById('cookieConsentBanner');
+      if (!widget || !btn) return;
+      var KEY = 'bauanBotPos', M = 8, drag = null, justDragged = false;
+      btn.title = 'Chat with Tourist Bot. Drag to move it, double-click to put it back.';
+
+      function store(v) { try { if (v) localStorage.setItem(KEY, JSON.stringify(v)); else localStorage.removeItem(KEY); } catch (e) {} }
+      function load() { try { return JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { return null; } }
+      function clamp(x, y) {
+        var w = widget.offsetWidth, h = widget.offsetHeight;
+        return { x: Math.min(Math.max(M, x), Math.max(M, innerWidth - w - M)), y: Math.min(Math.max(M, y), Math.max(M, innerHeight - h - M)) };
+      }
+      function place() {                         // which way should the window / bubble open?
+        var r = widget.getBoundingClientRect(), above = r.top, below = innerHeight - r.bottom;
+        var up = above >= below || above >= 540;
+        widget.classList.toggle('pos-top', !up);
+        widget.classList.toggle('pos-left', innerWidth > 520 && r.right - 360 < M);
+        if (win) win.style.height = Math.max(260, Math.min(500, (up ? above : below) - 100)) + 'px';
+      }
+      function lift() {                          // default corner only: sit above the cookie banner
+        var user = widget.classList.contains('user-pos');
+        var shown = banner && getComputedStyle(banner).display !== 'none';
+        widget.style.setProperty('--bot-lift', !user && shown ? (banner.offsetHeight + 16) + 'px' : '0px');
+        place();
+      }
+      function apply(x, y) {
+        var p = clamp(x, y);
+        widget.style.left = p.x + 'px'; widget.style.top = p.y + 'px'; widget.style.right = 'auto'; widget.style.bottom = 'auto';
+        widget.classList.add('user-pos'); place(); return p;
+      }
+      function save() {
+        var r = widget.getBoundingClientRect(), w = widget.offsetWidth, h = widget.offsetHeight;
+        store({ fx: r.left / Math.max(1, innerWidth - w), fy: r.top / Math.max(1, innerHeight - h) });
+      }
+      function restore() {
+        var v = load(); if (!v) return false;
+        var w = widget.offsetWidth, h = widget.offsetHeight;
+        apply(v.fx * (innerWidth - w), v.fy * (innerHeight - h)); return true;
+      }
+      function reset() {
+        ['left', 'top', 'right', 'bottom'].forEach(function (k) { widget.style.removeProperty(k); });
+        widget.classList.remove('user-pos'); store(null); lift();
+      }
+
+      btn.addEventListener('pointerdown', function (e) {
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+        var r = widget.getBoundingClientRect();
+        drag = { id: e.pointerId, sx: e.clientX, sy: e.clientY, ox: r.left, oy: r.top, active: false };
+        // follow the pointer across the whole page, so a fast flick can't "lose" the button
+        document.addEventListener('pointermove', move);
+        document.addEventListener('pointerup', end);
+        document.addEventListener('pointercancel', end);
+      });
+      function move(e) {
+        if (!drag || e.pointerId !== drag.id) return;
+        var dx = e.clientX - drag.sx, dy = e.clientY - drag.sy;
+        if (!drag.active) {
+          if (Math.hypot(dx, dy) < 6) return;     // small movement = a normal click
+          drag.active = true; widget.classList.add('dragging');
+        }
+        apply(drag.ox + dx, drag.oy + dy); e.preventDefault();
+      }
+      function end(e) {
+        if (!drag || e.pointerId !== drag.id) return;
+        document.removeEventListener('pointermove', move);
+        document.removeEventListener('pointerup', end);
+        document.removeEventListener('pointercancel', end);
+        if (drag.active) { widget.classList.remove('dragging'); justDragged = true; setTimeout(function () { justDragged = false; }, 60); save(); lift(); }
+        drag = null;
+      }
+      btn.addEventListener('click', function (e) { if (justDragged) { e.stopImmediatePropagation(); e.preventDefault(); } }, true);   // a drag must not open the chat
+      btn.addEventListener('dblclick', reset);
+      btn.addEventListener('keydown', function (e) {        // keyboard: Shift + arrow keys
+        var d = { ArrowLeft: [-24, 0], ArrowRight: [24, 0], ArrowUp: [0, -24], ArrowDown: [0, 24] }[e.key];
+        if (!d || !e.shiftKey) return;
+        var r = widget.getBoundingClientRect(); apply(r.left + d[0], r.top + d[1]); save(); e.preventDefault();
+      });
+
+      window.addEventListener('resize', function () { if (widget.classList.contains('user-pos')) { if (!restore()) lift(); } else lift(); });
+      if (banner && 'MutationObserver' in window) new MutationObserver(lift).observe(banner, { attributes: true, attributeFilter: ['style', 'class'] });
+      if (!restore()) lift();
+      setTimeout(lift, 800);                      // the cookie banner appears slightly after load
     })();
     </script>
 </body>

@@ -1,55 +1,142 @@
 {% extends "base.html" %}
 {% block content_public %}
 <style>
-  .reg-wrap { min-height: 90vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #072a35, #1a8a7c 70%); padding: 1.5rem; }
-  .reg-card { width: 100%; max-width: 440px; background: rgba(255,255,255,0.95); backdrop-filter: blur(8px); border-radius: 16px; padding: 2.5rem 2rem; box-shadow: 0 8px 32px rgba(0,0,0,.08); border: 1px solid rgba(0,0,0,0.06); }
-  .reg-card h4 { color: var(--brand-navy); font-weight: 800; font-size: 1.5rem; letter-spacing: -.01em; overflow: hidden; white-space: nowrap; width: 0; display: inline-block; border-right: 2px solid var(--brand-teal); animation: typing 2s steps(30,end) forwards, blink .75s step-end infinite; }
-  @keyframes typing { from { width: 0 } to { width: 100% } }
-  @keyframes blink { 50% { border-color: transparent } }
-  .reg-card .form-label { font-weight: 600; font-size: .85rem; color: #444; margin-bottom: .35rem; }
-  .reg-card input, .reg-card select { border: 1px solid #ccc; border-radius: 8px; padding: .6rem .8rem; font-size: .9rem; width: 100%; transition: border-color .15s, box-shadow .15s; }
-  .reg-card input:focus, .reg-card select:focus { outline: none; border-color: var(--brand-teal); box-shadow: 0 0 0 3px rgba(26,138,124,.15); }
-  .reg-btn { background: linear-gradient(135deg, var(--brand-navy), var(--brand-teal)); color: #fff; border: none; font-weight: 700; padding: .65rem 1.5rem; font-size: .95rem; cursor: pointer; border-radius: 8px; box-shadow: 0 3px 12px rgba(11,61,76,.25); transition: box-shadow .15s, transform .15s; }
-  .reg-btn:hover { box-shadow: 0 5px 18px rgba(11,61,76,.32); transform: translateY(-1px); }
-  .reg-btn:disabled { background: #bbb; box-shadow: none; cursor: not-allowed; transform: none; }
+  .rg-page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; position: relative; overflow: hidden;
+    background: linear-gradient(135deg, #072a35 0%, #0b3d4c 45%, #1a8a7c 100%); }
+  .rg-page::before { content: ""; position: absolute; top: -110px; right: -110px; width: 400px; height: 400px; border-radius: 50%; background: rgba(217,164,65,.16); }
+  .rg-page::after { content: ""; position: absolute; bottom: -130px; left: -130px; width: 360px; height: 360px; border-radius: 50%; background: rgba(255,255,255,.07); }
+  .rg-shell { position: relative; z-index: 2; width: 100%; max-width: 980px; display: grid; grid-template-columns: .92fr 1.08fr; background: #fff; border-radius: 22px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.35); }
+
+  .rg-aside { position: relative; overflow: hidden; color: #fff; padding: 2.6rem 2.3rem; display: flex; flex-direction: column; justify-content: center;
+    background: linear-gradient(160deg, #0b3d4c 0%, #146b68 60%, #1a8a7c 100%); }
+  .rg-aside::before { content: ""; position: absolute; top: -70px; right: -70px; width: 220px; height: 220px; border-radius: 50%; background: rgba(217,164,65,.22); }
+  .rg-aside > * { position: relative; z-index: 1; }
+  .rg-logo { display: flex; align-items: center; gap: .8rem; margin-bottom: 1.4rem; }
+  .rg-logo img { width: 52px; height: 52px; border-radius: 50%; object-fit: cover; background: #fff; padding: 4px; box-shadow: 0 8px 18px rgba(0,0,0,.2); }
+  .rg-logo span { font-size: .8rem; line-height: 1.35; color: rgba(255,255,255,.85); font-weight: 500; }
+  .rg-aside h2 { color: #fff; font-size: 1.65rem; line-height: 1.2; font-weight: 800; letter-spacing: -.01em; margin: 0 0 .7rem; }
+  .rg-aside > p { color: rgba(255,255,255,.85); font-size: .93rem; line-height: 1.65; margin: 0 0 1.5rem; }
+  .rg-steps { list-style: none; padding: 0; margin: 0; display: grid; gap: .95rem; }
+  .rg-steps li { display: flex; gap: .8rem; align-items: flex-start; font-size: .9rem; line-height: 1.45; color: rgba(255,255,255,.92); }
+  .rg-steps b { display: block; color: #fff; }
+  .rg-n { flex: 0 0 30px; height: 30px; border-radius: 50%; display: grid; place-items: center; font-weight: 700; font-size: .85rem; background: rgba(255,255,255,.16); border: 1px solid rgba(255,255,255,.28); }
+
+  .rg-card { padding: 2.4rem 2.3rem 2rem; }
+  .rg-card h1 { font-size: 1.45rem; font-weight: 800; color: #0b3d4c; letter-spacing: -.01em; margin: 0 0 .25rem; }
+  .rg-sub { color: #5b6b72; font-size: .9rem; margin: 0 0 1.4rem; }
+  .rg-card .form-label { font-weight: 600; font-size: .84rem; color: #2b4048; margin-bottom: .3rem; }
+  .rg-card .form-control, .rg-card .form-select { border: 1px solid #ccd6d9; border-radius: 10px; padding: .65rem .85rem; font-size: .92rem; }
+  .rg-card .form-control:focus, .rg-card .form-select:focus { border-color: #1a8a7c; box-shadow: 0 0 0 3px rgba(26,138,124,.16); }
+  .rg-err { color: #b42318; font-size: .8rem; margin-top: .3rem; }
+  .rg-err ul { list-style: none; margin: 0; padding: 0; }
+  .rg-hint { color: #6b7c82; font-size: .78rem; margin-top: .3rem; }
+  .rg-field[hidden] { display: none; }
+  .rg-terms { display: flex; align-items: flex-start; gap: .6rem; margin: 1.1rem 0 1.1rem; }
+  .rg-terms input { width: 16px; height: 16px; margin-top: .2rem; accent-color: #1a8a7c; flex: 0 0 auto; }
+  .rg-terms label { font-size: .82rem; color: #43575e; line-height: 1.5; margin: 0; }
+  .rg-btn { width: 100%; border: 0; border-radius: 10px; padding: .8rem 1rem; font-weight: 700; font-size: .96rem; color: #fff; cursor: pointer;
+    background: linear-gradient(135deg, #0b3d4c, #1a8a7c); box-shadow: 0 8px 20px rgba(11,61,76,.28); transition: transform .15s, box-shadow .15s; }
+  .rg-btn:hover { transform: translateY(-1px); box-shadow: 0 12px 26px rgba(11,61,76,.34); }
+  .rg-btn:disabled { background: #c3ccce; box-shadow: none; cursor: not-allowed; transform: none; }
+  .rg-links { text-align: center; margin-top: 1.1rem; font-size: .88rem; color: #5b6b72; }
+  .rg-links a { font-weight: 600; }
+
+  .rg-done { text-align: center; padding: 1.5rem .5rem; }
+  .rg-done .ok { width: 68px; height: 68px; border-radius: 50%; margin: 0 auto 1.1rem; display: grid; place-items: center; background: #e3f3f0; color: #1a8a7c; }
+  .rg-done .ok svg { width: 34px; height: 34px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+  .rg-done h2 { font-size: 1.35rem; font-weight: 800; color: #0b3d4c; margin: 0 0 .5rem; }
+  .rg-done p { color: #5b6b72; font-size: .94rem; line-height: 1.65; margin: 0 0 1.4rem; }
+
+  @media (max-width: 820px) { .rg-shell { grid-template-columns: 1fr; } .rg-aside { padding: 1.8rem 1.5rem; } .rg-card { padding: 1.8rem 1.4rem; } .rg-steps { display: none; } .rg-aside > p { margin: 0; } }
 </style>
-<div class="reg-wrap">
-  <div class="reg-card">
-    <div style="display:flex; align-items:center; gap:12px; justify-content:center; margin-bottom:10px;">
-      <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStfb1LD4WvgZ2qoeMg55h-DRWd53v5XGky3ucEhBZlXJflc1r1-LQKTEM&s=10" alt="Bauan Logo" style="width:46px; height:46px; border-radius:50%; background:#fff; padding:4px; box-shadow:0 6px 16px rgba(11,61,76,.12);">
-    </div>
-    <h4 class="mb-1 text-center">Bauan Integrated Tourism Portal</h4>
-    <p class="text-center text-muted small mb-4">Create a staff account</p>
-    {% if submitted %}
-      <div class="alert alert-success py-2 small">Account created. Please wait for admin approval before logging in.</div>
-    {% endif %}
-    <form method="post">
-      {% csrf_token %}
-      <div class="mb-3"><label class="form-label">Username</label>{{ form.username }}</div>
-      <div class="mb-3"><label class="form-label">Email</label>{{ form.email }}</div>
-      <div class="mb-3"><label class="form-label">Role</label>{{ form.role }}</div>
-      <div class="mb-3"><label class="form-label">Resort (if resort staff)</label>{{ form.resort }}</div>
-      <div class="mb-3"><label class="form-label">Password</label>{{ form.password }}</div>
-      {% if terms_error %}
-        <div class="alert alert-danger py-2 small">Please read and tick the Terms and Conditions checkbox to create an account.</div>
-      {% endif %}
-      <div class="d-flex align-items-center gap-2 mb-3">
-        <input class="form-check-input" type="checkbox" name="agree_terms" id="agreeTerms" {% if terms_checked %}checked{% endif %} style="width:14px; height:14px; border-radius:3px; margin:0;">
-        <label class="form-check-label small mb-0" for="agreeTerms" style="font-size:0.8rem;">
-          I have read and agree to the <a href="{% url 'terms' %}" target="_blank" rel="noopener">Terms and Conditions</a> and <a href="{% url 'terms' %}" target="_blank" rel="noopener">Privacy Notice</a>.
-        </label>
+
+<div class="rg-page">
+  <div class="rg-shell">
+    <aside class="rg-aside">
+      <div class="rg-logo">
+        <img src="/static/img/mto-logo.png" alt="Municipal Tourism Office of Bauan"
+             onerror="if(!this.dataset.f){this.dataset.f='1';this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStfb1LD4WvgZ2qoeMg55h-DRWd53v5XGky3ucEhBZlXJflc1r1-LQKTEM&amp;s=10';}else{this.style.display='none';}">
+        <span>Municipal Tourism Office<br>Bauan, Batangas</span>
       </div>
-      <button type="submit" id="registerBtn" class="btn reg-btn w-100">Create staff account</button>
-    </form>
-    <script>
-      (function () {
-        var box = document.getElementById('agreeTerms'), btn = document.getElementById('registerBtn');
-        if (!box || !btn) return;
-        function sync() { btn.disabled = !box.checked; }
-        box.addEventListener('change', sync); sync();
-      })();
-    </script>
-    <p class="text-center mt-3 small"><a href="{% url 'login' %}">Back to login</a></p>
+      <h2>Create your staff account</h2>
+      <p>For Municipal Tourism Office personnel and authorized staff of accommodation establishments in Bauan.</p>
+      <ol class="rg-steps">
+        <li><span class="rg-n">1</span><span><b>Fill in your details</b>Choose MTO staff or resort staff.</span></li>
+        <li><span class="rg-n">2</span><span><b>Wait for approval</b>An administrator reviews your account.</span></li>
+        <li><span class="rg-n">3</span><span><b>Log in and start recording</b>Access opens as soon as you are approved.</span></li>
+      </ol>
+    </aside>
+
+    <div class="rg-card">
+      {% if submitted %}
+        <div class="rg-done">
+          <div class="ok"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+          <h2>Registration received</h2>
+          <p>Your account has been created and is waiting for administrator approval. You will be able to log in once it is approved.</p>
+          <a href="{% url 'login' %}" class="rg-btn d-inline-block text-decoration-none" style="width:auto; padding:.75rem 1.8rem;">Go to login</a>
+          <div class="rg-links"><a href="{% url 'get_started' %}">Back to the portal page</a></div>
+        </div>
+      {% else %}
+        <h1>Register</h1>
+        <p class="rg-sub">Fill in the form below. Your account will be reviewed by an administrator.</p>
+
+        <form method="post" id="regForm" novalidate>
+          {% csrf_token %}
+          {% if form.non_field_errors %}<div class="alert alert-danger py-2 small">{{ form.non_field_errors.0 }}</div>{% endif %}
+
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label" for="{{ form.username.id_for_label }}">Username</label>
+              {{ form.username }}
+              {% if form.username.errors %}<div class="rg-err">{{ form.username.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-md-6">
+              <label class="form-label" for="{{ form.email.id_for_label }}">Email</label>
+              {{ form.email }}
+              {% if form.email.errors %}<div class="rg-err">{{ form.email.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="{{ form.role.id_for_label }}">Account type</label>
+              {{ form.role }}
+              {% if form.role.errors %}<div class="rg-err">{{ form.role.errors.0 }}</div>{% endif %}
+            </div>
+            <div class="col-12 rg-field" id="resortField" {% if form.role.value != 'resort' %}hidden{% endif %}>
+              <label class="form-label" for="{{ form.resort.id_for_label }}">Your resort / establishment</label>
+              {{ form.resort }}
+              {% if form.resort.errors %}<div class="rg-err">{{ form.resort.errors.0 }}</div>{% else %}<div class="rg-hint">Choose the establishment you work for.</div>{% endif %}
+            </div>
+            <div class="col-12">
+              <label class="form-label" for="{{ form.password.id_for_label }}">Password</label>
+              {{ form.password }}
+              {% if form.password.errors %}<div class="rg-err">{{ form.password.errors.0 }}</div>{% endif %}
+            </div>
+          </div>
+
+          {% if terms_error %}
+            <div class="alert alert-danger py-2 small mt-3 mb-0">Please read and tick the Terms and Conditions checkbox to create an account.</div>
+          {% endif %}
+          <div class="rg-terms">
+            <input type="checkbox" name="agree_terms" id="agreeTerms" {% if terms_checked %}checked{% endif %}>
+            <label for="agreeTerms">I have read and agree to the <a href="{% url 'terms' %}" target="_blank" rel="noopener">Terms and Conditions</a> and <a href="{% url 'terms' %}" target="_blank" rel="noopener">Privacy Notice</a>.</label>
+          </div>
+          <button type="submit" id="registerBtn" class="rg-btn">Create account</button>
+        </form>
+
+        <div class="rg-links">Already have an account? <a href="{% url 'login' %}">Log in</a><br><a href="{% url 'get_started' %}" style="font-weight:500;">Back to the portal page</a></div>
+      {% endif %}
+    </div>
   </div>
 </div>
+
+<script>
+  (function () {
+    var role = document.getElementById('id_role'), box = document.getElementById('resortField'),
+        sel = document.getElementById('id_resort'), agree = document.getElementById('agreeTerms'), btn = document.getElementById('registerBtn');
+    if (role && box) {
+      var sync = function () { var r = role.value === 'resort'; box.hidden = !r; if (!r && sel) sel.value = ''; };
+      role.addEventListener('change', sync); sync();
+    }
+    if (agree && btn) { var s = function () { btn.disabled = !agree.checked; }; agree.addEventListener('change', s); s(); }
+  })();
+</script>
 {% endblock %}

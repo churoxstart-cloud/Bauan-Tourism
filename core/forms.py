@@ -36,6 +36,15 @@ class RegisterForm(forms.ModelForm):
             "resort": forms.Select(attrs={"class": "form-select"}),
         }
 
+    def clean(self):
+        cleaned = super().clean()
+        role, resort = cleaned.get("role"), cleaned.get("resort")
+        if role == "resort" and not resort:
+            self.add_error("resort", "Please choose the resort you work for.")
+        elif role == "mto":
+            cleaned["resort"] = None          # MTO staff are not tied to one resort
+        return cleaned
+
     def save(self, commit=True):
         user = super().save(commit=False)
         user.set_password(self.cleaned_data["password"])

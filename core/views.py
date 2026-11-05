@@ -71,7 +71,11 @@ def landing_view(request):
 def get_started_view(request):
     """Staff/resort-owner onboarding page (formerly landing.html) — now
     linked from the public site's footer instead of living at the root URL."""
-    return render(request, "get_started.html")
+    stats = {
+        "resorts": Resort.objects.filter(status="active").count(),
+        "rooms": Room.objects.filter(is_archived=False).count(),
+    }
+    return render(request, "get_started.html", {"stats": stats})
 
 
 def api_resorts(request):
@@ -179,7 +183,9 @@ def register_view(request):
             form.save()
             return render(request, "register.html", {"form": RegisterForm(), "submitted": True})
         return render(request, "register.html", {"form": form, "terms_checked": True})
-    form = RegisterForm()
+    # the portal page links here with ?role=mto or ?role=resort so the right account type is already selected
+    role = request.GET.get("role")
+    form = RegisterForm(initial={"role": role} if role in ("mto", "resort") else None)
     return render(request, "register.html", {"form": form})
 
 

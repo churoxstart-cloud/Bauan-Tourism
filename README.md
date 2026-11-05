@@ -107,6 +107,17 @@ Recommended hosting approaches:
 - VPS / cloud hosting (for full custom deployment)
 - Hostinger VPS (possible, but requires Django + MySQL + Gunicorn + Nginx setup)
 
+After migrating the database, seed the initial data and accounts:
+
+```bash
+python manage.py load_resorts
+python manage.py load_rooms
+python manage.py create_resort_accounts
+python manage.py createsuperuser
+```
+
+`create_resort_accounts` creates one approved resort-staff account per Resort (default password: `Bauan@2026`, username = slug of the resort name). `createsuperuser` creates the MTO/admin account.
+
 ## Database
 
 The project is configured to use MySQL with Django via PyMySQL. The default settings in `bauan_portal/settings.py` expect database environment variables such as:
@@ -121,7 +132,13 @@ The project is configured to use MySQL with Django via PyMySQL. The default sett
 
 The project includes Django admin integration, system users, dashboard flows, and content management functionality. If you are making changes to the app logic or database models, run migrations a[...]
 
-## License
+## Recent Updates
+
+- UI refresh across landing, login, register, get-started, public home, bot questions, and recycle bin pages.
+- Removed emoji decorations from recycle bin UI.
+- Simplified monthly report room-count label.
+- Added deployment seed commands documentation.
+- User/account management and form updates in `core/forms.py` and `core/views.py`.
 
 This project is intended for educational and tourism-related use. Please check the repository status or project owner for explicit licensing terms before commercial deployment.
 

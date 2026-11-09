@@ -26,7 +26,7 @@
   .day-btn-archive:hover { background: #ffefbf; }
   .day-btn-delete { background: #fdecec; color: #b42323; border-color: #f2b9b9; }
   .day-btn-delete:hover { background: #fadada; }
-  .day-hint { font-size: .78rem; opacity: .7; margin: 8px 2px 0; text-align: right; }
+  .day-hint { font-size: .78rem; color: var(--text-muted); margin: 8px 2px 0; text-align: right; }
   @media (max-width: 640px) {
     .day-bar { flex-direction: column; align-items: stretch; }
     .day-bar-left, .day-bar-right { justify-content: stretch; }
@@ -42,6 +42,7 @@
       <p class="text-muted small mb-0">Form: DAE-1A</p>
     </div>
     <a href="{% url 'export_daily_log' %}?year={{ log_date|slice:':4' }}&month={{ log_date|slice:'5:7' }}" class="btn btn-primary btn-sm">Export to Excel</a>
+    <a href="{% url 'import_daily_logs' %}" class="btn btn-outline-secondary btn-sm">Import from Excel</a>
   </div>
 
   <div class="dl-chips">

@@ -25,13 +25,56 @@
     <span>Name of Establishment: <b>{{ resort.name }}</b></span>
     <span>Barangay: <b>{{ resort.barangay }}</b></span>
     <span>Month of: <b>{{ month_name }} {{ year }}</b></span>
-    <span>Total Number of Rooms: <b>{{ rooms|length }}</b></span>
+    <span>(4) Total Number of Rooms: <b>{{ rooms|length }}</b></span>
   </div>
 
+  {% if split %}
+    <div class="split-note no-print">This establishment has {{ rooms|length }} rooms, so the form prints in two parts: <b>Part 1</b> monthly totals (one page), then <b>Part 2</b> room by room, which continues down across as many pages as needed with the header repeated. Nothing is cut off.</div>
+  {% endif %}
   {% if not rooms %}
     <p class="no-print" style="color:#b00020">No rooms yet. Add your rooms under Manage Rooms so they appear as columns in this form.</p>
   {% endif %}
 
+  {% if split %}
+  <div class="part-title">Part 1: Monthly totals</div>
+  <table class="sheet">
+    <thead>
+      <tr>
+        <th>Day</th>
+        <th>Day of the week</th>
+        <th>Number of Guests Check IN<br>(unit: visitors)</th>
+        <th>Number of Guests staying over-night<br>(Guest Nights)</th>
+        <th>Number of Rooms Occupied by Guests<br>(unit: rooms)</th>
+        <th>Male</th>
+        <th>Female</th>
+        <th>Nationality</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+      <tr>
+        <td>{{ row.day }}</td>
+        <td>{{ row.weekday }}</td>
+        <td>{% if row.has_data %}{{ row.checked }}{% endif %}</td>
+        <td>{% if row.has_data %}{{ row.overnight }}{% endif %}</td>
+        <td>{% if row.has_data %}{{ row.occupied }}{% endif %}</td>
+        <td>{% if row.has_data %}{{ row.male }}{% endif %}</td>
+        <td>{% if row.has_data %}{{ row.female }}{% endif %}</td>
+        <td class="left">{% if row.has_data %}{{ row.nationality }}{% endif %}</td>
+      </tr>
+      {% endfor %}
+      <tr class="total">
+        <td colspan="2">Total of this Month</td>
+        <td>{{ totals.checked }}</td>
+        <td>{{ totals.overnight }}</td>
+        <td>{{ totals.occupied }}</td>
+        <td>{{ totals.male }}</td>
+        <td>{{ totals.female }}</td>
+        <td></td>
+      </tr>
+    </tbody>
+  </table>
+  {% else %}
   <table class="sheet {% if rooms|length > 12 %}compact{% endif %}">
     <thead>
       <tr>
@@ -77,13 +120,15 @@
       </tr>
     </tbody>
   </table>
+  {% endif %}
 
   <div class="notes">
     <div>Average Guest-Night = Total Number of Guests Nights / Total Number of Guests Check IN = <b>{{ avg.guest_night }}</b></div>
     <div>Average Room Occupancy Rate = Total No. of Rooms Occupied by the Guests during the month / Total No. of Rooms Available during the month
       = {{ totals.occupied }} / {{ available }} = <b>{{ avg.occupancy_rate }}%</b></div>
     <div>Average Number of Guest per room = Total Number of Guests Nights / Total Number of Rooms Occupied by the Guests = <b>{{ avg.guests_per_room }}</b></div>
-    <div>Room columns show the number of guests staying over-night in that room on that day (a check mark if the room was occupied but no guest count was entered).</div>
+    {% if split %}<div>Part 2 (next pages) lists every room: each cell shows the number of guests staying over-night in that room on that day (a check mark if the room was occupied but no guest count was entered).</div>
+    {% else %}<div>Room columns show the number of guests staying over-night in that room on that day (a check mark if the room was occupied but no guest count was entered).</div>{% endif %}
   </div>
 
   <div class="sign">
@@ -91,4 +136,28 @@
     <div><div class="line">Position / Date</div></div>
     <div><div class="line">Noted by: Municipal Tourism Office</div></div>
   </div>
+
+  {% if split %}
+  <div class="page-break"></div>
+  <div class="part-title">Part 2: Guests staying over-night per room (Room Identification)</div>
+  <table class="sheet compact rooms-down">
+    <thead>
+      <tr class="ctx"><th colspan="{{ day_numbers|length|add:2 }}">DAE-1A &middot; {{ resort.name }} &middot; {{ month_name }} {{ year }} &middot; guests staying over-night per room</th></tr>
+      <tr>
+        <th class="rn">Room No.</th>
+        {% for d in day_numbers %}<th>{{ d }}</th>{% endfor %}
+        <th class="sum">Days occupied</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for rr in room_rows %}
+      <tr>
+        <td class="rn">{{ rr.room.room_number }}</td>
+        {% for c in rr.cells %}<td>{{ c }}</td>{% endfor %}
+        <td class="sum">{{ rr.total }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% endif %}
 {% endblock %}

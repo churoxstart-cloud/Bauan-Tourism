@@ -33,6 +33,7 @@
 
       {% if user.role == 'resort' %}
         <a href="{% url 'resort_daily_log' %}" class="sidebar-link {% if current == 'resort_daily_log' %}active{% endif %}">Daily Log</a>
+        <a href="{% url 'import_daily_logs' %}" class="sidebar-link {% if current == 'import_daily_logs' %}active{% endif %}">Import from Excel</a>
         <a href="{% url 'resort_monthly_sheet' %}" class="sidebar-link">Monthly Report (Print)</a>
         <a href="{% url 'resort_attractions' %}" class="sidebar-link {% if current == 'resort_attractions' or current == 'attraction_visitor_log' %}active{% endif %}">Attractions</a>
         <a href="{% url 'view_programs' %}" class="sidebar-link {% if current == 'view_programs' %}active{% endif %}">Programs</a>
@@ -41,6 +42,7 @@
                 <a href="{% url 'recycle_bin' %}" class="sidebar-link {% if current == 'recycle_bin' %}active{% endif %}"> Recycle Bin</a>
       {% elif user.role == 'mto' or user.role == 'admin' %}
         <a href="{% url 'mto_annual_summary' %}" class="sidebar-link {% if current == 'mto_annual_summary' %}active{% endif %}">Annual Summary</a>
+        <a href="{% url 'import_daily_logs' %}" class="sidebar-link {% if current == 'import_daily_logs' %}active{% endif %}">Import from Excel</a>
         <a href="{% url 'manage_programs' %}" class="sidebar-link {% if current == 'manage_programs' %}active{% endif %}">Programs</a>
         <a href="{% url 'contact_inbox' %}" class="sidebar-link {% if current == 'contact_inbox' %}active{% endif %}">Contact Inbox</a>
         <a href="{% url 'add_attraction' %}" class="sidebar-link {% if current == 'add_attraction' %}active{% endif %}">Add Attraction</a>

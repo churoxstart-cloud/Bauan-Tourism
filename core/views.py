@@ -1,5 +1,10 @@
 import calendar
 import json
+import os
+import re
+import tempfile
+import time
+import uuid
 from collections import defaultdict
 from datetime import date
 from urllib.parse import quote_plus
@@ -28,6 +33,7 @@ from django.utils.http import urlsafe_base64_decode
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
+from . import importers
 from .forms import (
     AttractionForm,
     AttractionVisitorLogForm,
@@ -1113,6 +1119,9 @@ def _year_month(request):
     return year, month
 
 
+SPLIT_AFTER_ROOMS = 30      # more rooms than this and the DAE-1A prints as "totals page + room-by-room pages"
+
+
 def _build_resort_sheet(rooms, logs, year, month):
     """Turn one month of RoomDailyLog rows into the DAE-1A grid.
     Pure Python (no database access) so the arithmetic is easy to test."""
@@ -1240,10 +1249,24 @@ def resort_monthly_sheet(request):
         if not r.is_archived or r.id in with_logs
     ]
     sheet = _build_resort_sheet(rooms, logs, year, month)
+    # The official DAE-1A puts every room in its own column. That fits on one A4 page up to about
+    # SPLIT_AFTER_ROOMS rooms; beyond that the report is split: monthly totals first, then a
+    # room-by-room table that flows down across as many pages as needed.
+    layout = request.GET.get("layout")
+    split = len(rooms) > SPLIT_AFTER_ROOMS if layout not in ("split", "classic") else layout == "split"
+    room_rows = []
+    if split:
+        for i, room in enumerate(rooms):
+            room_rows.append({
+                "room": room,
+                "cells": [row["room_cells"][i] for row in sheet["rows"]],
+                "total": sheet["room_totals"][i],
+            })
     return render(
         request,
         "resort_monthly_sheet.html",
         {
+            "split": split, "room_rows": room_rows, "day_numbers": [row["day"] for row in sheet["rows"]],
             "resort": resort, "year": year, "month": month,
             "month_name": calendar.month_name[month], "months": MONTH_CHOICES,
             "rooms": rooms, "prepared_by": request.user.get_full_name() or request.user.username,
@@ -1557,3 +1580,209 @@ def bot_questions(request):
         "resolved": BotQuestion.objects.filter(resolved=True).count(),
     }
     return render(request, "bot_questions.html", {"questions": qs[:300], "show": show, "counts": counts})
+
+
+# ---------------------------------------------------------------- Import daily logs (DAE-1A) from Excel / CSV
+
+IMPORT_DIR = os.path.join(tempfile.gettempdir(), "bauan_imports")
+IMPORT_TTL = 3600           # an uploaded file waits this long (seconds) for the user to confirm
+
+
+def _stash_upload(user, filename, data, resort_choice, create_rooms):
+    os.makedirs(IMPORT_DIR, exist_ok=True)
+    now = time.time()
+    for name in os.listdir(IMPORT_DIR):                     # tidy up anything old
+        path = os.path.join(IMPORT_DIR, name)
+        try:
+            if now - os.path.getmtime(path) > IMPORT_TTL:
+                os.remove(path)
+        except OSError:
+            pass
+    token = uuid.uuid4().hex
+    with open(os.path.join(IMPORT_DIR, token + ".bin"), "wb") as fh:
+        fh.write(data)
+    with open(os.path.join(IMPORT_DIR, token + ".json"), "w", encoding="utf-8") as fh:
+        json.dump({"user": user.id, "filename": filename, "resort_choice": resort_choice, "create_rooms": create_rooms, "ts": now}, fh)
+    return token
+
+
+def _load_upload(user, token):
+    if not token or not re.fullmatch(r"[0-9a-f]{32}", token):
+        return None
+    try:
+        with open(os.path.join(IMPORT_DIR, token + ".json"), encoding="utf-8") as fh:
+            meta = json.load(fh)
+        with open(os.path.join(IMPORT_DIR, token + ".bin"), "rb") as fh:
+            meta["data"] = fh.read()
+    except (OSError, ValueError):
+        return None
+    if meta.get("user") != user.id or time.time() - meta.get("ts", 0) > IMPORT_TTL:
+        return None
+    return meta
+
+
+def _discard_upload(token):
+    for ext in (".bin", ".json"):
+        try:
+            os.remove(os.path.join(IMPORT_DIR, token + ext))
+        except OSError:
+            pass
+
+
+@login_required
+@role_required("resort", "mto", "admin")
+def import_daily_logs(request):
+    user = request.user
+    today = date.today()
+    ctx = {
+        "resorts": None if user.role == "resort" else Resort.objects.order_by("name"),
+        "own_resort": user.resort if user.role == "resort" else None,
+        "year": today.year, "month": today.month, "months": MONTH_CHOICES,
+        "max_mb": importers.MAX_BYTES // (1024 * 1024), "current": "import_daily_logs",
+    }
+
+    def show_preview(report, token, filename, resort_choice, create_rooms):
+        ctx.update(report=report, token=token, filename=filename, resort_choice=str(resort_choice or ""),
+                   create_rooms=create_rooms, errors_shown=report.errors[:importers.MAX_ERRORS_SHOWN],
+                   sample=[r for r in report.rows if r.action in ("create", "update")][:10],
+                   warnings_shown=report.warnings[:20])
+
+    if request.method == "POST":
+        action = request.POST.get("action")
+        if action == "preview":
+            upload = request.FILES.get("file")
+            resort_choice = request.POST.get("resort") or None
+            create_rooms = request.POST.get("create_rooms") == "on"
+            ctx.update(resort_choice=str(resort_choice or ""), create_rooms=create_rooms)
+            if not upload:
+                ctx["upload_error"] = "Choose a file first."
+            else:
+                data = upload.read(importers.MAX_BYTES + 1)
+                report = importers.analyze(user, upload.name, data, resort_choice, create_rooms)
+                if report.fatal:
+                    ctx["upload_error"] = report.fatal
+                elif not report.rows_read:
+                    ctx["upload_error"] = "The file has a header but no data rows."
+                else:
+                    token = _stash_upload(user, upload.name, data, resort_choice, create_rooms)
+                    show_preview(report, token, upload.name, resort_choice, create_rooms)
+        elif action == "confirm":
+            token = request.POST.get("token")
+            stash = _load_upload(user, token)
+            if not stash:
+                messages.error(request, "That upload expired or was not found. Please upload the file again.")
+                return redirect("import_daily_logs")
+            # check again at save time: the data may have changed since the preview
+            report = importers.analyze(user, stash["filename"], stash["data"], stash["resort_choice"], stash["create_rooms"])
+            skip_errors = request.POST.get("skip_errors") == "on"
+            if report.fatal:
+                ctx["upload_error"] = report.fatal
+            elif report.errors and not skip_errors:
+                show_preview(report, token, stash["filename"], stash["resort_choice"], stash["create_rooms"])
+                ctx["confirm_error"] = "There are rows with problems. Fix the file and upload again, or tick the box to import only the valid rows."
+            elif not report.writable:
+                show_preview(report, token, stash["filename"], stash["resort_choice"], stash["create_rooms"])
+                ctx["confirm_error"] = "Nothing to import: no new or changed rows."
+            else:
+                created, updated, rooms_created = importers.apply(report)
+                _discard_upload(token)
+                log_activity(
+                    user, "Imported daily logs",
+                    f"{', '.join(report.resort_list)} | {created} new, {updated} updated, {report.unchanged} unchanged, "
+                    f"{report.error_count} skipped | {stash['filename']}"[:250],
+                )
+                bits = [f"{created} new", f"{updated} updated"]
+                if report.unchanged:
+                    bits.append(f"{report.unchanged} already up to date")
+                if rooms_created:
+                    bits.append(f"{rooms_created} room(s) created")
+                if report.errors:
+                    bits.append(f"{report.error_count} row(s) skipped")
+                messages.success(request, "Import finished: " + ", ".join(bits) + ".")
+                return redirect("import_daily_logs")
+    return render(request, "import_daily_logs.html", ctx)
+
+
+@login_required
+@role_required("resort", "mto", "admin")
+def import_daily_template(request):
+    """Excel template in the DAE-1A layout. With a resort chosen it is pre-filled with every room and every day."""
+    from openpyxl.worksheet.datavalidation import DataValidation
+
+    user = request.user
+    year, month = _year_month(request)
+    resort = user.resort if user.role == "resort" else Resort.objects.filter(pk=request.GET.get("resort") or 0).first()
+    days = calendar.monthrange(year, month)[1]
+    rooms = list(Room.objects.filter(resort=resort, is_archived=False).order_by("room_number")) if resort else []
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "DAE-1A"
+    navy = PatternFill(start_color="0B3D4C", end_color="0B3D4C", fill_type="solid")
+    ws.merge_cells("A1:M1")
+    ws["A1"] = "Monthly Recording Format for Accommodation Establishment (DAE-1A)" + (f" - {resort.name} ({calendar.month_name[month]} {year})" if resort else "")
+    ws["A1"].font = Font(bold=True, size=13)
+    ws.merge_cells("A2:M2")
+    ws["A2"] = ("Fill in one row per room per day, starting at row 4. Leave the Resort column empty if the whole file is for one resort. "
+                "Rows you leave blank are ignored. See the 'How to fill in' sheet.")
+    ws["A2"].fill = PatternFill(start_color="FFF4DB", end_color="FFF4DB", fill_type="solid")
+    ws["A2"].alignment = Alignment(wrap_text=True, vertical="top")
+    ws.row_dimensions[2].height = 32
+    for i, h in enumerate(importers.TEMPLATE_HEADERS, 1):
+        c = ws.cell(row=3, column=i, value=h)
+        c.font = Font(bold=True, color="FFFFFF")
+        c.fill = navy
+        c.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+    ws.row_dimensions[3].height = 30
+
+    row = 4
+    if rooms:
+        for day in range(1, days + 1):
+            for room in rooms:
+                ws.cell(row=row, column=1, value=resort.name)
+                ws.cell(row=row, column=2, value=date(year, month, day)).number_format = "yyyy-mm-dd"
+                ws.cell(row=row, column=3, value=room.room_number)
+                row += 1
+    else:
+        ws.cell(row=4, column=1, value=resort.name if resort else "Example Beach Resort")
+        ws.cell(row=4, column=2, value=date(year, month, 1)).number_format = "yyyy-mm-dd"
+        ws.cell(row=4, column=3, value="01")
+        for i, v in enumerate([3, 5, "Yes", 2, 1, 3, 0, 0, 0, "Filipino"], start=4):
+            ws.cell(row=4, column=i, value=v)
+        row = 5
+    last = max(row - 1, 4)
+    yn = DataValidation(type="list", formula1='"Yes,No"', allow_blank=True)
+    nums = DataValidation(type="whole", operator="greaterThanOrEqual", formula1="0", allow_blank=True,
+                          errorTitle="Whole numbers only", error="Enter a whole number, 0 or more.")
+    ws.add_data_validation(yn)
+    ws.add_data_validation(nums)
+    yn.add(f"F4:F{last + 500}")
+    for letter in "DEGHIJKL":
+        nums.add(f"{letter}4:{letter}{last + 500}")
+    for letter, w in zip("ABCDEFGHIJKLM", [30, 12, 10, 12, 12, 12, 8, 8, 14, 12, 12, 10, 14]):
+        ws.column_dimensions[letter].width = w
+    ws.freeze_panes = "A4"
+
+    guide = wb.create_sheet("How to fill in")
+    lines = [
+        ("Column", "What to enter"),
+        ("Resort", "Optional. The name of the establishment. Leave empty when the file is for one resort (resort staff: always your own resort)."),
+        ("Date", "The day, for example 2026-03-15. Real Excel dates also work. Future dates are not accepted."),
+        ("Room No.", "The room number exactly as it appears under Manage Rooms (01 and 1 are treated as the same room)."),
+        ("Guests Check-in", "Number of guests who checked in that day (whole number, 0 or more)."),
+        ("Guests Overnight", "Number of guests who stayed overnight in that room (guest nights)."),
+        ("Rooms Occupied", "Yes or No. If you leave it empty it is set to Yes when there are guests."),
+        ("Male / Female", "Guests by sex."),
+        ("This Municipality / This Province / Other Province / Foreign", "Where the guests are from."),
+        ("Nationality", "Optional, for example Filipino, Korean."),
+        ("", ""),
+        ("Tips", "Uploading the same rooms and dates again updates them, so it never creates duplicates. You will see a preview and nothing is saved until you confirm."),
+    ]
+    for r, (a, b) in enumerate(lines, 1):
+        guide.cell(row=r, column=1, value=a).font = Font(bold=(r == 1 or a == "Tips"))
+        guide.cell(row=r, column=2, value=b).alignment = Alignment(wrap_text=True, vertical="top")
+    guide.column_dimensions["A"].width = 38
+    guide.column_dimensions["B"].width = 100
+
+    name = f"DAE-1A_template_{(resort.name if resort else 'blank').replace(' ', '_')}_{year}-{month:02d}.xlsx"
+    return _excel_response(wb, name)

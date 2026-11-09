@@ -3,8 +3,11 @@
 Put this file in:   core/management/commands/load_rooms.py
 and the data file:  core/data/rooms_2026.json
 
+KUBO IS NOT A ROOM. Kubo (including "Kubo rms"), tents, cabanas, open cottages, pools and halls are never
+counted. Only AC, Non-AC and plain "Rooms" become Room records.
+
 Safe by default: it only PRINTS what it would do. Nothing is written until you add --apply.
-It never deletes or changes existing rooms.
+It never deletes or changes existing rooms, except with --remove-kubo (see below).
 
     python manage.py load_rooms                      (preview only)
     python manage.py load_rooms --apply              (write the rooms)
@@ -14,6 +17,15 @@ Options:
     --accept-similar   also use resorts whose name only looks similar (the preview lists them first)
     --force            add rooms even to a resort that already has rooms
     --include "Kubo,Tent"   also count those unit types (they are listed under "maybe" in the JSON)
+    --top-up           for resorts that ALREADY have rooms but fewer than the list says, add only the missing ones
+                       (never deletes or renames anything; resorts with more rooms than the list are left alone).
+    --remove-kubo      clean up kubo "rooms" an earlier run of this command may have created (KuboRm-1, Kubo-1,
+                       ACKubo-1...). A kubo with no guest records is deleted; one that already has daily logs is
+                       ARCHIVED instead (kept, but left out of totals), so no data is lost.
+
+    Typical order:   python manage.py load_rooms --remove-kubo            (preview)
+                     python manage.py load_rooms --remove-kubo --apply
+                     python manage.py load_rooms --apply                   (adds rooms to resorts that have none)
 """
 import difflib
 import json
@@ -35,6 +47,9 @@ PREFIX = {
 
 
 GENERIC = {"beach", "resort", "hotel", "and", "dive", "club", "the", "of"}
+
+# room numbers this command gives to kubo units (KuboRm-1, Kubo-02, ACKubo-1), nothing else
+KUBO_REGEX = r"^(KuboRm|Kubo|ACKubo)-[0-9]+$"
 
 
 def core(text):
@@ -58,6 +73,8 @@ class Command(BaseCommand):
         parser.add_argument("--accept-similar", action="store_true", help="Also use resorts with a similar (not identical) name.")
         parser.add_argument("--force", action="store_true", help="Add rooms even if the resort already has rooms.")
         parser.add_argument("--include", default="", help='Extra unit types to count as rooms, e.g. "Kubo,Tent".')
+        parser.add_argument("--top-up", action="store_true", help="Add only the missing rooms to resorts that have fewer rooms than the list.")
+        parser.add_argument("--remove-kubo", action="store_true", help="Delete/archive kubo records created as rooms by an earlier run.")
 
     # ------------------------------------------------------------------ matching
     def find_resort(self, entry, resorts):
@@ -80,6 +97,33 @@ class Command(BaseCommand):
             return "similar", best, best_score
         return None, None, 0.0
 
+    # ------------------------------------------------------------------ top-up helper
+    def topup_names(self, resort, kinds, shortfall):
+        """Room numbers to add so the resort reaches the list's count. Existing rooms are never touched."""
+        existing = {r.room_number.lower() for r in resort.rooms_list.all()}
+        needs = []
+        for kind, count in kinds.items():
+            prefix = PREFIX.get(kind, kind.replace(" ", "") + "-")
+            have = sum(1 for n in existing if (n.startswith(prefix.lower()) if prefix else n.isdigit()))
+            needs.append([kind, prefix, max(0, count - have), count])
+        if sum(n[2] for n in needs) != shortfall:
+            # existing rooms are named differently from this command: just fill the gap using the main unit type
+            main = max(needs, key=lambda n: n[3])
+            needs = [[main[0], main[1], shortfall, main[3]]]
+        names = []
+        for kind, prefix, need, count in needs:
+            digits = [n[len(prefix):] for n in existing if n.startswith(prefix.lower()) and n[len(prefix):].isdigit()]
+            width = max([len(d) for d in digits] + [len(str(count))])
+            i = 1
+            while need > 0:
+                cand = f"{prefix}{i:0{width}d}"
+                if cand.lower() not in existing:
+                    names.append(cand)
+                    existing.add(cand.lower())
+                    need -= 1
+                i += 1
+        return names
+
     # ------------------------------------------------------------------ main
     def handle(self, *args, **opts):
         data = json.loads(DATA_FILE.read_text(encoding="utf-8"))
@@ -87,7 +131,8 @@ class Command(BaseCommand):
         resorts = list(Resort.objects.all())
         write = opts["apply"]
 
-        plan, report = [], {"exact": [], "similar": [], "missing": [], "no_rooms": [], "has_rooms": []}
+        plan, report = [], {"exact": [], "similar": [], "missing": [], "no_rooms": [], "has_rooms": [], "differs": []}
+        topups = []
         used_ids = set()
 
         for entry in data["establishments"]:
@@ -114,6 +159,11 @@ class Command(BaseCommand):
             existing = resort.rooms_list.count()
             if existing and not opts["force"]:
                 report["has_rooms"].append((resort.name, existing))
+                active = resort.rooms_list.filter(is_archived=False).count()
+                if active != total:
+                    report["differs"].append((resort.name, active, total))
+                if opts["top_up"] and active < total:
+                    topups.append((resort, self.topup_names(resort, kinds, total - active)))
                 continue
             plan.append((entry, resort, kinds, total))
 
@@ -138,6 +188,19 @@ class Command(BaseCommand):
             for name, n in report["has_rooms"]:
                 self.stdout.write(f"  {name}: {n} existing rooms")
             self.stdout.write("")
+        if report["differs"]:
+            self.stdout.write(self.style.WARNING("Different from the list (system vs list):"))
+            for name, have, want in report["differs"]:
+                note = f"{want - have} short" if have < want else f"{have - want} more than the list, left alone"
+                self.stdout.write(f"  {name}: system {have}, list {want}  ({note})")
+            if not opts["top_up"] and any(h < w for _, h, w in report["differs"]):
+                self.stdout.write("  -> add --top-up to add only the missing rooms")
+            self.stdout.write("")
+        if topups:
+            self.stdout.write(self.style.MIGRATE_HEADING("Rooms to top up" + ("" if write else "  (PREVIEW)")))
+            for resort, names in topups:
+                self.stdout.write(f"  {resort.name}: +{len(names)} ({', '.join(names)})")
+            self.stdout.write("")
         if report["no_rooms"]:
             self.stdout.write("No rooms listed (only cottages, pools, etc.): " + ", ".join(report["no_rooms"]) + "\n")
         if report["missing"]:
@@ -148,9 +211,41 @@ class Command(BaseCommand):
         if not_in_list:
             self.stdout.write("In the system but not in the list (left untouched): " + ", ".join(not_in_list) + "\n")
 
+        kubo_rooms = []
+        if opts["remove_kubo"]:
+            kubo_rooms = list(
+                Room.objects.filter(room_number__iregex=KUBO_REGEX).select_related("resort").order_by("resort__name", "room_number")
+            )
+            self.stdout.write(self.style.MIGRATE_HEADING("Kubo records to remove" + ("" if write else "  (PREVIEW)")))
+            if not kubo_rooms:
+                self.stdout.write("  none found\n")
+            for room in kubo_rooms:
+                has_logs = room.daily_logs.exists()
+                self.stdout.write(f"  {room.resort.name}: {room.room_number}  -> " + ("ARCHIVE (has guest logs)" if has_logs else "delete"))
+            self.stdout.write("")
+
         if not write:
-            self.stdout.write(self.style.SUCCESS("Preview only. Run again with --apply to write these rooms."))
+            self.stdout.write(self.style.SUCCESS("Preview only. Run again with --apply to write these changes."))
             return
+
+        removed, archived = 0, 0
+        if kubo_rooms:
+            with transaction.atomic():
+                touched = {}
+                for room in kubo_rooms:
+                    touched[room.resort_id] = room.resort
+                    if room.daily_logs.exists():
+                        if not room.is_archived:
+                            room.is_archived = True
+                            room.save(update_fields=["is_archived"])
+                        archived += 1
+                    else:
+                        room.delete()
+                        removed += 1
+                for resort in touched.values():
+                    resort.total_rooms = resort.rooms_list.filter(is_archived=False).count()
+                    resort.save(update_fields=["total_rooms"])
+            self.stdout.write(self.style.SUCCESS(f"Kubo cleanup: deleted {removed}, archived {archived}."))
 
         # ---------------------------------------------------------------- write
         created_rooms, created_resorts = 0, 0
@@ -169,6 +264,14 @@ class Command(BaseCommand):
                         created_rooms += int(was_new)
                 resort.total_rooms = resort.rooms_list.filter(is_archived=False).count()
                 resort.save(update_fields=["total_rooms"])
+        if topups:
+            with transaction.atomic():
+                for resort, names in topups:
+                    for room_number in names:
+                        _, was_new = Room.objects.get_or_create(resort=resort, room_number=room_number)
+                        created_rooms += int(was_new)
+                    resort.total_rooms = resort.rooms_list.filter(is_archived=False).count()
+                    resort.save(update_fields=["total_rooms"])
         self.stdout.write(self.style.SUCCESS(
             f"Done. Created {created_rooms} rooms" + (f" and {created_resorts} resorts" if created_resorts else "") + "."
         ))

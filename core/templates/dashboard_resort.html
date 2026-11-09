@@ -36,14 +36,14 @@
         <a class="link-row" href="{% url 'resort_monthly_sheet' %}"><svg class="ic"><use href="#i-calendar"/></svg><span><span class="link-title">Monthly report</span><span class="link-desc">View, print or download the monthly form.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
         <a class="link-row" href="{% url 'resort_attractions' %}"><svg class="ic"><use href="#i-pin"/></svg><span><span class="link-title">Attraction visitor log</span><span class="link-desc">Record visitors to your attractions (VAR-1).</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
         <a class="link-row" href="{% url 'manage_rooms' %}"><svg class="ic"><use href="#i-door"/></svg><span><span class="link-title">Manage rooms</span><span class="link-desc">Add, archive or remove rooms in your log.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
-        <a class="link-row" href="{% url 'view_programs' %}"><svg class="ic"><use href="#i-megaphone"/></svg><span><span class="link-title">Programs <span style="background:rgba(26,138,124,.12); color:#14633f; padding:1px 8px; border-radius:999px; font-size:.72rem; font-weight:700;">Tourism Programs</span></span><span class="link-desc">Programs posted by the MTO office.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
+        <a class="link-row" href="{% url 'view_programs' %}"><svg class="ic"><use href="#i-megaphone"/></svg><span><span class="link-title">Programs <span class="tag-pill">Tourism Programs</span></span><span class="link-desc">Programs posted by the MTO office.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
         <a class="link-row" href="{% url 'edit_resort_details' %}"><svg class="ic"><use href="#i-doc"/></svg><span><span class="link-title">My resort details</span><span class="link-desc">Address, owner and room count.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
         <a class="link-row" href="{% url 'recycle_bin' %}"><svg class="ic"><use href="#i-trash"/></svg><span><span class="link-title">Recycle bin</span><span class="link-desc">Restore or permanently delete archived items.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
       </div>
     </section>
 
     <section class="panel">
-      <div class="panel-head"><span class="panel-title">Programs <span style="background:rgba(26,138,124,.12); color:#14633f; padding:1px 8px; border-radius:999px; font-size:.72rem; font-weight:700;">Tourism Programs</span></span><a href="{% url 'view_programs' %}">All programs</a></div>
+      <div class="panel-head"><span class="panel-title">Programs <span class="tag-pill">Tourism Programs</span></span><a href="{% url 'view_programs' %}">All programs</a></div>
       {% if programs %}
         <ul class="feed">
           {% for p in programs %}

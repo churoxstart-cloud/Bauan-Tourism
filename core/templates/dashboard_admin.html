@@ -15,6 +15,9 @@
   {% if stats.pending %}
     <div class="dash-note"><span>{{ stats.pending }} staff account{{ stats.pending|pluralize }} waiting for approval.</span><a href="{% url 'manage_users' %}">Review accounts</a></div>
   {% endif %}
+  {% if stats.password_requests %}
+    <div class="dash-note"><span>{{ stats.password_requests }} password request{{ stats.password_requests|pluralize }} waiting for you.</span><a href="{% url 'password_requests' %}">Open requests</a></div>
+  {% endif %}
 
   <section class="kpis">
     <div class="kpi"><div class="kpi-label">Pending approval</div><div class="kpi-value">{{ stats.pending }}</div></div>

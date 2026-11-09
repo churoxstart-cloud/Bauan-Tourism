@@ -292,3 +292,4 @@ label, .form-label, label.form-label { color: var(--label); }
 [data-theme="dark"] .rb-clear { color: var(--text-muted); background: var(--surface-2); border-color: #3a4749; }
 [data-theme="dark"] .mu-modal .mu-who { background: var(--surface-2); color: var(--text); }
 [data-theme="dark"] .mu-modal .mu-warn { background: #40191e; color: #ff9aa4; }
+

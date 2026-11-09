@@ -9,7 +9,8 @@ A feature-rich, fully responsive tourism guide web application for Bauan, Batang
 - Local attraction information and travel highlights
 - Marine sanctuary and cultural content
 - Django-based admin and portal structure
-- Email-based account workflows and dashboard features
+- Staff account approval and Admin-handled password requests
+- Role-based dashboards for Admin, MTO staff, and resort staff
 - MySQL-backed data model for system records
 
 ## Tech Stack
@@ -130,7 +131,26 @@ The project is configured to use MySQL with Django via PyMySQL. The default sett
 
 The project includes Django admin integration, system users, dashboard flows, and content management functionality. If you are making changes to the app logic or database models, run migrations and test the admin workflow after updates.
 
+### Password changes
+
+The portal does not send password reset emails. Password changes go through the Admin:
+
+1. A user who forgot their password clicks **Forgot password?** on the login page and enters their username or email. A user who is logged in can click **Request Password Change** on **My Profile**. They can add a short note for the Admin.
+2. The request appears on **Admin > Password Requests** (`/admin-panel/password-requests/`). The Admin dashboard also shows a note when requests are waiting.
+3. The Admin sets a new password, or rejects the request. The Admin then gives the new password to the user directly.
+
+Notes:
+
+- A user can have only one pending request at a time.
+- The forgot-password page shows the same message whether or not the account exists, so it cannot be used to check which usernames are real.
+- Only Admin accounts can change their own password directly on My Profile.
+- Every request, new password, and rejection is recorded in the Activity Log.
+
 ## Recent Updates
+
+- Password changes now go through the Admin instead of email reset links. Adds the Password Requests page for Admins (see [Password changes](#password-changes)). Run `python manage.py migrate` to add migration `0009_passwordrequest`.
+- Removed the duplicate `forgot-password/` route and the unused email reset views, form, and templates.
+- Fixed a crash on the profile pages when a form was submitted with invalid input.
 
 - UI refresh across landing, login, register, get-started, public home, bot questions, and recycle bin pages.
 - Removed emoji decorations from recycle bin UI.

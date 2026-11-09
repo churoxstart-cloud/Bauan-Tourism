@@ -1,0 +1,210 @@
+<!-- ============================================================
+     Bauan Tourism Portal: 3D loading screen
+     Shown once per browser tab (sessionStorage), then the site opens.
+     Pure CSS 3D, no extra libraries. Never blocks: it hides when the
+     page has loaded, after 4.5 s at most, on click/Esc, and even with
+     JavaScript turned off (CSS fallback).
+     ============================================================ -->
+<script>
+  (function () {
+    var seen = false;
+    try { seen = sessionStorage.getItem('bauanLoaderSeen') === '1'; } catch (e) {}
+    if (seen || /[?&]noloader\b/.test(location.search)) document.documentElement.classList.add('bl-skip');
+  })();
+</script>
+<style>
+  #bauanLoader {
+    position: fixed; inset: 0; z-index: 2147483000; overflow: hidden;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 30px;
+    color: #fff; font-family: 'Poppins', 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    background:
+      radial-gradient(1100px 620px at 50% 115%, rgba(42,200,180,.30), transparent 62%),
+      radial-gradient(700px 420px at 85% -10%, rgba(249,115,22,.22), transparent 60%),
+      linear-gradient(180deg, #06202b 0%, #0b3d4c 55%, #0f5a5c 100%);
+    transition: opacity .7s ease, visibility .7s ease;
+    animation: blFailsafe .7s ease 6.5s forwards;          /* CSS-only safety net if scripts never run */
+  }
+  html.bl-skip #bauanLoader { display: none; }
+  #bauanLoader.bl-out { opacity: 0; visibility: hidden; pointer-events: none; }
+  @keyframes blFailsafe { to { opacity: 0; visibility: hidden; pointer-events: none; } }
+
+  /* twinkling particles */
+  #bauanLoader .bl-stars { position: absolute; inset: 0; pointer-events: none;
+    background-image:
+      radial-gradient(1.6px 1.6px at 12% 22%, rgba(255,255,255,.75), transparent 60%),
+      radial-gradient(1.4px 1.4px at 78% 14%, rgba(255,255,255,.6), transparent 60%),
+      radial-gradient(1.8px 1.8px at 64% 38%, rgba(253,186,116,.7), transparent 60%),
+      radial-gradient(1.2px 1.2px at 30% 60%, rgba(255,255,255,.5), transparent 60%),
+      radial-gradient(1.6px 1.6px at 88% 52%, rgba(127,216,201,.7), transparent 60%),
+      radial-gradient(1.3px 1.3px at 44% 12%, rgba(255,255,255,.55), transparent 60%),
+      radial-gradient(1.5px 1.5px at 6% 48%, rgba(127,216,201,.6), transparent 60%);
+    animation: blTwinkle 3.2s ease-in-out infinite alternate; }
+  @keyframes blTwinkle { from { opacity: .45; } to { opacity: 1; } }
+
+  /* ---------- the 3D scene ---------- */
+  #bauanLoader .bl-scene { position: relative; width: 230px; height: 230px; perspective: 900px; }
+  #bauanLoader .bl-world { position: absolute; inset: 0; transform-style: preserve-3d;
+    transform: rotateX(-14deg); animation: blIntro 1.1s cubic-bezier(.16,1,.3,1) both; }
+  @keyframes blIntro { from { transform: rotateX(-14deg) translateZ(-500px) scale(.6); opacity: 0; } to { transform: rotateX(-14deg); opacity: 1; } }
+
+  /* coin: front + back faces and a stack of discs that gives it real thickness */
+  #bauanLoader .bl-coin { position: absolute; left: 50%; top: 50%; width: 132px; height: 132px; margin: -66px 0 0 -66px;
+    transform-style: preserve-3d; animation: blSpin 3.6s cubic-bezier(.45,.05,.55,.95) infinite; }
+  @keyframes blSpin {
+    0%   { transform: translateY(0) rotateY(0deg); }
+    50%  { transform: translateY(-12px) rotateY(180deg); }
+    100% { transform: translateY(0) rotateY(360deg); }
+  }
+  #bauanLoader .bl-edge { position: absolute; inset: 0; border-radius: 50%;
+    background: linear-gradient(90deg, #a56a12, #f3c25c 50%, #a56a12); }
+  #bauanLoader .bl-face { position: absolute; inset: 0; border-radius: 50%; overflow: hidden; backface-visibility: hidden;
+    display: grid; place-items: center;
+    background: radial-gradient(circle at 32% 28%, #ffffff 0%, #e9f7f4 45%, #c9e9e3 100%);
+    box-shadow: inset 0 0 0 5px #f3c25c, inset 0 0 0 8px rgba(165,106,18,.55), inset 0 -10px 22px rgba(11,61,76,.25); }
+  #bauanLoader .bl-face.front { transform: translateZ(7px); }
+  #bauanLoader .bl-face.back  { transform: rotateY(180deg) translateZ(7px);
+    background: radial-gradient(circle at 32% 28%, #17806f 0%, #0b3d4c 85%); }
+  #bauanLoader .bl-face img { width: 80%; height: 80%; object-fit: cover; border-radius: 50%; }
+  #bauanLoader .bl-face .bl-mono { display: none; font-weight: 800; font-size: 2.4rem; letter-spacing: -.02em; color: #0b3d4c; }
+  #bauanLoader .bl-face.no-img .bl-mono { display: block; }
+  #bauanLoader .bl-back-art { width: 70%; height: 70%; }
+  #bauanLoader .bl-back-art .sun { fill: #f9a03f; }
+  #bauanLoader .bl-back-art .wave { fill: none; stroke: #7fd8c9; stroke-width: 5; stroke-linecap: round; }
+  #bauanLoader .bl-back-art .wave.w2 { stroke: #ffffff; opacity: .8; }
+  /* a glint that sweeps across the front face */
+  #bauanLoader .bl-face.front::after { content: ""; position: absolute; inset: -20%; pointer-events: none;
+    background: linear-gradient(115deg, transparent 40%, rgba(255,255,255,.75) 50%, transparent 60%);
+    transform: translateX(-120%); animation: blGlint 3.6s ease-in-out infinite; }
+  @keyframes blGlint { 0%, 55% { transform: translateX(-120%); } 80%, 100% { transform: translateX(120%); } }
+
+  /* orbit rings (tilted in 3D) with a glowing dot on each */
+  #bauanLoader .bl-orbit { position: absolute; left: 50%; top: 50%; border-radius: 50%; transform-style: preserve-3d; }
+  #bauanLoader .bl-orbit.o1 { width: 216px; height: 216px; margin: -108px 0 0 -108px; border: 2px solid rgba(127,216,201,.55);
+    animation: blOrbit1 6s linear infinite; }
+  #bauanLoader .bl-orbit.o2 { width: 184px; height: 184px; margin: -92px 0 0 -92px; border: 2px dashed rgba(253,186,116,.55);
+    animation: blOrbit2 4.5s linear infinite; }
+  @keyframes blOrbit1 { from { transform: rotateX(72deg) rotateZ(0deg); } to { transform: rotateX(72deg) rotateZ(360deg); } }
+  @keyframes blOrbit2 { from { transform: rotateX(72deg) rotateY(-24deg) rotateZ(360deg); } to { transform: rotateX(72deg) rotateY(-24deg) rotateZ(0deg); } }
+  #bauanLoader .bl-orbit i { position: absolute; top: -7px; left: 50%; width: 12px; height: 12px; margin-left: -6px; border-radius: 50%; }
+  #bauanLoader .bl-orbit.o1 i { background: #7fd8c9; box-shadow: 0 0 14px 4px rgba(127,216,201,.85); }
+  #bauanLoader .bl-orbit.o2 i { background: #fdba74; box-shadow: 0 0 14px 4px rgba(249,115,22,.85); }
+
+  /* soft shadow/reflection on the "water" below */
+  #bauanLoader .bl-shadow { position: absolute; left: 50%; bottom: -6px; width: 150px; height: 26px; margin-left: -75px; border-radius: 50%;
+    background: radial-gradient(closest-side, rgba(0,0,0,.45), transparent); filter: blur(2px);
+    animation: blShadow 3.6s cubic-bezier(.45,.05,.55,.95) infinite; }
+  @keyframes blShadow { 0%, 100% { transform: scaleX(1); opacity: .9; } 50% { transform: scaleX(.72); opacity: .5; } }
+
+  /* animated sea at the bottom of the screen, seen in perspective */
+  #bauanLoader .bl-sea { position: absolute; left: -10%; right: -10%; bottom: 0; height: 32vh; perspective: 400px; pointer-events: none; }
+  #bauanLoader .bl-sea svg { position: absolute; left: 0; bottom: 0; width: 200%; height: 100%; transform-origin: bottom; }
+  #bauanLoader .bl-sea .s1 { animation: blSea 9s linear infinite; opacity: .35; }
+  #bauanLoader .bl-sea .s2 { animation: blSea 6s linear infinite reverse; opacity: .5; height: 70%; }
+  @keyframes blSea { from { transform: rotateX(55deg) translateX(0); } to { transform: rotateX(55deg) translateX(-50%); } }
+
+  /* ---------- text + progress ---------- */
+  #bauanLoader .bl-text { position: relative; text-align: center; }
+  #bauanLoader .bl-hello { margin: 0 0 4px; font-size: clamp(.95rem, 2.4vw, 1.15rem); font-weight: 500; letter-spacing: .32em; text-transform: uppercase;
+    color: #7fd8c9; animation: blHello 1s cubic-bezier(.16,1,.3,1) .35s both; }
+  @keyframes blHello { from { opacity: 0; letter-spacing: .9em; } to { opacity: 1; letter-spacing: .32em; } }
+  #bauanLoader .bl-place { margin: 0; font-family: 'Playfair Display', Georgia, serif; font-size: clamp(2rem, 6.4vw, 3.4rem); font-weight: 700; line-height: 1.1;
+    color: #fff; text-shadow: 0 6px 24px rgba(0,0,0,.35); perspective: 600px; white-space: nowrap; }
+  #bauanLoader .bl-place i { display: inline-block; font-style: normal; transform-origin: 50% 100%;
+    animation: blLetter .75s cubic-bezier(.2,1.4,.4,1) both; animation-delay: calc(.75s + var(--d) * 55ms); }
+  #bauanLoader .bl-place i:nth-child(n+8) { color: #fdba74; }      /* "Batangas" in sunset orange */
+  @keyframes blLetter { from { opacity: 0; transform: translateY(.7em) rotateX(-90deg); } to { opacity: 1; transform: none; } }
+  #bauanLoader .bl-sub { margin: 10px 0 0; font-size: .8rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(255,255,255,.72);
+    animation: blUp .8s ease 1.6s both; }
+  #bauanLoader .bl-bar { position: relative; width: min(260px, 70vw); height: 4px; border-radius: 999px; overflow: hidden;
+    background: rgba(255,255,255,.14); animation: blUp .9s cubic-bezier(.16,1,.3,1) .4s both; }
+  #bauanLoader .bl-bar b { position: absolute; inset: 0; width: 0; border-radius: inherit;
+    background: linear-gradient(90deg, #2ec4b6, #7fd8c9, #fdba74); transition: width .35s ease; }
+  #bauanLoader .bl-skipbtn { position: absolute; right: 18px; bottom: 16px; z-index: 2; background: rgba(255,255,255,.1); color: rgba(255,255,255,.85);
+    border: 1px solid rgba(255,255,255,.28); border-radius: 999px; padding: 6px 14px; font-family: inherit; font-weight: 600; font-size: .78rem; cursor: pointer; }
+  #bauanLoader .bl-skipbtn:hover { background: rgba(255,255,255,.2); color: #fff; }
+  @keyframes blUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+
+  /* exit: the coin flies toward the viewer */
+  #bauanLoader.bl-out .bl-world { transform: rotateX(-14deg) translateZ(420px); transition: transform .7s cubic-bezier(.6,0,.4,1); }
+
+  @media (max-width: 480px) { #bauanLoader .bl-scene { transform: scale(.82); } #bauanLoader .bl-text { padding: 0 20px; } #bauanLoader .bl-sub { letter-spacing: .08em; font-size: .72rem; line-height: 1.6; } #bauanLoader .bl-hello { letter-spacing: .24em; } }
+  @media (prefers-reduced-motion: reduce) {
+    #bauanLoader *, #bauanLoader { animation: none !important; }
+    #bauanLoader .bl-world { transform: rotateX(-14deg) rotateY(-20deg); }
+    #bauanLoader.bl-out .bl-world { transform: none; }
+  }
+</style>
+
+<div id="bauanLoader" role="status" aria-live="polite" aria-label="Loading Bauan Tourism Portal">
+  <div class="bl-stars"></div>
+
+  <div class="bl-scene" aria-hidden="true">
+    <div class="bl-world">
+      <div class="bl-orbit o1"><i></i></div>
+      <div class="bl-orbit o2"><i></i></div>
+      <div class="bl-coin">
+        <div class="bl-edge" style="transform: translateZ(6px)"></div>
+        <div class="bl-edge" style="transform: translateZ(4px)"></div>
+        <div class="bl-edge" style="transform: translateZ(2px)"></div>
+        <div class="bl-edge" style="transform: translateZ(0)"></div>
+        <div class="bl-edge" style="transform: translateZ(-2px)"></div>
+        <div class="bl-edge" style="transform: translateZ(-4px)"></div>
+        <div class="bl-edge" style="transform: translateZ(-6px)"></div>
+        <div class="bl-face front" id="blFront">
+          <img src="/static/img/mto-logo.png" alt=""
+               onerror="if(!this.dataset.f){this.dataset.f='1';this.src='https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStfb1LD4WvgZ2qoeMg55h-DRWd53v5XGky3ucEhBZlXJflc1r1-LQKTEM&amp;s=10';}else{this.remove();document.getElementById('blFront').classList.add('no-img');}">
+          <span class="bl-mono">MTO</span>
+        </div>
+        <div class="bl-face back">
+          <svg class="bl-back-art" viewBox="0 0 100 100" aria-hidden="true">
+            <circle class="sun" cx="50" cy="42" r="18"/>
+            <path class="wave" d="M10 66 Q22 58 34 66 T58 66 T82 66 T106 66"/>
+            <path class="wave w2" d="M2 78 Q14 70 26 78 T50 78 T74 78 T98 78"/>
+          </svg>
+        </div>
+      </div>
+      <div class="bl-shadow"></div>
+    </div>
+  </div>
+
+  <div class="bl-text">
+    <p class="bl-hello">Welcome to</p>
+    <h1 class="bl-place" aria-label="Bauan, Batangas"><i style="--d:0">B</i><i style="--d:1">a</i><i style="--d:2">u</i><i style="--d:3">a</i><i style="--d:4">n</i><i style="--d:5">,</i><i style="--d:6">&nbsp;</i><i style="--d:7">B</i><i style="--d:8">a</i><i style="--d:9">t</i><i style="--d:10">a</i><i style="--d:11">n</i><i style="--d:12">g</i><i style="--d:13">a</i><i style="--d:14">s</i></h1>
+    <p class="bl-sub">Bauan Tourism Portal &middot; Municipal Tourism Office</p>
+  </div>
+  <div class="bl-bar" aria-hidden="true"><b id="blBar"></b></div>
+
+  <div class="bl-sea" aria-hidden="true">
+    <svg class="s1" viewBox="0 0 1200 120" preserveAspectRatio="none"><path fill="#2ec4b6" d="M0 60 Q75 20 150 60 T300 60 T450 60 T600 60 T750 60 T900 60 T1050 60 T1200 60 V120 H0 Z"/></svg>
+    <svg class="s2" viewBox="0 0 1200 120" preserveAspectRatio="none"><path fill="#0b3d4c" d="M0 70 Q100 35 200 70 T400 70 T600 70 T800 70 T1000 70 T1200 70 V120 H0 Z"/></svg>
+  </div>
+
+  <button type="button" class="bl-skipbtn" id="blSkip">Skip</button>
+</div>
+
+<script>
+  (function () {
+    var el = document.getElementById('bauanLoader');
+    if (!el || document.documentElement.classList.contains('bl-skip')) { if (el) el.remove(); return; }
+    var bar = document.getElementById('blBar'), start = Date.now(), MIN = 2600, MAX = 5200, done = false, p = 8;
+    try { sessionStorage.setItem('bauanLoaderSeen', '1'); } catch (e) {}
+    document.documentElement.style.overflow = 'hidden';
+
+    var tick = setInterval(function () { p = Math.min(90, p + (90 - p) * 0.12); bar.style.width = p + '%'; }, 120);
+    function hide() {
+      if (done) return; done = true;
+      clearInterval(tick); bar.style.width = '100%';
+      setTimeout(function () {
+        el.classList.add('bl-out');
+        document.documentElement.style.overflow = '';
+        setTimeout(function () { el.remove(); }, 800);
+      }, 250);
+    }
+    function whenReady() { setTimeout(hide, Math.max(0, MIN - (Date.now() - start))); }
+    if (document.readyState === 'complete') whenReady(); else window.addEventListener('load', whenReady);
+    setTimeout(hide, MAX);                                   // slow network: never wait longer than this
+    document.getElementById('blSkip').addEventListener('click', hide);
+    el.addEventListener('dblclick', hide);
+    document.addEventListener('keydown', function (e) { if (e.key === 'Escape') hide(); });
+  })();
+</script>

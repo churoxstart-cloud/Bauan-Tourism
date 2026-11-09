@@ -8,6 +8,7 @@
   <link href="/static/css/portal.css" rel="stylesheet">
 </head>
 <body>
+{% include "_loader.html" %}
   {% if user.is_authenticated %}
   {% with current=request.resolver_match.url_name %}
   <nav class="topbar">

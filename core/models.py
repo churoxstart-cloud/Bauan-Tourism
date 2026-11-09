@@ -1,4 +1,5 @@
 from django.contrib.auth.models import AbstractUser
+from django.conf import settings
 from django.db import models
 from django.db.models import Count, Q, Sum
 
@@ -14,9 +15,23 @@ class Resort(models.Model):
         choices=[("active", "Active"), ("inactive", "Inactive")],
         default="active",
     )
+    # Shown on the public landing page (hero carousel). Resorts with a photo appear there automatically.
+    photo_url = models.URLField(
+        max_length=500, blank=True, verbose_name="Photo URL",
+        help_text="Link to a nice photo of the resort (beach, pool or front). Resorts with a photo appear on the website's main page.",
+    )
+    highlight = models.CharField(
+        max_length=220, blank=True, verbose_name="Short description",
+        help_text="One or two sentences visitors will read, e.g. White-sand beach with a pool and a house reef for snorkeling.",
+    )
 
     def __str__(self):
         return self.name
+
+    def get_public_url(self):
+        from django.urls import reverse
+        from django.utils.text import slugify
+        return reverse("resort_public", args=[self.pk, slugify(self.name) or "resort"])
 
 
 class SystemUser(AbstractUser):
@@ -38,6 +53,28 @@ class SystemUser(AbstractUser):
 
     def __str__(self):
         return f"{self.username} ({self.role})"
+
+    @property
+    def display_name(self):
+        """Full name if the user filled it in under My Profile, otherwise a readable
+        version of the username ("alegria-hotel" -> "Alegria Hotel")."""
+        full = self.get_full_name().strip()
+        if full:
+            return full
+        import re
+        words = [w for w in re.split(r"[-_.\s]+", self.username or "") if w]
+        acronyms, small = {"mto", "lgu", "dot", "bpls"}, {"and", "of", "the", "sa", "ng"}
+        out = []
+        for i, w in enumerate(words):
+            if any(c.isupper() for c in w):
+                out.append(w)
+            elif w.lower() in acronyms:
+                out.append(w.upper())
+            elif i and w.lower() in small:
+                out.append(w.lower())
+            else:
+                out.append(w.capitalize())
+        return " ".join(out) or self.username
 
 
 class Room(models.Model):
@@ -299,6 +336,11 @@ class Destination(models.Model):
     def tag_list(self, field):
         return [t.strip() for t in (getattr(self, field) or "").split(",") if t.strip()]
 
+    def get_absolute_url(self):
+        from django.urls import reverse
+        from django.utils.text import slugify
+        return reverse("place_detail", args=[self.pk, slugify(self.name) or "place"])
+
 
 class BotQuestion(models.Model):
     """Questions Tourist Bot could not answer well, so the MTO can see what visitors want.
@@ -354,22 +396,27 @@ class BotQuestion(models.Model):
 
 
 class PasswordRequest(models.Model):
-    """A user asks the Admin to set a new password for them (forgot password,
-    or wants to change it). The Admin sets the password from the admin panel."""
+    """A staff member asking the Admin to reset their password (matches migration 0009_passwordrequest)."""
 
-    STATUS_CHOICES = [("pending", "Pending"), ("done", "Done"), ("rejected", "Rejected")]
+    STATUS_CHOICES = [
+        ("pending", "Pending"),
+        ("done", "Done"),
+        ("rejected", "Rejected"),
+    ]
 
-    user = models.ForeignKey(SystemUser, on_delete=models.CASCADE, related_name="password_requests")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="password_requests"
+    )
     reason = models.CharField(max_length=255, blank=True)
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
     created_at = models.DateTimeField(auto_now_add=True)
-    handled_by = models.ForeignKey(
-        SystemUser, on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
-    )
     handled_at = models.DateTimeField(null=True, blank=True)
+    handled_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
+    )
 
     class Meta:
         ordering = ["-created_at"]
 
     def __str__(self):
-        return f"{self.user} - {self.status} ({self.created_at:%Y-%m-%d %H:%M})"
+        return f"{self.user} ({self.status})"

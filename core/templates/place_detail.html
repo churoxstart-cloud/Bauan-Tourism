@@ -1,0 +1,298 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }} | Discover Bauan, Batangas</title>
+    <meta name="description" content="{{ description|truncatechars:155 }}">
+    <meta property="og:title" content="{{ title }} | Discover Bauan, Batangas">
+    <meta property="og:description" content="{{ description|truncatechars:155 }}">
+    {% if photo %}<meta property="og:image" content="{{ photo }}">{% endif %}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{% static 'core/css/consent.css' %}">
+    <style>
+        :root {
+            --bg: #07141d; --surface: #0e222e; --surface-2: #132c3a; --line: rgba(255, 255, 255, .09);
+            --text: #eef4f5; --muted: #a9bcc2; --orange: #f97316; --orange-2: #fdba74; --teal: #2ec4b6; --teal-d: #0f766e;
+        }
+        * { box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { margin: 0; background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+        a { color: inherit; }
+        img { display: block; max-width: 100%; }
+
+        /* top bar */
+        .pd-nav { position: fixed; inset: 0 0 auto 0; z-index: 50; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+                  padding: 12px clamp(16px, 4vw, 48px); background: rgba(7, 20, 29, .55); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+                  border-bottom: 1px solid var(--line); transition: background .3s; }
+        .pd-nav.solid { background: rgba(7, 20, 29, .94); }
+        .pd-brand { display: flex; align-items: center; gap: 10px; min-width: 0; text-decoration: none; font-weight: 700; font-size: .95rem; }
+        .pd-brand img { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255, 255, 255, .5); flex: 0 0 auto; background: #fff; }
+        .pd-brand span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .pd-back { flex: 0 0 auto; display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 999px; text-decoration: none; font-size: .88rem; font-weight: 600;
+                   border: 1px solid rgba(255, 255, 255, .35); transition: background .2s, color .2s; }
+        .pd-back:hover { background: #fff; color: #0b2f3a; }
+
+        /* hero */
+        .pd-hero { position: relative; min-height: max(460px, 68vh); display: flex; align-items: flex-end; overflow: hidden;
+                   padding: 110px clamp(16px, 5vw, 72px) 44px; background: linear-gradient(135deg, #0f766e, #0b3d4f 60%, #07141d); }
+        .pd-hero-img { position: absolute; inset: 0; background-size: cover; background-position: center; transform: scale(1.08); animation: pdKen 10s ease-out forwards; }
+        @keyframes pdKen { to { transform: scale(1); } }
+        .pd-hero::after { content: ""; position: absolute; inset: 0;
+            background: linear-gradient(0deg, rgba(7, 20, 29, 1) 0%, rgba(7, 20, 29, .55) 40%, rgba(7, 20, 29, .15) 75%),
+                        linear-gradient(90deg, rgba(7, 20, 29, .7) 0%, rgba(7, 20, 29, 0) 70%); }
+        .pd-hero-inner { position: relative; z-index: 2; width: 100%; max-width: 1180px; margin: 0 auto; }
+        .pd-crumbs { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 14px; padding: 0; list-style: none; font-size: .82rem; color: rgba(255, 255, 255, .75); }
+        .pd-crumbs li + li::before { content: "/"; margin-right: 6px; opacity: .5; }
+        .pd-crumbs a { text-decoration: none; } .pd-crumbs a:hover { text-decoration: underline; }
+        .pd-chip { display: inline-block; padding: 4px 12px; border-radius: 999px; font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase;
+                   background: rgba(255, 255, 255, .16); border: 1px solid rgba(255, 255, 255, .3); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+        .pd-hero h1 { margin: 14px 0 8px; font-weight: 800; text-transform: uppercase; letter-spacing: -.01em; line-height: 1;
+                      font-size: clamp(2.2rem, 6vw, 4.6rem); max-width: 900px; text-shadow: 0 4px 24px rgba(0, 0, 0, .35); overflow-wrap: anywhere; }
+        .pd-loc { margin: 0 0 24px; color: rgba(255, 255, 255, .9); font-size: 1rem; }
+        .pd-loc i { color: var(--orange-2); margin-right: 6px; }
+        .pd-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+        .btn { display: inline-flex; align-items: center; justify-content: center; gap: 10px; padding: 13px 24px; border-radius: 12px; border: 0; cursor: pointer;
+               font: 700 .95rem 'Poppins', sans-serif; text-decoration: none; transition: transform .2s, background .2s, box-shadow .2s; }
+        .btn:hover { transform: translateY(-2px); }
+        .btn-white { background: #fff; color: #0b2f3a; box-shadow: 0 10px 26px rgba(0, 0, 0, .25); }
+        .btn-orange { background: var(--orange); color: #fff; box-shadow: 0 10px 24px rgba(249, 115, 22, .35); }
+        .btn-orange:hover { background: #ea6a0d; }
+        .btn-ghost { background: rgba(255, 255, 255, .08); color: #fff; border: 1px solid rgba(255, 255, 255, .35); }
+        .btn-ghost:hover { background: rgba(255, 255, 255, .16); }
+        .btn-teal { background: var(--teal-d); color: #fff; }
+        .btn-teal:hover { background: #0b5d56; }
+        .btn-block { width: 100%; }
+
+        /* body */
+        .pd-main { max-width: 1180px; margin: 0 auto; padding: 36px clamp(16px, 5vw, 72px) 40px; display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(0, 1fr); gap: 22px 28px; align-items: start; }
+        @media (min-width: 1180px) { .pd-main { padding-left: 0; padding-right: 0; } }
+        .card { background: var(--surface); border: 1px solid var(--line); border-radius: 18px; padding: 24px; }
+        .pd-about { grid-column: 1; grid-row: 1; }
+        .pd-map { grid-column: 1; grid-row: 2; }
+        .side { grid-column: 2; grid-row: 1 / span 2; }
+        .card h2 { margin: 0 0 12px; font-size: 1.15rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .card h2 i { color: var(--orange-2); font-size: 1rem; }
+        .lead { margin: 0; font-size: 1.02rem; color: #dbe7ea; }
+        details.tl { margin-top: 14px; border-top: 1px solid var(--line); padding-top: 12px; }
+        details.tl summary { cursor: pointer; font-weight: 600; color: var(--orange-2); font-size: .9rem; }
+        details.tl p { margin: 10px 0 0; color: #cfdde1; }
+        .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+        .chips li { padding: 7px 14px; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--line); font-size: .86rem; text-transform: capitalize; }
+        .chips.teal li { background: rgba(46, 196, 182, .12); border-color: rgba(46, 196, 182, .35); color: #bff3ec; }
+        .sub-h { margin: 20px 0 10px; font-size: .78rem; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); font-weight: 700; }
+        .tips { margin-top: 20px; padding: 14px 16px; border-radius: 12px; background: rgba(249, 115, 22, .1); border: 1px solid rgba(249, 115, 22, .3); color: #ffe1c9; font-size: .93rem; }
+        .tips b { color: var(--orange-2); }
+        .map { width: 100%; height: 340px; border: 0; border-radius: 12px; background: var(--surface-2); }
+        .map-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 12px; font-size: .88rem; color: var(--orange-2); text-decoration: none; font-weight: 600; }
+        .map-link:hover { text-decoration: underline; }
+
+        .side { position: sticky; top: 86px; }
+        .facts { list-style: none; margin: 0 0 18px; padding: 0; }
+        .facts li { display: flex; gap: 14px; padding: 13px 0; border-bottom: 1px solid var(--line); }
+        .facts li:first-child { padding-top: 0; }
+        .facts i { flex: 0 0 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; background: rgba(46, 196, 182, .14); color: var(--teal); font-size: .9rem; }
+        .facts small { display: block; font-size: .74rem; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); font-weight: 600; }
+        .facts span { font-size: .95rem; font-weight: 500; overflow-wrap: anywhere; }
+        .facts .na { color: var(--muted); font-weight: 400; font-style: italic; }
+        .facts a { color: #bff3ec; }
+        .side-note { margin: 0 0 16px; font-size: .82rem; color: var(--muted); }
+        .side .btn + .btn { margin-top: 10px; }
+
+        /* card rows */
+        .pd-section { max-width: 1180px; margin: 0 auto; padding: 8px clamp(16px, 5vw, 72px) 34px; }
+        @media (min-width: 1180px) { .pd-section { padding-left: 0; padding-right: 0; } }
+        .pd-section h2 { margin: 0 0 16px; font-size: 1.3rem; font-weight: 700; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 18px; }
+        .tile { position: relative; display: block; aspect-ratio: 4 / 3; border-radius: 16px; overflow: hidden; text-decoration: none; border: 1px solid var(--line);
+                background: linear-gradient(135deg, #0f766e, #0b3d4f); transition: transform .3s, box-shadow .3s, border-color .3s; }
+        .tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .6s; }
+        .tile::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(3, 12, 18, .9) 0%, rgba(3, 12, 18, .1) 60%); }
+        .tile .ph { position: absolute; inset: 0; display: grid; place-items: center; font-size: 2rem; color: rgba(255, 255, 255, .35); }
+        .tile div { position: absolute; left: 14px; right: 14px; bottom: 12px; z-index: 1; }
+        .tile small { display: block; font-size: .72rem; color: rgba(255, 255, 255, .78); }
+        .tile strong { display: block; font-weight: 800; text-transform: uppercase; font-size: .95rem; line-height: 1.15; }
+        .tile:hover { transform: translateY(-6px); border-color: rgba(253, 186, 116, .8); box-shadow: 0 18px 36px rgba(0, 0, 0, .4); }
+        .tile:hover img { transform: scale(1.07); }
+        .empty { color: var(--muted); font-size: .92rem; }
+
+        .pd-foot { border-top: 1px solid var(--line); padding: 22px clamp(16px, 5vw, 72px); text-align: center; color: var(--muted); font-size: .84rem; }
+        .pd-foot a { color: var(--orange-2); }
+
+        .toast { position: fixed; left: 50%; bottom: 24px; z-index: 60; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; padding: 11px 18px; border-radius: 10px;
+                 background: #fff; color: #0b2f3a; font-weight: 600; font-size: .9rem; box-shadow: 0 10px 30px rgba(0, 0, 0, .3); transition: .3s; }
+        .toast.show { opacity: 1; transform: translate(-50%, 0); }
+
+        /* reveal on scroll */
+        .rv { opacity: 0; transform: translateY(18px); transition: opacity .6s ease, transform .7s cubic-bezier(.2, .8, .2, 1); }
+        .rv.in { opacity: 1; transform: none; }
+
+        @media (max-width: 900px) {
+            .pd-main { grid-template-columns: minmax(0, 1fr); }
+            .side, .pd-about, .pd-map { grid-column: 1; grid-row: auto; }
+            .side { order: 1; } .pd-map { order: 2; }
+            .side { position: static; }
+            .pd-hero { min-height: 420px; padding-bottom: 30px; }
+            .map { height: 260px; }
+        }
+        @media (max-width: 520px) {
+            .pd-brand span { display: none; }
+            .pd-actions .btn { flex: 1 1 auto; padding: 12px 16px; }
+            .card { padding: 18px; }
+            .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+            .tile strong { font-size: .8rem; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .pd-hero-img { animation: none; transform: none; }
+            .rv { opacity: 1; transform: none; transition: none; }
+            .btn, .tile, .tile img { transition: none; }
+        }
+    </style>
+</head>
+<body>
+    <header class="pd-nav" id="pdNav">
+        <a class="pd-brand" href="{% url 'landing' %}">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStfb1LD4WvgZ2qoeMg55h-DRWd53v5XGky3ucEhBZlXJflc1r1-LQKTEM&s=10" alt="Bauan logo" referrerpolicy="no-referrer">
+            <span>Municipal Tourism Office of Bauan Batangas</span>
+        </a>
+        <a class="pd-back" href="{% url 'landing' %}"><i class="fa-solid fa-arrow-left"></i> Back to home</a>
+    </header>
+
+    <section class="pd-hero">
+        {% if photo %}<div class="pd-hero-img" style="background-image: url('{{ photo }}');"></div>{% endif %}
+        <div class="pd-hero-inner">
+            <ol class="pd-crumbs" aria-label="Breadcrumb">
+                <li><a href="{% url 'landing' %}">Home</a></li>
+                <li>{% if kind == "resort" %}Resorts{% else %}Destinations{% endif %}</li>
+                <li aria-current="page">{{ title }}</li>
+            </ol>
+            <span class="pd-chip">{{ category }}</span>
+            <h1>{{ title }}</h1>
+            <p class="pd-loc"><i class="fa-solid fa-location-dot"></i>{{ location }}</p>
+            <div class="pd-actions">
+                <a class="btn btn-white" href="{{ directions }}" target="_blank" rel="noopener"><i class="fa-solid fa-diamond-turn-right"></i> Get directions</a>
+                <a class="btn btn-orange" href="{% url 'landing' %}?ask={{ ask|urlencode }}"><i class="fa-solid fa-comment-dots"></i> Ask Tourist Bot</a>
+                <button type="button" class="btn btn-ghost" id="shareBtn"><i class="fa-solid fa-share-nodes"></i> Share</button>
+            </div>
+        </div>
+    </section>
+
+    <main class="pd-main">
+            <article class="card rv pd-about">
+                <h2><i class="fa-solid fa-circle-info"></i> About {% if kind == "resort" %}this resort{% else %}this place{% endif %}</h2>
+                <p class="lead">{{ description|default:"The MTO has not posted a description for this place yet." }}</p>
+                {% if description_tl %}
+                <details class="tl"><summary>Basahin sa Tagalog</summary><p>{{ description_tl }}</p></details>
+                {% endif %}
+
+                {% if activities %}
+                <p class="sub-h">Things to do</p>
+                <ul class="chips">{% for a in activities %}<li>{{ a }}</li>{% endfor %}</ul>
+                {% endif %}
+                {% if good_for %}
+                <p class="sub-h">Good for</p>
+                <ul class="chips teal">{% for g in good_for %}<li>{{ g }}</li>{% endfor %}</ul>
+                {% endif %}
+                {% if tips %}
+                <div class="tips"><b><i class="fa-solid fa-lightbulb"></i> Tips:</b> {{ tips|linebreaksbr }}</div>
+                {% endif %}
+            </article>
+
+            <section class="card rv pd-map">
+                <h2><i class="fa-solid fa-map-location-dot"></i> Map</h2>
+                <iframe class="map" src="{{ map_embed }}" title="Map of {{ title }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                <a class="map-link" href="{{ map_open }}" target="_blank" rel="noopener">Open in Google Maps <i class="fa-solid fa-arrow-up-right-from-square"></i></a>
+            </section>
+
+        <aside class="side">
+            <div class="card rv">
+                <h2><i class="fa-solid fa-calendar-check"></i> {% if kind == "resort" %}Resort details{% else %}Plan your visit{% endif %}</h2>
+                <ul class="facts">
+                    {% for icon, label, value in facts %}
+                    <li><i class="{{ icon }}"></i>
+                        <div><small>{{ label }}</small>
+                        {% if value %}
+                            {% if label == "Contact number" %}<span><a href="tel:{{ value|cut:' '|cut:'-' }}">{{ value }}</a></span>{% else %}<span>{{ value }}</span>{% endif %}
+                        {% else %}<span class="na">Not posted yet</span>{% endif %}</div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% if kind == "resort" %}
+                <p class="side-note">This website does not take bookings. Please contact the resort directly to reserve and to confirm rates.</p>
+                {% if phone %}<a class="btn btn-teal btn-block" href="tel:{{ phone|cut:' '|cut:'-' }}"><i class="fa-solid fa-phone"></i> Call the resort</a>{% endif %}
+                <a class="btn btn-ghost btn-block" href="{% url 'landing' %}?guide={{ resort_id }}"><i class="fa-solid fa-route"></i> Show on Travel Guide map</a>
+                {% else %}
+                <p class="side-note">Details not posted yet? Contact the Municipal Tourism Office before your visit.</p>
+                <a class="btn btn-teal btn-block" href="{{ directions }}" target="_blank" rel="noopener"><i class="fa-solid fa-diamond-turn-right"></i> Get directions</a>
+                {% endif %}
+                <a class="btn btn-orange btn-block" href="{% url 'landing' %}?ask={{ ask|urlencode }}"><i class="fa-solid fa-comment-dots"></i> Ask Tourist Bot</a>
+            </div>
+        </aside>
+    </main>
+
+    <section class="pd-section rv">
+        <h2>{{ near_title }}</h2>
+        {% if near %}
+        <div class="grid">
+            {% for c in near %}
+            <a class="tile" href="{{ c.url }}">
+                {% if c.img %}<img src="{{ c.img }}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">{% endif %}
+                <span class="ph"><i class="fa-solid fa-umbrella-beach"></i></span>
+                <div><small>{{ c.sub }}</small><strong>{{ c.name }}</strong></div>
+            </a>
+            {% endfor %}
+        </div>
+        {% else %}<p class="empty">No other resorts listed here yet.</p>{% endif %}
+    </section>
+
+    {% if more %}
+    <section class="pd-section rv">
+        <h2>More places to visit in Bauan</h2>
+        <div class="grid">
+            {% for c in more %}
+            <a class="tile" href="{{ c.url }}">
+                {% if c.img %}<img src="{{ c.img }}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()">{% endif %}
+                <span class="ph"><i class="fa-solid fa-mountain-sun"></i></span>
+                <div><small>{{ c.sub }}</small><strong>{{ c.name }}</strong></div>
+            </a>
+            {% endfor %}
+        </div>
+    </section>
+    {% endif %}
+
+    <footer class="pd-foot">
+        &copy; {% now "Y" %} Municipal Tourism Office of Bauan, Batangas &middot; <a href="{% url 'terms' %}">Terms and Conditions</a>
+    </footer>
+
+    <div class="toast" id="pdToast" role="status" aria-live="polite"></div>
+
+    {% include "_consent_modals.html" %}
+    <script src="{% static 'core/js/consent.js' %}"></script>
+    <script>
+    (function () {
+        var nav = document.getElementById('pdNav');
+        function onScroll() { nav.classList.toggle('solid', scrollY > 40); }
+        addEventListener('scroll', onScroll, { passive: true }); onScroll();
+
+        // hero photo that fails to load: keep the teal gradient instead of a broken image
+        var hero = document.querySelector('.pd-hero-img');
+        if (hero) { var m = /url\(['"]?(.*?)['"]?\)/.exec(hero.style.backgroundImage); if (m) { var t = new Image(); t.onerror = function () { hero.remove(); }; t.src = m[1]; } }
+
+        var toast = document.getElementById('pdToast'), tt;
+        function say(msg) { toast.textContent = msg; toast.classList.add('show'); clearTimeout(tt); tt = setTimeout(function () { toast.classList.remove('show'); }, 2600); }
+        document.getElementById('shareBtn').addEventListener('click', function () {
+            var data = { title: document.title, url: location.href };
+            if (navigator.share) { navigator.share(data).catch(function () {}); return; }
+            if (navigator.clipboard) navigator.clipboard.writeText(location.href).then(function () { say('Link copied. You can paste it anywhere.'); }, function () { say(location.href); });
+            else say(location.href);
+        });
+
+        var items = document.querySelectorAll('.rv');
+        if (!('IntersectionObserver' in window)) { items.forEach(function (el) { el.classList.add('in'); }); return; }
+        var io = new IntersectionObserver(function (en) { en.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }); }, { threshold: 0.12 });
+        items.forEach(function (el) { io.observe(el); });
+    })();
+    </script>
+</body>
+</html>

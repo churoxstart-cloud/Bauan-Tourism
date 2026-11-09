@@ -161,8 +161,10 @@ class TourismProgramForm(forms.ModelForm):
 class ResortDetailsForm(forms.ModelForm):
     class Meta:
         model = Resort
-        fields = ["address", "owner_name", "contact_number", "total_rooms"]
+        fields = ["address", "owner_name", "contact_number", "total_rooms", "photo_url", "highlight"]
         widgets = {
+            "photo_url": forms.URLInput(attrs={"class": "form-control", "placeholder": "https://..."}),
+            "highlight": forms.Textarea(attrs={"class": "form-control", "rows": 2, "maxlength": 220}),
             "address": forms.TextInput(attrs={"class": "form-control"}),
             "owner_name": forms.TextInput(attrs={"class": "form-control"}),
             "contact_number": forms.TextInput(attrs={"class": "form-control"}),
@@ -186,8 +188,10 @@ class RoomForm(forms.ModelForm):
 class ResortAdminForm(forms.ModelForm):
     class Meta:
         model = Resort
-        fields = ["name", "barangay", "address", "owner_name", "contact_number", "total_rooms", "status"]
+        fields = ["name", "barangay", "address", "owner_name", "contact_number", "total_rooms", "photo_url", "highlight", "status"]
         widgets = {
+            "photo_url": forms.URLInput(attrs={"class": "form-control", "placeholder": "https://..."}),
+            "highlight": forms.Textarea(attrs={"class": "form-control", "rows": 2, "maxlength": 220}),
             "name": forms.TextInput(attrs={"class": "form-control"}),
             "barangay": forms.TextInput(attrs={"class": "form-control"}),
             "address": forms.TextInput(attrs={"class": "form-control"}),
@@ -234,8 +238,11 @@ class UserProfileForm(forms.ModelForm):
 
     class Meta:
         model = SystemUser
-        fields = ["username", "email"]
+        fields = ["first_name", "last_name", "username", "email"]
+        labels = {"first_name": "First name", "last_name": "Last name"}
         widgets = {
+            "first_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "e.g. Juan", "autocomplete": "given-name"}),
+            "last_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "e.g. Dela Cruz", "autocomplete": "family-name"}),
             "username": forms.TextInput(attrs={"class": "form-control"}),
             "email": forms.EmailInput(attrs={"class": "form-control"}),
         }

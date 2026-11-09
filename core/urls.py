@@ -8,6 +8,10 @@ from .chat import api_chat
 urlpatterns = [
     # ---------- public ----------
     path("", views.landing_view, name="landing"),
+    path("places/<int:pk>/", views.place_detail, name="place_detail_short"),
+    path("places/<int:pk>/<slug:slug>/", views.place_detail, name="place_detail"),
+    path("resorts/<int:pk>/", views.resort_public, name="resort_public_short"),
+    path("resorts/<int:pk>/<slug:slug>/", views.resort_public, name="resort_public"),
     path("get-started/", views.get_started_view, name="get_started"),
     path("terms/", views.terms_view, name="terms"),
     path("api/resorts/", views.api_resorts, name="api_resorts"),

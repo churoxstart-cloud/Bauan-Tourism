@@ -9,6 +9,9 @@
   .dash-title { margin: 6px 0 2px; font-size: 1.7rem; font-weight: 700; letter-spacing: -.01em; color: var(--d-text); }
   [data-theme="dark"] .dash .dash-title { color: var(--d-text); }
   .dash-sub { margin: 0; font-size: .92rem; color: var(--d-muted) !important; }
+  .dash-sub b { color: var(--d-text); font-weight: 600; }
+  .dash-title { font-size: clamp(1.5rem, 3.2vw, 2.1rem); line-height: 1.2; }
+  .dash-name { color: var(--d-accent); overflow-wrap: anywhere; }
   .dash-date { text-align: right; line-height: 1.25; }
   .dash-date b { display: block; font-size: 1rem; font-weight: 700; }
   .dash-date span { font-size: .85rem; color: var(--d-muted); }
@@ -53,4 +56,93 @@
 
   @media (max-width: 960px) { .dash-grid { grid-template-columns: 1fr; } .kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); } .kpi:nth-child(3) { border-left: 0; } .kpi:nth-child(n+3) { border-top: 1px solid var(--d-border); } }
   @media (max-width: 600px) { .dash { padding: 20px 14px 40px; } .links { grid-template-columns: 1fr; } .link-row:last-child:nth-child(odd) { grid-column: auto; } .dash-title { font-size: 1.4rem; } .dash-date { text-align: left; } .kpi { padding: 14px 16px; } .kpi-value { font-size: 1.6rem; } }
+
+  /* =========================================================
+     Dashboard motion: entrance, count-up numbers, hover life.
+     Runs on admin, MTO and resort staff dashboards.
+     ========================================================= */
+  @keyframes dRise   { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes dFade   { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes dSlideL { from { opacity: 0; transform: translateX(-12px); } to { opacity: 1; transform: none; } }
+  @keyframes dLine   { from { width: 0; } to { width: 22px; } }
+  @keyframes dSheen  { from { background-position: 120% 0; } to { background-position: -20% 0; } }
+  @keyframes dUnder  { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes dBar    { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+  @keyframes dPop    { 0% { transform: scale(1); } 40% { transform: scale(1.08); } 100% { transform: scale(1); } }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .dash-eyebrow { animation: dFade .5s ease both; }
+    .dash-eyebrow::before { animation: dLine .6s .15s cubic-bezier(.2,.8,.2,1) both; }
+    .dash-title { animation: dRise .6s .05s cubic-bezier(.2,.8,.2,1) both; }
+    .dash-sub   { animation: dRise .6s .15s cubic-bezier(.2,.8,.2,1) both; }
+    .dash-date  { animation: dFade .6s .25s ease both; }
+    .dash-note  { animation: dSlideL .55s .3s cubic-bezier(.2,.8,.2,1) both; }
+
+    /* the user's name: a light sweep passes over it once, then an underline draws in */
+    .dash-name { position: relative; display: inline-block;
+      background: linear-gradient(100deg, var(--d-accent) 0 40%, #7fe3d3 50%, var(--d-accent) 60% 100%);
+      background-size: 250% 100%; background-position: -20% 0;
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+      animation: dSheen 1.4s .55s ease-in-out both; }
+    .dash-name::after { content: ""; position: absolute; left: 0; right: 0; bottom: -3px; height: 3px; border-radius: 3px;
+      background: linear-gradient(90deg, var(--d-gold), var(--d-accent)); transform-origin: left;
+      animation: dUnder .7s .9s cubic-bezier(.2,.8,.2,1) both; }
+
+    .kpis { animation: dFade .4s .2s ease both; }
+    .kpi { animation: dRise .55s cubic-bezier(.2,.8,.2,1) both; }
+    .kpi:nth-child(1) { animation-delay: .25s; } .kpi:nth-child(2) { animation-delay: .33s; }
+    .kpi:nth-child(3) { animation-delay: .41s; } .kpi:nth-child(4) { animation-delay: .49s; }
+    .kpi-value.counted { animation: dPop .35s ease; }
+
+    .panel { animation: dRise .6s cubic-bezier(.2,.8,.2,1) both; }
+    .dash-grid > .panel:nth-child(1) { animation-delay: .45s; }
+    .dash-grid > .panel:nth-child(2) { animation-delay: .55s; }
+    .link-row { animation: dRise .5s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(.6s + var(--i, 0) * 50ms); }
+    .feed li  { animation: dSlideL .5s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(.7s + var(--i, 0) * 60ms); }
+  }
+
+  /* hover life (kept subtle) */
+  .kpi { position: relative; transition: background .2s; }
+  .kpi::after { content: ""; position: absolute; left: 22px; right: 22px; bottom: 0; height: 2px; border-radius: 2px;
+    background: linear-gradient(90deg, var(--d-gold), var(--d-accent)); transform: scaleX(0); transform-origin: left; transition: transform .3s cubic-bezier(.2,.8,.2,1); }
+  .kpi:hover { background: var(--d-hover); }
+  .kpi:hover::after { transform: scaleX(1); }
+  .kpis { overflow: hidden; }
+  .panel { transition: box-shadow .25s, transform .25s; }
+  .panel:hover { box-shadow: 0 10px 28px rgba(15, 60, 55, .10); }
+  [data-theme="dark"] .panel:hover { box-shadow: 0 10px 28px rgba(0, 0, 0, .35); }
+  .link-row .ic { transition: transform .25s cubic-bezier(.2,.8,.2,1); }
+  .link-row:hover .ic { transform: translateY(-2px) scale(1.12); }
+  .link-row::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--d-accent);
+    transform: scaleY(0); transition: transform .2s; }
+  .link-row:hover::before, .link-row:focus-visible::before { transform: scaleY(1); }
+  @media (prefers-reduced-motion: reduce) { .kpi::after, .link-row::before, .link-row .ic, .panel { transition: none; } }
 </style>
+
+<script>
+/* staggering indexes + count-up for the KPI numbers */
+document.addEventListener('DOMContentLoaded', function () {
+  var dash = document.querySelector('.dash'); if (!dash) return;
+  dash.querySelectorAll('.links').forEach(function (g) { g.querySelectorAll('.link-row').forEach(function (r, i) { r.style.setProperty('--i', i); }); });
+  dash.querySelectorAll('.feed').forEach(function (f) { f.querySelectorAll('li').forEach(function (r, i) { r.style.setProperty('--i', Math.min(i, 8)); }); });
+
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  dash.querySelectorAll('.kpi-value').forEach(function (el, k) {
+    var node = el.firstChild; if (!node || node.nodeType !== 3) return;
+    var raw = node.nodeValue.trim(), m = raw.match(/^([\d,]+)(\.\d+)?$/); if (!m) return;
+    var target = parseFloat(raw.replace(/,/g, '')), dec = m[2] ? m[2].length - 1 : 0, comma = raw.indexOf(',') > -1;
+    if (!target) return;
+    var fmt = function (v) { var s = v.toFixed(dec); return comma ? Number(s).toLocaleString('en-US', { minimumFractionDigits: dec, maximumFractionDigits: dec }) : s; };
+    node.nodeValue = fmt(0);
+    var start = null, dur = 900 + Math.min(600, target * 4), delay = 300 + k * 80;
+    setTimeout(function () {
+      requestAnimationFrame(function step(t) {
+        if (start === null) start = t;
+        var p = Math.min(1, (t - start) / dur), e = 1 - Math.pow(1 - p, 3);
+        node.nodeValue = fmt(target * e);
+        if (p < 1) requestAnimationFrame(step); else { node.nodeValue = raw; el.classList.add('counted'); }
+      });
+    }, delay);
+  });
+});
+</script>

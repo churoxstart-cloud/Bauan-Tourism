@@ -1,0 +1,63 @@
+{# Terms gate + "Confirm your location" dialogs. Used by the home page and the place/resort pages (needs consent.css + consent.js). #}
+    <!-- TERMS GATE: must tick the box before using the site -->
+    <div id="termsModal" class="consent-overlay" role="dialog" aria-modal="true" aria-labelledby="termsTitle" hidden>
+        <div class="consent-card">
+            <div class="consent-head">
+                <h3 id="termsTitle" data-i18n="terms_modal_title">Before you continue</h3>
+                <p data-i18n="terms_modal_intro">Please read our Terms and Conditions. You need to agree to use this site.</p>
+            </div>
+            <div class="consent-scroll" tabindex="0">
+                {% include "_terms_content.html" %}
+            </div>
+            <div class="consent-foot">
+                <label class="consent-check" for="termsAgreeBox">
+                    <input type="checkbox" id="termsAgreeBox">
+                    <span data-i18n="terms_agree_label">I have read and agree to the Terms and Conditions and Privacy Notice.</span>
+                </label>
+                <p class="consent-hint" data-i18n="terms_scroll_hint">Tick the box to continue.</p>
+                <div class="consent-actions">
+                    <button type="button" id="termsAgreeBtn" class="consent-btn primary" disabled data-i18n="terms_agree_btn">Agree &amp; Continue</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CONFIRM YOUR LOCATION: shown before the browser's own permission prompt -->
+    <div id="locationModal" class="consent-overlay" role="dialog" aria-modal="true" aria-labelledby="locTitle" hidden>
+        <div class="consent-card loc-card">
+            <div class="loc-body">
+                <div class="loc-icon" id="locIcon"><i class="fa-solid fa-location-crosshairs"></i></div>
+                <h3 id="locTitle" data-i18n="loc_title">Confirm your location</h3>
+
+                <div id="locStep-ask">
+                    <p data-i18n="loc_intro">Allow Discover Bauan to use your current location so we can show directions to resorts and attractions, and help Tourist Bot suggest places near you.</p>
+                    <p class="loc-note" data-i18n="loc_note">Your browser will ask for permission next. We do not save your location.</p>
+                </div>
+
+                <div id="locStep-detecting" hidden>
+                    <p id="locDetectingText">Finding your location…</p>
+                </div>
+
+                <div id="locStep-confirm" hidden>
+                    <p data-i18n="loc_confirm_q">Is this where you are?</p>
+                    <iframe id="locMap" class="loc-map" title="Your location" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <p class="loc-coords" id="locCoords"></p>
+                </div>
+
+                <div id="locStep-error" hidden>
+                    <p class="loc-error" id="locErrorText"></p>
+                </div>
+            </div>
+
+            <div class="consent-actions">
+                <button type="button" id="locNotNowBtn" class="consent-btn ghost" data-i18n="loc_not_now">Not now</button>
+                <button type="button" id="locAllowBtn" class="consent-btn primary" data-i18n="loc_allow">Allow &amp; detect my location</button>
+                <button type="button" id="locAgainBtn" class="consent-btn ghost" data-i18n="loc_retry" hidden>Detect again</button>
+                <button type="button" id="locYesBtn" class="consent-btn primary" data-i18n="loc_yes" hidden>Yes, confirm</button>
+                <button type="button" id="locCloseBtn" class="consent-btn ghost" data-i18n="loc_close" hidden>Close</button>
+                <button type="button" id="locRetryBtn" class="consent-btn primary" data-i18n="loc_try_again" hidden>Try again</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="consentToast" class="consent-toast" role="status" aria-live="polite"></div>

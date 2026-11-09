@@ -6,6 +6,7 @@ from .models import (
     AttractionVisitorLog,
     BotQuestion,
     Destination,
+    PasswordRequest,
     Report,
     Resort,
     Room,
@@ -86,3 +87,10 @@ class DestinationAdmin(admin.ModelAdmin):
 class BotQuestionAdmin(admin.ModelAdmin):
     list_display = ("question", "count", "reason", "resolved", "last_asked")
     list_filter = ("resolved", "lang")
+
+
+@admin.register(PasswordRequest)
+class PasswordRequestAdmin(admin.ModelAdmin):
+    list_display = ("user", "status", "reason", "created_at", "handled_by", "handled_at")
+    list_filter = ("status",)
+    search_fields = ("user__username", "reason")

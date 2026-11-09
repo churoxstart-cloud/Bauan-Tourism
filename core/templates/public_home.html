@@ -7,7 +7,7 @@
     <title data-i18n="page_title">Bauan | Batangas Tourism</title>
     
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
     
     <!-- FontAwesome for Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1019,6 +1019,31 @@
         .chat-window { width: min(360px, calc(100vw - 24px)); }
         .chat-widget.pos-left .chat-window { right: auto; left: 0; }
         .chat-widget.pos-top .chat-window { bottom: auto; top: 85px; transform-origin: top center; }
+
+        /* Tourist Bot: message box + send button (the input used to take the full width and squash the button) */
+        .chat-footer { padding: 12px 12px 12px 14px; gap: 10px; }
+        .chat-footer input { flex: 1 1 auto; width: auto; min-width: 0; height: 46px; padding: 0 18px; margin: 0; }
+        .chat-footer button {
+            flex: 0 0 46px; width: 46px; height: 46px; padding: 0; margin: 0;
+            border-radius: 50%; font-size: 1rem; aspect-ratio: 1;
+        }
+        .chat-footer button i { transform: translateX(-1px); }
+        .chat-footer button:active { transform: scale(0.94); }
+
+        /* phones & tablets: bigger touch targets, no zoom-in when typing, window always fits the screen */
+        @media (max-width: 1024px) {
+            .chat-window { height: min(540px, calc(100dvh - 130px)); }
+            .chat-footer input { font-size: 16px; }   /* iPhone zooms in on inputs smaller than 16px */
+            .chat-footer { padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px)); }
+        }
+        @media (max-width: 600px) {
+            .chat-widget .chat-window,
+            .chat-widget.pos-left .chat-window { width: calc(100vw - 32px); }
+            .chat-widget:not(.pos-left) .chat-window { right: 0; left: auto; }
+            .chat-header { padding: 14px 16px; }
+            .chat-body { padding: 14px 12px; }
+            .bot-msg-wrapper { max-width: 94%; }
+        }
         .chat-widget.pos-left .chat-greet { right: auto; left: 0; border-radius: 18px 18px 18px 4px; transform-origin: bottom left; }
         .chat-widget.pos-top .chat-greet { bottom: auto; top: 92px; transform-origin: top right; }
         .chat-widget.pos-left.pos-top .chat-greet { transform-origin: top left; }
@@ -1127,6 +1152,163 @@
         .stat-label { color: rgba(255, 255, 255, .9) !important; }
         .home-section .section-subtitle, .home-section .orbit-hint { color: rgba(255, 255, 255, .88) !important; }
         body { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; text-rendering: optimizeLegibility; }
+
+        /* =====================================================
+           HERO DESTINATION CAROUSEL
+           Big photo of the chosen place fills the hero; tap a card to switch places.
+           ===================================================== */
+        .hero-section.hero-carousel {
+            height: auto; min-height: max(660px, 100vh); padding: 108px clamp(18px, 5vw, 72px) 44px;
+            display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); grid-template-rows: auto 1fr;
+            column-gap: 40px; align-items: end; justify-content: stretch; text-align: left; background: #06141c;
+        }
+        .hero-carousel .hc-bg {
+            position: absolute; inset: 0; background-size: cover; background-position: center; background-color: #0b2430;
+            opacity: 0; transform: scale(1.12); transition: opacity 1.1s ease, transform 1.1s ease;
+        }
+        .hero-carousel .hc-bg.is-active { opacity: 1; animation: hcKen 9s ease-out forwards; }
+        @keyframes hcKen { from { transform: scale(1.12); } to { transform: scale(1.0); } }
+        .hero-carousel .overlay {
+            background:
+                linear-gradient(90deg, rgba(3, 12, 18, .86) 0%, rgba(3, 12, 18, .6) 38%, rgba(3, 12, 18, .12) 72%, rgba(3, 12, 18, 0) 100%),
+                linear-gradient(0deg, rgba(3, 12, 18, .78) 0%, rgba(3, 12, 18, 0) 46%),
+                linear-gradient(180deg, rgba(3, 12, 18, .5) 0%, rgba(3, 12, 18, 0) 22%);
+        }
+        /* keep only the birds from the parallax art: the photo is the star now */
+        .hero-carousel .px-sun, .hero-carousel .px-islands, .hero-carousel .px-sea, .hero-carousel .px-palm { display: none; }
+        .hero-carousel .px-birds { top: 16%; left: auto; right: 22%; }
+
+        /* search */
+        .hc-search {
+            box-sizing: border-box; grid-column: 1 / -1; grid-row: 1; justify-self: center; align-self: start; position: relative; z-index: 3;
+            width: min(520px, 100%); display: flex; align-items: center; gap: 10px; padding: 6px 6px 6px 18px;
+            background: rgba(255, 255, 255, .94); border-radius: 999px; box-shadow: 0 10px 30px rgba(0, 0, 0, .25);
+        }
+        .hc-search > i { color: #6b7c80; font-size: .95rem; }
+        .hc-search input { flex: 1; min-width: 0; border: 0; outline: 0; background: transparent; font: 400 .95rem 'Poppins', sans-serif; color: #14313a; padding: 8px 0; }
+        .hc-search input::placeholder { color: #7d8b8f; }
+        .hc-search input::-webkit-search-cancel-button { display: none; }
+        .hc-search button { flex: 0 0 40px; height: 40px; border: 0; border-radius: 50%; background: #0f766e; color: #fff; cursor: pointer; transition: background .2s, transform .2s; }
+        .hc-search button:hover { background: #0b5d56; transform: translateX(2px); }
+        .hc-search:focus-within { box-shadow: 0 0 0 3px rgba(253, 186, 116, .7), 0 10px 30px rgba(0, 0, 0, .25); }
+
+        /* left: the chosen place */
+        .hero-carousel .hc-content { grid-column: 1; grid-row: 2; align-self: end; max-width: 640px; margin: 0; padding: 0 0 6px; z-index: 3; }
+        .hero-carousel .hero-badge { margin-bottom: 14px; font-size: .74rem; }
+        .hc-loc { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin: 0 0 10px !important; font-size: .95rem !important; font-weight: 500; color: rgba(255, 255, 255, .92) !important; }
+        .hc-loc i { color: #fdba74; }
+        .hc-cat { margin-left: 4px; padding: 3px 10px; border-radius: 999px; background: rgba(255, 255, 255, .16); border: 1px solid rgba(255, 255, 255, .28);
+                  font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+        .hero-carousel h1.hc-title {
+            font-family: 'Poppins', sans-serif; font-weight: 800; text-transform: uppercase; letter-spacing: -.01em;
+            font-size: clamp(2.3rem, 5.6vw, 4.9rem); line-height: .98; margin: 0 0 16px; color: #fff;
+            text-shadow: 0 4px 24px rgba(0, 0, 0, .35); overflow-wrap: anywhere;
+        }
+        .hero-carousel h1.hc-title.is-long { font-size: clamp(2rem, 4.2vw, 3.6rem); }
+        .hero-carousel .hc-desc { max-width: 520px; margin: 0 0 26px; font-size: clamp(.92rem, 1.15vw, 1.02rem); line-height: 1.7; color: rgba(255, 255, 255, .9); text-shadow: 0 1px 8px rgba(0, 0, 0, .45); }
+        .hc-actions { display: flex; align-items: center; gap: 14px; }
+        .hc-explore {
+            display: inline-flex; align-items: center; gap: 12px; padding: 14px 30px; border-radius: 12px; background: #fff; color: #0b2f3a;
+            font: 700 1rem 'Poppins', sans-serif; text-decoration: none; box-shadow: 0 10px 26px rgba(0, 0, 0, .25); transition: transform .25s, box-shadow .25s, background .25s;
+        }
+        .hc-explore i { font-size: .85rem; transition: transform .25s; }
+        .hc-explore:hover { transform: translateY(-2px); background: #fff7ed; color: #0b2f3a; box-shadow: 0 14px 32px rgba(0, 0, 0, .32); }
+        .hc-explore:hover i { transform: translateX(4px); }
+        .hc-ask {
+            width: 50px; height: 50px; border-radius: 50%; border: 0; background: #f97316; color: #fff; font-size: 1.15rem; cursor: pointer;
+            box-shadow: 0 10px 24px rgba(249, 115, 22, .4); transition: transform .25s, background .25s;
+        }
+        .hc-ask:hover { transform: translateY(-2px) scale(1.05); background: #ea6a0d; }
+
+        /* text swap animation */
+        .hc-anim { transition: opacity .45s ease, transform .55s cubic-bezier(.2, .8, .2, 1); transition-delay: calc(var(--d, 0) * 80ms); }
+        .hc-content.is-swapping .hc-anim { opacity: 0; transform: translateY(16px); transition-duration: .25s; transition-delay: 0s; }
+
+        /* right: card rail + controls */
+        .hc-side { grid-column: 2; grid-row: 2; align-self: end; min-width: 0; z-index: 3; }
+        .hc-rail {
+            display: flex; gap: 16px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 14px 4px 6px;
+            -webkit-mask-image: linear-gradient(90deg, #000 78%, transparent); mask-image: linear-gradient(90deg, #000 78%, transparent);
+        }
+        .hc-rail::-webkit-scrollbar { display: none; }
+        .hc-card {
+            position: relative; flex: 0 0 clamp(150px, 13.5vw, 205px); aspect-ratio: 3 / 4; padding: 0; border: 2px solid rgba(255, 255, 255, .0); border-radius: 18px;
+            overflow: hidden; cursor: pointer; scroll-snap-align: start; background: #123543; text-align: left; color: #fff;
+            box-shadow: 0 14px 30px rgba(0, 0, 0, .35); transition: transform .35s cubic-bezier(.2, .8, .2, 1), border-color .25s, box-shadow .35s;
+        }
+        .hc-card img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .6s ease; }
+        .hc-card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(3, 12, 18, .88) 0%, rgba(3, 12, 18, .15) 55%, rgba(3, 12, 18, 0) 100%); }
+        .hc-card-cat, .hc-card strong { position: absolute; left: 14px; right: 12px; z-index: 1; }
+        .hc-card-cat { bottom: 56px; font: 500 .7rem 'Poppins', sans-serif; color: rgba(255, 255, 255, .8); }
+        .hc-card strong { bottom: 14px; font: 800 1rem/1.12 'Poppins', sans-serif; text-transform: uppercase; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .hc-card:hover, .hc-card:focus-visible { transform: translateY(-8px); border-color: rgba(253, 186, 116, .9); box-shadow: 0 20px 40px rgba(0, 0, 0, .45); outline: none; }
+        .hc-card:hover img { transform: scale(1.08); }
+        .hc-card.is-active { display: none; }
+        .hc-card.hc-enter { animation: hcCardIn .55s cubic-bezier(.2, .8, .2, 1) both; animation-delay: calc(var(--k, 0) * 70ms); }
+        @keyframes hcCardIn { from { opacity: 0; transform: translateX(40px) scale(.94); } to { opacity: 1; transform: none; } }
+
+        .hc-controls { display: flex; align-items: center; gap: 12px; margin-top: 16px; padding-right: 96px; color: #fff; }   /* room for the Tourist Bot button */
+        .hc-nav { flex: 0 0 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .5); background: rgba(255, 255, 255, .08); color: #fff; cursor: pointer;
+                  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); transition: background .2s, border-color .2s; }
+        .hc-nav:hover { background: #fff; color: #0b2f3a; border-color: #fff; }
+        .hc-progress { flex: 1; height: 3px; border-radius: 3px; background: rgba(255, 255, 255, .25); overflow: hidden; }
+        .hc-progress span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, #fdba74, #f97316); }
+        .hc-progress span.run { animation: hcBar var(--hc-ms, 7000ms) linear forwards; }
+        .heroCarousel-paused .hc-progress span.run, .hc-paused .hc-progress span.run { animation-play-state: paused; }
+        @keyframes hcBar { from { width: 0; } to { width: 100%; } }
+        .hc-count { font: 500 .85rem 'Poppins', sans-serif; color: rgba(255, 255, 255, .7); white-space: nowrap; font-variant-numeric: tabular-nums; }
+        .hc-count b { font-size: 1.5rem; font-weight: 800; color: #fff; }
+
+        @media (max-width: 900px) {
+            .hero-section.hero-carousel { grid-template-columns: minmax(0, 1fr); grid-template-rows: auto auto auto; row-gap: 22px; padding: 84px 18px 28px; align-content: end; min-height: max(620px, 100svh); }
+            .hero-carousel .hc-content { grid-column: 1; grid-row: 2; }
+            .hc-side { grid-column: 1; grid-row: 3; }
+            .hc-card { flex-basis: clamp(128px, 36vw, 170px); border-radius: 14px; }
+            .hc-card strong { font-size: .86rem; }
+            .hc-card-cat { bottom: 50px; }
+            .hero-carousel .overlay { background: linear-gradient(0deg, rgba(3, 12, 18, .9) 0%, rgba(3, 12, 18, .55) 55%, rgba(3, 12, 18, .35) 100%); }
+            .hero-carousel .hc-desc { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 20px; }
+            .hc-explore { padding: 12px 24px; }
+            .hc-ask { width: 46px; height: 46px; }
+            .hero-carousel .px-birds { display: none; }
+        }
+        @media (max-width: 480px) {
+            .hero-carousel h1.hc-title { font-size: clamp(1.9rem, 9vw, 2.4rem); }
+            .hc-search input { font-size: 16px; }      /* stops iPhone zooming in */
+            .hero-carousel .hero-badge { font-size: .64rem; letter-spacing: 1.5px; }
+            .hc-count b { font-size: 1.2rem; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .hero-carousel .hc-bg.is-active { animation: none; transform: none; }
+            .hero-carousel .hc-bg { transition: opacity .3s; transform: none; }
+            .hc-anim, .hc-card { transition: none; }
+            .hc-card.hc-enter { animation: none; }
+        }
+
+        /* =====================================================
+           SEPARATE PAGES (set by showSitePage in script.js)
+           Home = the destination carousel only. Each section is its own page.
+           ===================================================== */
+        body[data-page="home"] .top-video,
+        body[data-page="home"] .mission-vision-login,
+        body[data-page="home"] #home ~ .home-section,
+        body[data-page="home"] #home ~ footer,
+        body[data-page]:not([data-page="discover"]) .trust-stats { display: none !important; }
+        body[data-page] #home.active-view { min-height: 0 !important; }
+        /* Home: the carousel fills exactly the screen under the top bar */
+        body[data-page="home"] .hero-section.hero-carousel { min-height: max(600px, calc(100vh - 75px)) !important; padding-top: 34px !important; }
+        /* other pages: the carousel folds away but its photo stays as the page backdrop */
+        body[data-page]:not([data-page="home"]) .hero-section.hero-carousel { min-height: 0 !important; height: 0; padding: 0 !important; overflow: visible; }
+        body[data-page]:not([data-page="home"]) .hero-carousel > :not(.slideshow-container):not(.overlay) { display: none !important; }
+        body[data-page]:not([data-page="home"]) #home ~ .home-section:not(.page-current) { display: none !important; }
+        body[data-page]:not([data-page="discover"]) .top-video,
+        body[data-page]:not([data-page="discover"]) .mission-vision-login { display: none !important; }
+        body[data-page]:not([data-page="home"]) .hero-carousel .overlay { background: rgba(4, 12, 20, .72); }
+        body[data-page]:not([data-page="home"]):not([data-page="discover"]) .home-section.page-current { padding-top: 96px !important; min-height: calc(100vh - 60px); }
+        body[data-page="discover"] .home-section.page-current { min-height: 0; }
+        .home-section.page-current { animation: pageIn .45s cubic-bezier(.2, .8, .2, 1); }
+        @keyframes pageIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+        @media (prefers-reduced-motion: reduce) { .home-section.page-current { animation: none; } }
     </style>
 </head>
 <body>
@@ -1142,17 +1324,9 @@
         <!-- Desktop Nav Links -->
         <ul class="nav-links" id="navLinks">
             <li><a data-target="home" class="nav-btn active-link" data-i18n="nav_home">Home</a></li>
+            <li><a data-target="discover" class="nav-btn" data-i18n="nav_discover">Discover</a></li>
             <li><a data-target="guide" class="nav-btn" data-i18n="nav_guide">Travel Guide</a></li>
             <li><a data-target="contact" class="nav-btn" data-i18n="nav_contact">Contact</a></li>
-            <li class="nav-dropdown" id="navMoreDropdown">
-                <a href="#" class="nav-btn nav-dropdown-toggle" id="navMoreToggle" data-i18n="nav_more">More <i class="fa-solid fa-chevron-down nav-dropdown-caret"></i></a>
-                <ul class="nav-dropdown-menu">
-                    <li><a data-target="about" class="nav-btn" data-i18n="nav_about">About</a></li>
-                    <li><a data-target="destinations" class="nav-btn" data-i18n="nav_destinations">Destinations</a></li>
-                    <li><a data-target="gallery" class="nav-btn" data-i18n="nav_gallery">Gallery</a></li>
-                    <li><a data-target="reviews" class="nav-btn" data-i18n="nav_reviews">Reviews</a></li>
-                </ul>
-            </li>
         </ul>
         
         <div class="nav-actions" style="display: flex; align-items: center; gap: 12px;">
@@ -1189,11 +1363,8 @@
             </div>
             <ul class="menu-links">
                 <li><a data-target="home" class="nav-btn" data-i18n="nav_home">🏠 Home</a></li>
-                <li><a data-target="about" class="nav-btn" data-i18n="nav_about">👤 About</a></li>
-                <li><a data-target="destinations" class="nav-btn" data-i18n="nav_destinations">📍 Destinations</a></li>
+                <li><a data-target="discover" class="nav-btn" data-i18n="nav_discover">🧭 Discover</a></li>
                 <li><a data-target="guide" class="nav-btn" data-i18n="nav_guide">🗺️ Travel Guide</a></li>
-                <li><a data-target="gallery" class="nav-btn" data-i18n="nav_gallery">📷 Gallery</a></li>
-                <li><a data-target="reviews" class="nav-btn" data-i18n="nav_reviews">⭐ Reviews</a></li>
                 <li><a data-target="contact" class="nav-btn" data-i18n="nav_contact">✉️ Contact</a></li>
             </ul>
         </div>
@@ -1223,20 +1394,10 @@
             <p class="top-video-credit">Video: <a href="https://youtu.be/pBgTwLH40KA" target="_blank" rel="noopener">The Jingle of One Town, One Heart</a> on YouTube</p>
         </section>
 
-        <div class="hero-section">
+        <div class="hero-section hero-carousel" id="heroCarousel">
             <div class="slideshow-container">
-                <div class="slide active-slide" style="background-image: url('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgoUixNNq5YaHqj8ihSOM9F49Iew9WniRPC5R64slDy9KAQ5zxMFks_OaqJpt7cfk3MyFL_ox-xhDS2VZD7S_6v0EyPQ3QDIsqxVtTjsMOJNgRnZBnSh56qTXvFqVDvP493KfhpplttO3so/s1600/SAMPAGUITA+BEACH+RESORT+BLOG+REVIEW.png');"></div>
-                <div class="slide" style="background-image: url('https://www.dronestagr.am/wp-content/uploads/2017/10/Bauan-Dive.jpg');"></div>
-                <div class="slide" style="background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQDSPGltwbqmdQAoYk2HYtPD0PlU-BON-6y2RB3Wa09gWEEdYSHh1DI-zEQ&s=10');"></div>
-                <div class="slide" style="background-image: url('https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0f/1b/f1/8c/simply-breathtaking.jpg?w=600&h=400&s=1');"></div>
-                <div class="slide" style="background-image: url('https://media-cdn.tripadvisor.com/media/photo-s/0c/12/5a/44/bauan-divers-sanctuary.jpg');"></div>
-                <div class="hero-dots" style="position:absolute;bottom:20px;left:0;right:0;z-index:2;display:flex;justify-content:center;gap:8px;">
-                    <span class="dot active-slide" style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.6);cursor:pointer;"></span>
-                    <span class="dot" style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.6);cursor:pointer;"></span>
-                    <span class="dot" style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.6);cursor:pointer;"></span>
-                    <span class="dot" style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.6);cursor:pointer;"></span>
-                    <span class="dot" style="width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,0.6);cursor:pointer;"></span>
-                </div>
+                {% for d in hero_destinations %}<div class="hc-bg{% if forloop.first %} is-active{% endif %}" data-bg="{{ d.img }}"{% if forloop.first %} style="background-image: url('{{ d.img }}');"{% endif %}></div>
+                {% endfor %}
             </div>
             <div class="overlay"></div>
 
@@ -1257,20 +1418,46 @@
                 <div class="px-l px-palm right" data-depth="0.58" data-tilt="30"><svg class="px-palm-svg" viewBox="0 0 320 520" preserveAspectRatio="xMidYMax meet"><g><path d="M150 520 C158 430 178 320 168 150" fill="none" stroke="currentColor" stroke-width="15" stroke-linecap="round"/><path d="M168 150 Q109 119 40 167 Q102 154 168 150Z M168 150 Q132 87 61 82 Q108 116 168 150Z M168 150 Q170 87 127 45 Q140 98 168 150Z M168 150 Q203 103 196 44 Q175 95 168 150Z M168 150 Q235 130 268 76 Q212 103 168 150Z M168 150 Q242 167 305 151 Q234 130 168 150Z M168 150 Q226 201 298 240 Q236 167 168 150Z M168 150 Q198 214 256 294 Q217 192 168 150Z M168 150 Q116 122 52 189 Q108 153 168 150Z M168 150 Q97 144 35 228 Q103 179 168 150Z M168 150 Q100 168 55 255 Q116 196 168 150Z" fill="currentColor"/><circle cx="168" cy="152" r="9" fill="currentColor"/></g></svg></div>
             </div>
 
-            <div class="home-content">
+            <form class="hc-search" id="hcSearch" role="search" autocomplete="off">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <input type="search" id="hcSearchInput" aria-label="Search tourist spots" data-i18n-placeholder="hero_search" placeholder="Search tourist spots or ask Tourist Bot...">
+                <button type="submit" aria-label="Search"><i class="fa-solid fa-arrow-right"></i></button>
+            </form>
+
+            {% with d=hero_destinations.0 %}
+            <div class="home-content hc-content" id="hcContent" aria-live="polite">
                 <span class="hero-badge" data-i18n="home_badge">Municipal Tourism Office &bull; Bauan, Batangas</span>
-                <h1 data-i18n="home_title">Parine na sa <span>Bauan</span></h1>
-                <p data-i18n="home_desc">Experience pristine beaches, world-class diving spots, and the warm hospitality of Bauan — a hidden coastal gem in the heart of Batangas, Philippines.</p>
-                <button class="btn-hero" onclick="document.querySelector('[data-target=\'destinations\']').click()" data-i18n="home_btn">
-                    Explore Destinations <i class="fa-solid fa-arrow-right"></i>
-                </button>
+                <p class="hc-loc hc-anim" style="--d:0"><i class="fa-solid fa-location-dot"></i> Bauan, Batangas <span class="hc-cat" id="hcCat">{{ d.cat }}</span></p>
+                <h1 class="hc-title hc-anim" style="--d:1" id="hcTitle">{{ d.name }}</h1>
+                <p class="hc-desc hc-anim" style="--d:2" id="hcDesc">{{ d.desc|truncatechars:220 }}</p>
+                <div class="hc-actions hc-anim" style="--d:3">
+                    <a href="{{ d.url|default:'#' }}" class="hc-explore{% if not d.url %} place-card{% endif %}" id="hcExplore" data-resort="{{ d.resort }}" data-place="{{ d.place }}"><span data-i18n="hero_explore">Explore</span> <i class="fa-solid fa-arrow-right"></i></a>
+                    <button type="button" class="hc-ask" id="hcAsk" aria-label="Ask Tourist Bot about this place" title="Ask Tourist Bot about this place"><i class="fa-solid fa-comment-dots"></i></button>
+                </div>
             </div>
-            <a href="#about" class="px-scroll" aria-label="Scroll down to explore"><span></span>Scroll to explore</a>
+            {% endwith %}
+
+            <div class="hc-side">
+                <div class="hc-rail" id="hcRail">
+                    {% for d in hero_destinations %}<button type="button" class="hc-card{% if forloop.first %} is-active{% endif %}" data-i="{{ forloop.counter0 }}" data-url="{{ d.url|default:'' }}" data-name="{{ d.name }}" data-cat="{{ d.cat }}" data-desc="{{ d.desc|truncatechars:220 }}" data-desc-tl="{{ d.desc_tl|truncatechars:220 }}" data-img="{{ d.img }}" data-resort="{{ d.resort }}" data-place="{{ d.place }}" aria-label="Show {{ d.name }}">
+                        <img src="{{ d.img }}" alt="" loading="lazy" referrerpolicy="no-referrer">
+                        <span class="hc-card-cat">{{ d.cat }}</span>
+                        <strong>{{ d.name }}</strong>
+                    </button>
+                    {% endfor %}
+                </div>
+                <div class="hc-controls">
+                    <button type="button" class="hc-nav" id="hcPrev" aria-label="Previous place"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button type="button" class="hc-nav" id="hcNext" aria-label="Next place"><i class="fa-solid fa-chevron-right"></i></button>
+                    <div class="hc-progress" aria-hidden="true"><span id="hcBar"></span></div>
+                    <span class="hc-count"><b id="hcNum">01</b> / {{ hero_destinations|length|stringformat:"02d" }}</span>
+                </div>
+            </div>
         </div>
 
         <section class="mission-vision-login">
             <div class="mission-vision-copy">
-                <span class="section-tag">Bauan 2040</span>
+                <span class="section-tag">Bauan 2026</span>
                 <h2>Mission</h2>
                 <p>To attain sustainability through the provision of basic social services, employment, livelihood, and adequate infrastructure, and support facilities while promoting economic growth and an ecologically-balanced environment through responsive and holistic development approaches.</p>
 
@@ -1630,13 +1817,22 @@
             <h2 data-px="0.06" class="section-title" data-i18n="planner_title">Interactive Itinerary Generator</h2>
             <div class="planner-box">
                 <div class="planner-controls">
-                    <select id="durationSelect" class="planner-select">
+                    <select id="durationSelect" class="planner-select" aria-label="Trip length">
                         <option value="1" data-i18n="plan_opt_1">1-Day Day Trip</option>
                         <option value="2" data-i18n="plan_opt_2">Weekend Getaway (2 Days)</option>
+                        <option value="3" data-i18n="plan_opt_3">Long Weekend (3 Days)</option>
                     </select>
-                    <select id="styleSelect" class="planner-select">
+                    <select id="styleSelect" class="planner-select" aria-label="Kind of trip">
                         <option value="adventure" data-i18n="plan_opt_adv">Extreme Adventure & Diving</option>
                         <option value="relax" data-i18n="plan_opt_rel">Relaxed Beach & Food Trip</option>
+                        <option value="family" data-i18n="plan_opt_fam">Family Trip with Kids</option>
+                        <option value="heritage" data-i18n="plan_opt_her">Heritage, Faith & Culture</option>
+                        <option value="couple" data-i18n="plan_opt_cou">Couples & Sunset Escape</option>
+                        <option value="budget" data-i18n="plan_opt_bud">Budget Barkada Trip</option>
+                    </select>
+                    <select id="travelSelect" class="planner-select" aria-label="How you will travel">
+                        <option value="car" data-i18n="plan_opt_car">By private car</option>
+                        <option value="commute" data-i18n="plan_opt_com">By bus & commute</option>
                     </select>
                     <button class="btn-primary" onclick="generateItinerary()" data-i18n="plan_btn">Generate Plan</button>
                 </div>
@@ -1648,7 +1844,11 @@
 
             <span class="section-tag" data-i18n="faq_tag">Got Questions?</span>
             <h2 data-px="0.06" class="section-title" data-i18n="faq_title">Frequently Asked Questions</h2>
-            <div class="faq-container">
+            <div class="faq-search">
+                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                <input type="search" id="faqSearch" aria-label="Search the questions" data-i18n-placeholder="faq_search" placeholder="Search questions, e.g. fees, food, commute...">
+            </div>
+            <div class="faq-container" id="faqList">
                 <div class="faq-item">
                     <div class="faq-question"><span data-i18n="faq_q1">How do I get to Bauan from Manila via public commute?</span> <i class="fa-solid fa-chevron-down"></i></div>
                     <div class="faq-answer" data-i18n="faq_a1">You can ride a bus from terminals in Cubao or Buendia headed straight to the Batangas City Grand Terminal. From the grand terminal, step out to catch a local jeepney bound directly for Bauan town proper.</div>
@@ -1661,6 +1861,47 @@
                     <div class="faq-question"><span data-i18n="faq_q3">Do I need pre-booking for scuba diving packages?</span> <i class="fa-solid fa-chevron-down"></i></div>
                     <div class="faq-answer" data-i18n="faq_a3">While walk-ins are occasionally accommodated, pre-booking with certified local dive operators is strongly advised especially during weekends and peak dry season months to secure gear and instructors.</div>
                 </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span data-i18n="faq_q4">When is the best time to visit Bauan?</span> <i class="fa-solid fa-chevron-down"></i></div>
+                    <div class="faq-answer" data-i18n="faq_a4">The dry season, roughly November to May, has the calmest seas and clearest water for swimming and diving. March to May is the warmest and busiest, so book early. From June to October, rain and the habagat (southwest monsoon) can make the sea rough; check the weather and PAGASA advisories before you go.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span data-i18n="faq_q5">How do I get to Bauan by private car?</span> <i class="fa-solid fa-chevron-down"></i></div>
+                    <div class="faq-answer" data-i18n="faq_a5">From Metro Manila, take SLEX, continue to the STAR Tollway, and exit toward Batangas City, then follow the national road to Bauan. Without heavy traffic the drive is about 2 to 3 hours. Most beach and dive resorts are in coastal barangays such as Sampaguita, San Pablo and La Liga Locloc, so use the Travel Guide map for exact directions.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span data-i18n="faq_q6">How do I get around once I'm in Bauan?</span> <i class="fa-solid fa-chevron-down"></i></div>
+                    <div class="faq-answer" data-i18n="faq_a6">Jeepneys run along the main roads, and tricycles can take you from the town proper or the highway to resorts in the coastal barangays. Agree on the fare before the ride, especially for longer trips to beach areas. If you have a lot of gear (for example, dive equipment), a private car or a resort pick-up is easier.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span data-i18n="faq_q7">Can I book a resort through this website?</span> <i class="fa-solid fa-chevron-down"></i></div>
+                    <div class="faq-answer" data-i18n="faq_a7">Not yet. This site is run by the Municipal Tourism Office to help you find places; it does not take bookings or payments. Open a resort's page (tap Explore) to see its contact number, then reserve and confirm rates directly with the resort.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span data-i18n="faq_q8">Are there entrance or environmental fees?</span> <i class="fa-solid fa-chevron-down"></i></div>
+                    <div class="faq-answer" data-i18n="faq_a8">Resorts charge their own entrance or day-use fees, and some dive sites and marine sanctuaries collect a separate fee used for their protection. Amounts can change, so confirm with the resort, your dive operator, or the MTO before you go. Each place's page shows the fee if the MTO has posted it.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span data-i18n="faq_q9">What should I bring for a beach or dive trip?</span> <i class="fa-solid fa-chevron-down"></i></div>
+                    <div class="faq-answer" data-i18n="faq_a9">Bring reef-safe sunscreen, a hat, drinking water, a reusable bottle, a dry bag, water shoes, cash for small stores and tricycles, and a valid ID. Divers should bring their certification card and logbook. Please take your trash home with you: Bauan's reefs and beaches depend on it.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span data-i18n="faq_q10">What are the rules in the marine sanctuaries?</span> <i class="fa-solid fa-chevron-down"></i></div>
+                    <div class="faq-answer" data-i18n="faq_a10">Do not touch, stand on, or collect corals, shells or marine life, and do not feed the fish. Fishing and spearfishing are not allowed inside sanctuaries. Follow your dive guide, keep good buoyancy, and use only mooring buoys instead of dropping anchor on the reef.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span data-i18n="faq_q11">What local food should I try?</span> <i class="fa-solid fa-chevron-down"></i></div>
+                    <div class="faq-answer" data-i18n="faq_a11">Try Batangas lomi (thick noodle soup), bulalo (beef shank soup), goto, tapang Taal, and a cup of strong kapeng barako. Fresh seafood is easy to find near the coast, and the Bauan public market is a good stop for pasalubong.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span data-i18n="faq_q12">Is Bauan good for families with kids?</span> <i class="fa-solid fa-chevron-down"></i></div>
+                    <div class="faq-answer" data-i18n="faq_a12">Yes. Many resorts have pools and shallow areas, and short trips such as a beach day, a church visit and a food stop work well with kids. Some shorelines are rocky or drop off quickly, so bring water shoes, keep children supervised, and ask the resort where it is safe to swim.</div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question"><span data-i18n="faq_q13">Who do I contact in an emergency or for tourist assistance?</span> <i class="fa-solid fa-chevron-down"></i></div>
+                    <div class="faq-answer" data-i18n="faq_a13">For emergencies, call 911. For tourist information, lost items, or complaints about a tourism establishment, contact the Municipal Tourism Office of Bauan through the Contact page. You can also ask the front desk of your resort for the nearest police station or hospital.</div>
+                </div>
+                <p class="faq-empty" id="faqEmpty" hidden>No matching question. Try another word, or <a href="#" id="faqAskBot">ask Tourist Bot</a>.</p>
             </div>
 
         </div>
@@ -1979,68 +2220,7 @@
         </div>
     </div>
 
-    <!-- TERMS GATE: must tick the box before using the site -->
-    <div id="termsModal" class="consent-overlay" role="dialog" aria-modal="true" aria-labelledby="termsTitle" hidden>
-        <div class="consent-card">
-            <div class="consent-head">
-                <h3 id="termsTitle" data-i18n="terms_modal_title">Before you continue</h3>
-                <p data-i18n="terms_modal_intro">Please read our Terms and Conditions. You need to agree to use this site.</p>
-            </div>
-            <div class="consent-scroll" tabindex="0">
-                {% include "_terms_content.html" %}
-            </div>
-            <div class="consent-foot">
-                <label class="consent-check" for="termsAgreeBox">
-                    <input type="checkbox" id="termsAgreeBox">
-                    <span data-i18n="terms_agree_label">I have read and agree to the Terms and Conditions and Privacy Notice.</span>
-                </label>
-                <p class="consent-hint" data-i18n="terms_scroll_hint">Tick the box to continue.</p>
-                <div class="consent-actions">
-                    <button type="button" id="termsAgreeBtn" class="consent-btn primary" disabled data-i18n="terms_agree_btn">Agree &amp; Continue</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- CONFIRM YOUR LOCATION: shown before the browser's own permission prompt -->
-    <div id="locationModal" class="consent-overlay" role="dialog" aria-modal="true" aria-labelledby="locTitle" hidden>
-        <div class="consent-card loc-card">
-            <div class="loc-body">
-                <div class="loc-icon" id="locIcon"><i class="fa-solid fa-location-crosshairs"></i></div>
-                <h3 id="locTitle" data-i18n="loc_title">Confirm your location</h3>
-
-                <div id="locStep-ask">
-                    <p data-i18n="loc_intro">Allow Discover Bauan to use your current location so we can show directions to resorts and attractions, and help Tourist Bot suggest places near you.</p>
-                    <p class="loc-note" data-i18n="loc_note">Your browser will ask for permission next. We do not save your location.</p>
-                </div>
-
-                <div id="locStep-detecting" hidden>
-                    <p id="locDetectingText">Finding your location…</p>
-                </div>
-
-                <div id="locStep-confirm" hidden>
-                    <p data-i18n="loc_confirm_q">Is this where you are?</p>
-                    <iframe id="locMap" class="loc-map" title="Your location" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-                    <p class="loc-coords" id="locCoords"></p>
-                </div>
-
-                <div id="locStep-error" hidden>
-                    <p class="loc-error" id="locErrorText"></p>
-                </div>
-            </div>
-
-            <div class="consent-actions">
-                <button type="button" id="locNotNowBtn" class="consent-btn ghost" data-i18n="loc_not_now">Not now</button>
-                <button type="button" id="locAllowBtn" class="consent-btn primary" data-i18n="loc_allow">Allow &amp; detect my location</button>
-                <button type="button" id="locAgainBtn" class="consent-btn ghost" data-i18n="loc_retry" hidden>Detect again</button>
-                <button type="button" id="locYesBtn" class="consent-btn primary" data-i18n="loc_yes" hidden>Yes, confirm</button>
-                <button type="button" id="locCloseBtn" class="consent-btn ghost" data-i18n="loc_close" hidden>Close</button>
-                <button type="button" id="locRetryBtn" class="consent-btn primary" data-i18n="loc_try_again" hidden>Try again</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="consentToast" class="consent-toast" role="status" aria-live="polite"></div>
+    {% include "_consent_modals.html" %}
 
     <div class="chat-widget">
         <div class="chat-btn" id="chatBtn" title="Chat with Tourist Bot" role="button" tabindex="0" aria-label="Chat with Tourist Bot">
@@ -2093,6 +2273,155 @@
     <!-- External JavaScript File Link -->
     <script src="{% static 'core/js/script.js' %}"></script>
     <script src="{% static 'core/js/consent.js' %}"></script>
+
+    <!-- Hero destination carousel: tap a card (or wait) and the whole hero changes to that place -->
+    <script>
+    (function () {
+      var hero = document.getElementById('heroCarousel'); if (!hero) return;
+      var cards = Array.prototype.slice.call(hero.querySelectorAll('.hc-card')),
+          bgs = Array.prototype.slice.call(hero.querySelectorAll('.hc-bg')),
+          N = cards.length; if (!N) return;
+      var content = document.getElementById('hcContent'), titleEl = document.getElementById('hcTitle'),
+          descEl = document.getElementById('hcDesc'), catEl = document.getElementById('hcCat'),
+          explore = document.getElementById('hcExplore'), numEl = document.getElementById('hcNum'),
+          bar = document.getElementById('hcBar'), rail = document.getElementById('hcRail'),
+          langSel = document.getElementById('langToggle');
+      var reduce = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+      var MS = 7000, cur = 0, timer = null, paused = false, swapT = null;
+      hero.style.setProperty('--hc-ms', MS + 'ms');
+
+      function lang() { return langSel && langSel.value === 'tl' ? 'tl' : 'en'; }
+      function descOf(c) { return (lang() === 'tl' && c.dataset.descTl) ? c.dataset.descTl : c.dataset.desc; }
+      function loadBg(i) { var b = bgs[i]; if (b && !b.style.backgroundImage) b.style.backgroundImage = "url('" + b.dataset.bg.replace(/'/g, "%27") + "')"; }
+      function pad(n) { return (n < 9 ? '0' : '') + (n + 1); }
+
+      function layoutRail(animate) {
+        var k = 0;
+        for (var step = 1; step <= N; step++) {
+          var c = cards[(cur + step) % N];
+          c.style.order = step;
+          c.classList.toggle('is-active', c === cards[cur]);
+          if (animate && c !== cards[cur]) { c.classList.remove('hc-enter'); void c.offsetWidth; c.style.setProperty('--k', k++); c.classList.add('hc-enter'); }
+        }
+        rail.scrollTo ? rail.scrollTo({ left: 0, behavior: reduce ? 'auto' : 'smooth' }) : (rail.scrollLeft = 0);
+      }
+      function restartBar() {
+        if (!bar) return; bar.classList.remove('run'); void bar.offsetWidth;
+        if (!reduce) bar.classList.add('run');
+      }
+      function schedule() {
+        clearTimeout(timer); if (reduce || paused || N < 2) return;
+        timer = setTimeout(function () { go(cur + 1); }, MS);
+      }
+
+      function go(i, instant) {
+        i = (i + N) % N; if (i === cur && !instant) return;
+        cur = i; var c = cards[i];
+        loadBg(i); loadBg((i + 1) % N);
+        bgs.forEach(function (b, k) { b.classList.toggle('is-active', k === i); });
+        var apply = function () {
+          titleEl.textContent = c.dataset.name; titleEl.classList.toggle('is-long', c.dataset.name.length > 22); descEl.textContent = descOf(c); catEl.textContent = c.dataset.cat;
+          explore.dataset.resort = c.dataset.resort || ''; explore.dataset.place = c.dataset.place || c.dataset.name;
+          // places with their own page open it; the rest use the old map / Travel Guide behaviour
+          explore.setAttribute('href', c.dataset.url || '#'); explore.classList.toggle('place-card', !c.dataset.url);
+          numEl.textContent = pad(i);
+          content.classList.remove('is-swapping');
+        };
+        clearTimeout(swapT);
+        if (instant || reduce) apply(); else { content.classList.add('is-swapping'); swapT = setTimeout(apply, 260); }
+        layoutRail(!instant);
+        restartBar(); schedule();
+      }
+
+      var countEl = hero.querySelector('.hc-count');
+      function updateCount() { if (countEl) countEl.innerHTML = '<b id="hcNum">' + pad(cur) + '</b> / ' + (N < 10 ? '0' : '') + N; numEl = document.getElementById('hcNum'); }
+      // a photo that does not load (moved or deleted online): drop that place from the carousel
+      function drop(card) {
+        var k = cards.indexOf(card); if (k < 0 || N < 2) { if (card) card.querySelector('img').style.visibility = 'hidden'; return; }
+        var wasCur = k === cur;
+        cards.splice(k, 1); var bg = bgs.splice(k, 1)[0]; card.remove(); if (bg) bg.remove(); N--;
+        if (k < cur) cur--;
+        if (wasCur) { cur = Math.min(cur, N - 1); go(cur, true); } else layoutRail(false);
+        updateCount();
+      }
+      cards.forEach(function (c) {
+        c.addEventListener('click', function () { go(cards.indexOf(c)); });
+        var img = c.querySelector('img');
+        img.addEventListener('error', function () { drop(c); });
+        if (img.complete && img.naturalWidth === 0 && img.getAttribute('src')) drop(c);
+      });
+      document.getElementById('hcPrev').addEventListener('click', function () { go(cur - 1); });
+      document.getElementById('hcNext').addEventListener('click', function () { go(cur + 1); });
+
+      // pause while the visitor is reading / hovering, or the tab is hidden
+      function setPaused(p) { paused = p; hero.classList.toggle('hc-paused', p); if (p) clearTimeout(timer); else schedule(); }
+      ['.hc-content', '.hc-side', '.hc-search'].forEach(function (sel) {
+        var el = hero.querySelector(sel); if (!el) return;
+        el.addEventListener('mouseenter', function () { setPaused(true); });
+        el.addEventListener('mouseleave', function () { setPaused(false); });
+      });
+      hero.addEventListener('focusin', function () { setPaused(true); });
+      hero.addEventListener('focusout', function () { setPaused(false); });
+      document.addEventListener('visibilitychange', function () { setPaused(document.hidden); });
+
+      // swipe on the photo (phones)
+      var sx = null, sy = 0;
+      hero.addEventListener('touchstart', function (e) { if (e.target.closest('.hc-rail, .hc-search, .hc-actions')) { sx = null; return; } sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+      hero.addEventListener('touchend', function (e) {
+        if (sx === null) return; var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy; sx = null;
+        if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) go(cur + (dx < 0 ? 1 : -1));
+      }, { passive: true });
+      // keyboard arrows when the hero has focus
+      hero.addEventListener('keydown', function (e) {
+        if (e.target.closest('input')) return;
+        if (e.key === 'ArrowRight') { go(cur + 1); e.preventDefault(); } else if (e.key === 'ArrowLeft') { go(cur - 1); e.preventDefault(); }
+      });
+
+      // "Ask Tourist Bot" about the place on screen
+      function askBot(q) {
+        var win = document.getElementById('chatWindow'); if (win) win.classList.add('open');
+        if (typeof sendMessage === 'function') setTimeout(function () { sendMessage(q); }, 250);
+      }
+      document.getElementById('hcAsk').addEventListener('click', function () {
+        askBot((lang() === 'tl' ? 'Sabihin mo sa akin ang tungkol sa ' : 'Tell me about ') + cards[cur].dataset.name);
+      });
+      // search: jump to a matching place, otherwise ask Tourist Bot
+      document.getElementById('hcSearch').addEventListener('submit', function (e) {
+        e.preventDefault();
+        var input = document.getElementById('hcSearchInput'), q = input.value.trim(); if (!q) { input.focus(); return; }
+        var ql = q.toLowerCase(), hit = -1;
+        cards.forEach(function (c, i) { if (hit < 0 && (c.dataset.name.toLowerCase().indexOf(ql) > -1 || ql.indexOf(c.dataset.name.toLowerCase()) > -1)) hit = i; });
+        input.value = ''; input.blur();
+        if (hit > -1) go(hit); else askBot(q);
+      });
+      if (langSel) langSel.addEventListener('change', function () { descEl.textContent = descOf(cards[cur]); });
+
+      go(0, true); updateCount();
+
+      // links from a place/resort page: /?ask=... opens Tourist Bot with that question, /?guide=<id> opens the Travel Guide map
+      try {
+        var qs = new URLSearchParams(location.search), askQ = qs.get('ask'), guideId = qs.get('guide');
+        if (askQ || guideId) history.replaceState(null, '', location.pathname + location.hash);
+        if (askQ) {
+          var tries = 0, waitTerms = setInterval(function () {
+            var ok = !window.BauanConsent || window.BauanConsent.termsAccepted();
+            var modalOpen = document.querySelector('.consent-overlay:not([hidden])');
+            if (ok && !modalOpen) { clearInterval(waitTerms); askBot(askQ.slice(0, 200)); }
+            else if (++tries > 600) clearInterval(waitTerms);   // give up after ~5 minutes
+          }, 500);
+        }
+        if (guideId) {
+          var g = 0, waitGuide = setInterval(function () {
+            var ready = typeof KNOWN_RESORTS !== 'undefined' && KNOWN_RESORTS.length && typeof guideToResortFromChat === 'function';
+            if (ready) { clearInterval(waitGuide); guideToResortFromChat(guideId); scrollTo(0, 0); }
+            else if (++g > 40) clearInterval(waitGuide);
+          }, 250);
+        }
+      } catch (e) { /* old browser: ignore */ }
+      // warm up the other photos after the page has settled
+      window.addEventListener('load', function () { setTimeout(function () { for (var k = 1; k < N; k++) loadBg(k); }, 1200); });
+    })();
+    </script>
 
     <!-- Slide-out Drawer Hamburger Menu Functionality Script -->
     <script>

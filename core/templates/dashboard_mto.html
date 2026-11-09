@@ -6,8 +6,8 @@
   <header class="dash-head">
     <div>
       <div class="dash-eyebrow">Municipal Tourism Office</div>
-      <h1 class="dash-title">MTO staff dashboard</h1>
-      <p class="dash-sub">Consolidated tourism reports across all resorts in Bauan &middot; {{ request.user.get_full_name|default:request.user.username }}</p>
+      <h1 class="dash-title">{% now "G" as hr %}{% if hr|add:"0" < 12 %}Good morning{% elif hr|add:"0" < 18 %}Good afternoon{% else %}Good evening{% endif %}, <span class="dash-name">{{ request.user.display_name }}</span></h1>
+      <p class="dash-sub"><b>MTO staff dashboard</b> &middot; Consolidated tourism reports across all resorts in Bauan</p>
     </div>
     <div class="dash-date"><b>{% now "l" %}</b><span>{% now "F j, Y" %}</span></div>
   </header>

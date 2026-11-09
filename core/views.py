@@ -65,8 +65,172 @@ def role_required(*roles):
     return user_passes_test(lambda u: u.is_authenticated and u.role in roles)
 
 
+# Landing-page hero carousel. Used when the MTO has not posted enough Destinations with photos yet.
+HERO_FALLBACK = [
+    {"name": "Sampaguita Beach", "cat": "Beach", "resort": "sampaguita", "place": "Sampaguita Beach",
+     "img": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgoUixNNq5YaHqj8ihSOM9F49Iew9WniRPC5R64slDy9KAQ5zxMFks_OaqJpt7cfk3MyFL_ox-xhDS2VZD7S_6v0EyPQ3QDIsqxVtTjsMOJNgRnZBnSh56qTXvFqVDvP493KfhpplttO3so/s1600/SAMPAGUITA+BEACH+RESORT+BLOG+REVIEW.png",
+     "desc": "A tranquil coastal getaway perfect for swimming, relaxing under the sun, and watching magnificent Batangas sunsets.",
+     "desc_tl": "Isang tahimik na dalampasigan na swak sa paglangoy, pagpapahinga sa ilalim ng araw, at panonood ng magandang paglubog ng araw sa Batangas."},
+    {"name": "Bauan Dive Spots", "cat": "Diving & marine", "resort": "dive", "place": "Bauan Dive Spots",
+     "img": "https://www.dronestagr.am/wp-content/uploads/2017/10/Bauan-Dive.jpg",
+     "desc": "Easy-access dive sites for beginners and certified divers, with vibrant coral reefs, sea turtles and clear water close to shore.",
+     "desc_tl": "Mga dive site na madaling puntahan para sa baguhan at certified divers, may makukulay na coral reef, pawikan at malinaw na tubig malapit sa baybayin."},
+    {"name": "Immaculate Conception Parish", "cat": "Heritage & culture", "resort": "immaculate", "place": "Immaculate Conception Parish",
+     "img": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/22/ee/1e/78/caption.jpg?w=1200&h=-1&s=1",
+     "desc": "A historic landmark standing as a proud symbol of Bauan's deep religious and cultural heritage.",
+     "desc_tl": "Isang makasaysayang simbahan na simbolo ng malalim na pananampalataya at kultura ng Bauan."},
+    {"name": "Bauan Divers Sanctuary", "cat": "Diving & marine", "resort": "sanctuary", "place": "Bauan Divers Sanctuary",
+     "img": "https://media-cdn.tripadvisor.com/media/photo-s/0c/12/5a/44/bauan-divers-sanctuary.jpg",
+     "desc": "A protected dive area where divers enjoy calm waters and healthy marine life close to the shore.",
+     "desc_tl": "Isang protektadong dive area na may kalmadong tubig at masiglang buhay-dagat malapit sa dalampasigan."},
+    {"name": "Scenic Bauan Coastline", "cat": "Nature & scenic", "resort": "coast", "place": "Bauan Coastline",
+     "img": "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/0f/1b/f1/8c/simply-breathtaking.jpg?w=600&h=400&s=1",
+     "desc": "Breathtaking sea views and open skies, perfect for a relaxed stroll, photos and golden sunsets.",
+     "desc_tl": "Magandang tanawin ng dagat at malawak na langit, swak sa paglalakad, pagkuha ng litrato at paglubog ng araw."},
+]
+
+
+def hero_destinations():
+    """Destinations for the landing-page hero: the MTO's own (active, with a photo) first,
+    topped up with the built-in Bauan highlights so the carousel always has something to show."""
+    items, seen = [], set()
+    for d in Destination.objects.filter(status="active").exclude(photo_url="")[:8]:
+        items.append({
+            "url": d.get_absolute_url(),
+            "name": d.name, "cat": d.get_category_display(), "resort": "",
+            "place": d.map_query or d.name, "img": d.photo_url,
+            "desc": d.description, "desc_tl": d.description_tl,
+        })
+        seen.add(d.name.strip().lower())
+    for d in HERO_FALLBACK:
+        if len(items) >= 6:
+            break
+        if d["name"].lower() not in seen:
+            items.append(d)
+            seen.add(d["name"].lower())
+    # Resorts registered in the system that have a photo (set under Admin > Resorts or Resort details).
+    # "Explore" on these opens the Travel Guide map with that resort selected.
+    for r in Resort.objects.filter(status="active").exclude(photo_url="").order_by("barangay", "name"):
+        if len(items) >= 16:
+            break
+        if r.name.strip().lower() in seen:
+            continue
+        brgy = (r.barangay or "").strip()
+        place = "Brgy. " + brgy if brgy and brgy.lower() != "urban areas" else "Bauan town proper"
+        items.append({
+            "url": r.get_public_url(),
+            "name": r.name, "cat": "Resort \u00b7 " + place, "resort": r.name, "place": r.name,
+            "img": r.photo_url,
+            "desc": r.highlight or f"An accredited resort in {place}, Bauan. Tap Explore to see it on the map and get directions.",
+            "desc_tl": "" if r.highlight else f"Isang accredited na resort sa {place}, Bauan. Pindutin ang Explore para makita sa mapa at makakuha ng direksyon.",
+        })
+        seen.add(r.name.strip().lower())
+    return items
+
+
 def landing_view(request):
-    return render(request, "public_home.html")
+    return render(request, "public_home.html", {"hero_destinations": hero_destinations()})
+
+
+# ---------------------------------------------------------------------------
+# Public pages for one destination / one resort (opened from "Explore" on the home page)
+# ---------------------------------------------------------------------------
+def _maps_links(query):
+    q = quote_plus(query)
+    return {
+        "map_embed": f"https://maps.google.com/maps?q={q}&z=15&output=embed",
+        "directions": f"https://www.google.com/maps/dir/?api=1&destination={q}",
+        "map_open": f"https://www.google.com/maps/search/?api=1&query={q}",
+    }
+
+
+def _resort_location(r):
+    brgy = (r.barangay or "").strip()
+    return "Brgy. " + brgy if brgy and brgy.lower() != "urban areas" else "Bauan town proper"
+
+
+def _resort_cards(qs, limit):
+    """Resorts as small cards; the ones with a photo first."""
+    from django.db.models import Case, IntegerField, When
+    qs = qs.annotate(has_photo=Case(When(photo_url="", then=0), default=1, output_field=IntegerField()))
+    return [
+        {"name": r.name, "url": r.get_public_url(), "img": r.photo_url, "sub": _resort_location(r)}
+        for r in qs.order_by("-has_photo", "name")[:limit]
+    ]
+
+
+def place_detail(request, pk, slug=None):
+    from django.utils.text import slugify
+    d = get_object_or_404(Destination, pk=pk, status="active")
+    if slug != slugify(d.name):
+        return redirect(d.get_absolute_url(), permanent=True)
+
+    # resorts near this place: a barangay named in the place's text, otherwise any resort with a photo
+    resorts = Resort.objects.filter(status="active")
+    text = " ".join([d.name, d.description, d.map_query, d.tips]).lower()
+    brgys = [b for b in resorts.values_list("barangay", flat=True).distinct() if b and b.lower() in text and b.lower() != "urban areas"]
+    near = resorts.filter(barangay__in=brgys) if brgys else resorts
+    others = Destination.objects.filter(status="active").exclude(pk=d.pk).order_by("sort_order", "name")[:4]
+
+    facts = [
+        ("fa-regular fa-clock", "Opening hours", d.opening_hours),
+        ("fa-solid fa-ticket", "Entrance fee", d.entrance_fee),
+        ("fa-solid fa-sun", "Best time to visit", d.best_time),
+    ]
+    ctx = {
+        "kind": "place",
+        "title": d.name,
+        "category": d.get_category_display(),
+        "location": "Bauan, Batangas",
+        "photo": d.photo_url,
+        "description": d.description,
+        "description_tl": d.description_tl,
+        "facts": facts,
+        "activities": d.tag_list("activities"),
+        "good_for": d.tag_list("good_for"),
+        "tips": d.tips,
+        "ask": f"Tell me about {d.name}",
+        "near_title": "Places to stay nearby" if brgys else "Places to stay in Bauan",
+        "near": _resort_cards(near, 6),
+        "more": [{"name": o.name, "url": o.get_absolute_url(), "img": o.photo_url, "sub": o.get_category_display()} for o in others],
+        "updated": d.updated_at,
+        **_maps_links(d.map_query or f"{d.name}, Bauan, Batangas, Philippines"),
+    }
+    return render(request, "place_detail.html", ctx)
+
+
+def resort_public(request, pk, slug=None):
+    from django.utils.text import slugify
+    r = get_object_or_404(Resort, pk=pk, status="active")
+    if slug != slugify(r.name):
+        return redirect(r.get_public_url(), permanent=True)
+
+    where = _resort_location(r)
+    rooms = r.rooms_list.filter(is_archived=False).count() or r.total_rooms
+    facts = [
+        ("fa-solid fa-location-dot", "Location", ", ".join(filter(None, [r.address, where, "Bauan, Batangas"]))),
+        ("fa-solid fa-phone", "Contact number", r.contact_number),
+        ("fa-solid fa-bed", "Rooms", f"{rooms} room{'s' if rooms != 1 else ''}" if rooms else ""),
+    ]
+    same_brgy = Resort.objects.filter(status="active", barangay=r.barangay).exclude(pk=r.pk)
+    places = Destination.objects.filter(status="active").order_by("sort_order", "name")[:4]
+    ctx = {
+        "kind": "resort",
+        "title": r.name,
+        "category": "Resort \u00b7 " + where,
+        "location": where + ", Bauan, Batangas",
+        "photo": r.photo_url,
+        "description": r.highlight or f"{r.name} is an accredited resort in {where}, Bauan, Batangas.",
+        "facts": facts,
+        "phone": r.contact_number,
+        "resort_id": r.pk,
+        "ask": f"Tell me about {r.name}",
+        "near_title": f"Other resorts in {where}",
+        "near": _resort_cards(same_brgy, 6),
+        "more": [{"name": o.name, "url": o.get_absolute_url(), "img": o.photo_url, "sub": o.get_category_display()} for o in places],
+        **_maps_links(", ".join(filter(None, [r.name, r.address, r.barangay, "Bauan, Batangas, Philippines"]))),
+    }
+    return render(request, "place_detail.html", ctx)
 
 
 def get_started_view(request):
@@ -267,7 +431,8 @@ def dashboard(request):
             "rooms": Room.objects.filter(is_archived=False).count(),
         }
         activity = ActivityLog.objects.select_related("user")[:6]
-        return render(request, "dashboard_admin.html", {"stats": stats, "activity": activity})
+        pw_requests = PasswordRequest.objects.filter(status="pending").select_related("user", "user__resort").order_by("created_at")[:5]
+        return render(request, "dashboard_admin.html", {"stats": stats, "activity": activity, "pw_requests": pw_requests})
 
     if request.user.role == "mto":
         year_logs = RoomDailyLog.objects.filter(log_date__year=today.year, is_archived=False).aggregate(
@@ -1468,6 +1633,7 @@ def session_ping(request):
     request.session['last_activity'] = now
     return JsonResponse({'remaining': limit, 'limit': limit})
 
+from django.contrib.auth import views as _auth_views
 
 
 # ---------------------------------------------------------------- Destinations (what Tourist Bot knows)

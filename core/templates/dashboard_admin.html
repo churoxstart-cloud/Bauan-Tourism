@@ -6,8 +6,8 @@
   <header class="dash-head">
     <div>
       <div class="dash-eyebrow">System administration</div>
-      <h1 class="dash-title">Admin dashboard</h1>
-      <p class="dash-sub">Manage user accounts, system configuration and data &middot; {{ request.user.get_full_name|default:request.user.username }}</p>
+      <h1 class="dash-title">{% now "G" as hr %}{% if hr|add:"0" < 12 %}Good morning{% elif hr|add:"0" < 18 %}Good afternoon{% else %}Good evening{% endif %}, <span class="dash-name">{{ request.user.display_name }}</span></h1>
+      <p class="dash-sub"><b>Admin dashboard</b> &middot; Manage user accounts, system configuration and data</p>
     </div>
     <div class="dash-date"><b>{% now "l" %}</b><span>{% now "F j, Y" %}</span></div>
   </header>
@@ -16,11 +16,12 @@
     <div class="dash-note"><span>{{ stats.pending }} staff account{{ stats.pending|pluralize }} waiting for approval.</span><a href="{% url 'manage_users' %}">Review accounts</a></div>
   {% endif %}
   {% if stats.password_requests %}
-    <div class="dash-note"><span>{{ stats.password_requests }} password request{{ stats.password_requests|pluralize }} waiting for you.</span><a href="{% url 'password_requests' %}">Open requests</a></div>
+    <div class="dash-note"><span>{{ stats.password_requests }} user{{ stats.password_requests|pluralize }} asked for a new password.</span><a href="{% url 'password_requests' %}">Open requests</a></div>
   {% endif %}
 
   <section class="kpis">
     <div class="kpi"><div class="kpi-label">Pending approval</div><div class="kpi-value">{{ stats.pending }}</div></div>
+    <div class="kpi"><div class="kpi-label">Password requests</div><div class="kpi-value">{{ stats.password_requests }}</div><div class="kpi-hint">waiting</div></div>
     <div class="kpi"><div class="kpi-label">Staff accounts</div><div class="kpi-value">{{ stats.users }}</div><div class="kpi-hint">approved</div></div>
     <div class="kpi"><div class="kpi-label">Active resorts</div><div class="kpi-value">{{ stats.resorts }}</div></div>
     <div class="kpi"><div class="kpi-label">Active rooms</div><div class="kpi-value">{{ stats.rooms }}</div></div>
@@ -39,6 +40,19 @@
         <a class="link-row" href="{% url 'activity_log' %}"><svg class="ic"><use href="#i-clock"/></svg><span><span class="link-title">Activity log</span><span class="link-desc">Who did what, and when.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
         <a class="link-row" href="{% url 'recycle_bin' %}"><svg class="ic"><use href="#i-trash"/></svg><span><span class="link-title">Recycle bin</span><span class="link-desc">Restore or permanently delete archived items.</span></span><svg class="go"><use href="#i-chevron"/></svg></a>
       </div>
+    </section>
+
+    <section class="panel">
+      <div class="panel-head"><span class="panel-title">Password requests</span><a href="{% url 'password_requests' %}">Open all</a></div>
+      {% if pw_requests %}
+        <ul class="feed">
+          {% for r in pw_requests %}
+          <li><span class="f-main"><a href="{% url 'password_requests' %}">{{ r.user.display_name }}</a> ({{ r.user.username }}){% if r.reason %}: {{ r.reason }}{% endif %}</span><span class="f-meta">{{ r.user.get_role_display }}{% if r.user.resort %} &middot; {{ r.user.resort.name }}{% endif %} &middot; {{ r.created_at|timesince }} ago</span></li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <div class="feed-empty">No one is waiting for a new password.</div>
+      {% endif %}
     </section>
 
     <section class="panel">

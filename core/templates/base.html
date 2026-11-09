@@ -27,6 +27,12 @@ input.pw-has-eye { padding-right: 2.9rem !important; }
 .pw-toggle[aria-pressed="true"] { color: #127566; }
 [data-theme="dark"] .pw-toggle { color: #a9b4b2; }
 [data-theme="dark"] .pw-toggle:hover, [data-theme="dark"] .pw-toggle[aria-pressed="true"] { color: #7fd8c9; background: rgba(127,216,201,.12); }
+  /* small phones: the portal name shrinks instead of pushing Logout off the screen */
+  @media (max-width: 480px) {
+    .topbar .navbar-brand { min-width: 0; flex: 1 1 auto; }
+    .topbar .brand-text { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: .95rem; }
+    .topbar-right { flex: 0 0 auto; gap: 8px; }
+  }
   </style>
 </head>
 <body>
@@ -76,7 +82,7 @@ input.pw-has-eye { padding-right: 2.9rem !important; }
       {% if user.role == 'admin' %}
         <div class="sidebar-section">Admin</div>
         <a href="{% url 'manage_users' %}" class="sidebar-link {% if current == 'manage_users' %}active{% endif %}">Manage Users</a>
-        <a href="{% url 'password_requests' %}" class="sidebar-link {% if current == 'password_requests' %}active{% endif %}">Password Requests</a>
+        <a href="{% url 'password_requests' %}" class="sidebar-link {% if current == 'password_requests' %}active{% endif %}">Password Requests{% if pw_request_count %} <span class="badge bg-danger rounded-pill">{{ pw_request_count }}</span>{% endif %}</a>
         <a href="{% url 'activity_log' %}" class="sidebar-link {% if current == 'activity_log' %}active{% endif %}">Activity Log</a>
         <a href="{% url 'admin_resorts' %}" class="sidebar-link {% if current == 'admin_resorts' or current == 'resort_add' or current == 'resort_edit' %}active{% endif %}">Manage Resorts</a>
         <a href="{% url 'admin_rooms' %}" class="sidebar-link {% if current == 'admin_rooms' %}active{% endif %}">Manage Rooms</a>
@@ -104,7 +110,7 @@ input.pw-has-eye { padding-right: 2.9rem !important; }
 
   <div id="cookie-banner" style="display:none; position:fixed; bottom:0; left:0; right:0; background:var(--brand-navy); color:white; padding:14px 20px; z-index:1000; font-size:14px;">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
-      <span>Gumagamit ang site na ito ng cookies para sa session/login lamang. Sa pagpapatuloy, sumasang-ayon ka sa aming <a href="{% url 'terms' %}" style="color:var(--brand-gold);">Terms and Conditions</a>.</span>
+      <span>This site uses cookies for sessions and login only. By continuing, you agree to our <a href="{% url 'terms' %}" style="color:var(--brand-gold);">Terms and Conditions</a>.</span>
       <button onclick="acceptCookies()" class="btn btn-sm" style="background:var(--brand-gold); color:var(--brand-navy); border:none;">Accept</button>
     </div>
   </div>

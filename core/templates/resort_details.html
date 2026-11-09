@@ -8,6 +8,10 @@
     <div class="mb-2"><label class="form-label">Owner name</label>{{ form.owner_name }}</div>
     <div class="mb-2"><label class="form-label">Contact number</label>{{ form.contact_number }}</div>
     <div class="mb-2"><label class="form-label">Total rooms</label>{{ form.total_rooms }}</div>
+    <div class="mb-2"><label class="form-label">Photo URL <span class="text-muted small">(optional)</span></label>{{ form.photo_url }}
+      <div class="form-text">Link to a nice photo of your resort. Resorts with a photo appear on the website's main page.</div>{{ form.photo_url.errors }}</div>
+    <div class="mb-2"><label class="form-label">Short description <span class="text-muted small">(optional)</span></label>{{ form.highlight }}
+      <div class="form-text">One or two sentences visitors will read on the main page.</div></div>
     <button type="submit" class="btn btn-primary btn-sm">Save</button>
   </form>
 </div>

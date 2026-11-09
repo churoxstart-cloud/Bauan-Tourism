@@ -6,6 +6,7 @@ const translations = {
         nav_about: "About",
         nav_destinations: "Destinations",
         nav_activities: "Activities",
+        nav_discover: "Discover",
         nav_guide: "Travel Guide",
         nav_gallery: "Gallery",
         nav_reviews: "Reviews",
@@ -13,6 +14,8 @@ const translations = {
         home_title: "Discover <span>Bauan</span>",
         home_desc: "Experience pristine beaches, world-class diving spots, and the warm hospitality of Bauan — a hidden coastal gem in the heart of Batangas, Philippines.",
         home_btn: "Explore Destinations →",
+        hero_explore: "Explore",
+        hero_search: "Search tourist spots or ask Tourist Bot...",
         footer_desc: "Your ultimate guide to exploring the beautiful coastal town of Bauan, Batangas. Discover pristine beaches, world-class diving, and rich Filipino culture.",
         footer_contact: "Contact Us",
         footer_legal: "Legal",
@@ -69,7 +72,15 @@ const translations = {
         plan_opt_rel: "Relaxed Beach & Food Trip",
         plan_btn: "Generate Plan",
         plan_out_title: "Select your preferences above and click Generate Plan!",
-        plan_out_desc: "Your customized custom travel schedule for Bauan will appear right here.",
+        plan_out_desc: "Your customized travel schedule for Bauan will appear right here.",
+        plan_opt_3: "Long Weekend (3 Days)",
+        plan_opt_fam: "Family Trip with Kids",
+        plan_opt_her: "Heritage, Faith & Culture",
+        plan_opt_cou: "Couples & Sunset Escape",
+        plan_opt_bud: "Budget Barkada Trip",
+        plan_opt_car: "By private car",
+        plan_opt_com: "By bus & commute",
+        faq_search: "Search questions, e.g. fees, food, commute...",
         faq_tag: "Got Questions?",
         faq_title: "Frequently Asked Questions",
         faq_q1: "How do I get to Bauan from Manila via public commute?",
@@ -78,6 +89,26 @@ const translations = {
         faq_a2: "Yes, multiple major commercial banks and ATMs are stationed around the municipal center. However, it is always recommended to bring sufficient cash if you are visiting remote beach or diving resorts.",
         faq_q3: "Do I need pre-booking for scuba diving packages?",
         faq_a3: "While walk-ins are occasionally accommodated, pre-booking with certified local dive operators is strongly advised especially during weekends and peak dry season months to secure gear and instructors.",
+        faq_q4: "When is the best time to visit Bauan?",
+        faq_a4: "The dry season, roughly November to May, has the calmest seas and clearest water for swimming and diving. March to May is the warmest and busiest, so book early. From June to October, rain and the habagat (southwest monsoon) can make the sea rough; check the weather and PAGASA advisories before you go.",
+        faq_q5: "How do I get to Bauan by private car?",
+        faq_a5: "From Metro Manila, take SLEX, continue to the STAR Tollway, and exit toward Batangas City, then follow the national road to Bauan. Without heavy traffic the drive is about 2 to 3 hours. Most beach and dive resorts are in coastal barangays such as Sampaguita, San Pablo and La Liga Locloc, so use the Travel Guide map for exact directions.",
+        faq_q6: "How do I get around once I'm in Bauan?",
+        faq_a6: "Jeepneys run along the main roads, and tricycles can take you from the town proper or the highway to resorts in the coastal barangays. Agree on the fare before the ride, especially for longer trips to beach areas. If you have a lot of gear (for example, dive equipment), a private car or a resort pick-up is easier.",
+        faq_q7: "Can I book a resort through this website?",
+        faq_a7: "Not yet. This site is run by the Municipal Tourism Office to help you find places; it does not take bookings or payments. Open a resort's page (tap Explore) to see its contact number, then reserve and confirm rates directly with the resort.",
+        faq_q8: "Are there entrance or environmental fees?",
+        faq_a8: "Resorts charge their own entrance or day-use fees, and some dive sites and marine sanctuaries collect a separate fee used for their protection. Amounts can change, so confirm with the resort, your dive operator, or the MTO before you go. Each place's page shows the fee if the MTO has posted it.",
+        faq_q9: "What should I bring for a beach or dive trip?",
+        faq_a9: "Bring reef-safe sunscreen, a hat, drinking water, a reusable bottle, a dry bag, water shoes, cash for small stores and tricycles, and a valid ID. Divers should bring their certification card and logbook. Please take your trash home with you: Bauan's reefs and beaches depend on it.",
+        faq_q10: "What are the rules in the marine sanctuaries?",
+        faq_a10: "Do not touch, stand on, or collect corals, shells or marine life, and do not feed the fish. Fishing and spearfishing are not allowed inside sanctuaries. Follow your dive guide, keep good buoyancy, and use only mooring buoys instead of dropping anchor on the reef.",
+        faq_q11: "What local food should I try?",
+        faq_a11: "Try Batangas lomi (thick noodle soup), bulalo (beef shank soup), goto, tapang Taal, and a cup of strong kapeng barako. Fresh seafood is easy to find near the coast, and the Bauan public market is a good stop for pasalubong.",
+        faq_q12: "Is Bauan good for families with kids?",
+        faq_a12: "Yes. Many resorts have pools and shallow areas, and short trips such as a beach day, a church visit and a food stop work well with kids. Some shorelines are rocky or drop off quickly, so bring water shoes, keep children supervised, and ask the resort where it is safe to swim.",
+        faq_q13: "Who do I contact in an emergency or for tourist assistance?",
+        faq_a13: "For emergencies, call 911. For tourist information, lost items, or complaints about a tourism establishment, contact the Municipal Tourism Office of Bauan through the Contact page. You can also ask the front desk of your resort for the nearest police station or hospital.",
         gallery_heading: "Photo Gallery",
         gallery_subheading: "Visual highlights capturing the beauty of Bauan.",
         gallery_tag: "Captured Moments",
@@ -139,6 +170,7 @@ const translations = {
         nav_about: "Tungkol",
         nav_destinations: "Destinasyon",
         nav_activities: "Gawain",
+        nav_discover: "Tuklasin",
         nav_guide: "Gabay sa Paglalakbay",
         nav_gallery: "Larawan",
         nav_reviews: "Mga Rebyu",
@@ -146,6 +178,8 @@ const translations = {
         home_title: "Tuklasin ang <span>Bauan</span>",
         home_desc: "Damhin ang malilinis na dalampasigan, world-class na diving spots, at ang mainit na pagtanggap ng Bauan — isang nakatagong hiyas sa puso ng Batangas, Pilipinas.",
         home_btn: "Galugarin ang mga Destinasyon →",
+        hero_explore: "Tuklasin",
+        hero_search: "Maghanap ng pasyalan o magtanong kay Tourist Bot...",
         footer_desc: "Ang iyong gabay sa pagtuklas ng magandang bayan ng Bauan, Batangas. Tuklasin ang mga baybayin, diving, at kulturang Pilipino.",
         footer_contact: "Makipag-ugnayan",
         footer_legal: "Legal",
@@ -203,6 +237,14 @@ const translations = {
         plan_btn: "Gumawa ng Plano",
         plan_out_title: "Pumili sa itaas at i-click ang Gumawa ng Plano!",
         plan_out_desc: "Lilitaw dito ang iyong customized na iskedyul para sa Bauan.",
+        plan_opt_3: "Long Weekend (3 Araw)",
+        plan_opt_fam: "Pampamilya, may kasamang bata",
+        plan_opt_her: "Kasaysayan, Pananampalataya at Kultura",
+        plan_opt_cou: "Para sa Magkasintahan at Sunset",
+        plan_opt_bud: "Tipid na Barkada Trip",
+        plan_opt_car: "Sariling sasakyan",
+        plan_opt_com: "Bus at commute",
+        faq_search: "Maghanap ng tanong, hal. bayad, pagkain, commute...",
         faq_tag: "May Tanong Ba?",
         faq_title: "Mga Madalas Itanong",
         faq_q1: "Paano pumunta sa Bauan mula Maynila sa pamamagitan ng bus?",
@@ -212,6 +254,26 @@ const translations = {
         faq_a2: "Oo, maraming bangko at ATM sa paligid ng munisipyo. Subalit, mainam pa ring magdala ng sapat na cash kung pupunta sa liblib na resort.",
         faq_q3: "Kailangan ba ng pre-booking para sa scuba diving?",
         faq_a3: "Bagamat tinatanggap ang walk-in, mainam na mag-book nang maaga sa mga certified dive operator lalo na tuwing weekend.",
+        faq_q4: "Kailan ang pinakamagandang panahon para bumisita sa Bauan?",
+        faq_a4: "Ang tag-araw, mga Nobyembre hanggang Mayo, ang may pinakakalmadong dagat at pinakamalinaw na tubig para sa paglangoy at diving. Pinakamainit at pinakamaraming tao mula Marso hanggang Mayo, kaya mag-book nang maaga. Mula Hunyo hanggang Oktubre, maaaring maalon dahil sa ulan at habagat; tingnan muna ang panahon at abiso ng PAGASA.",
+        faq_q5: "Paano pumunta sa Bauan gamit ang sariling sasakyan?",
+        faq_a5: "Mula Metro Manila, dumaan sa SLEX, tumuloy sa STAR Tollway, at lumabas papuntang Batangas City, saka sundan ang national road papuntang Bauan. Kung hindi trapik, mga 2 hanggang 3 oras ang biyahe. Karamihan ng beach at dive resort ay nasa mga barangay sa baybayin gaya ng Sampaguita, San Pablo at La Liga Locloc; gamitin ang Travel Guide map para sa eksaktong direksyon.",
+        faq_q6: "Paano umikot sa loob ng Bauan?",
+        faq_a6: "May mga jeep sa mga pangunahing kalsada, at may tricycle mula sa bayan o highway papunta sa mga resort sa baybayin. Pag-usapan muna ang pamasahe bago sumakay, lalo na sa malayong beach area. Kung marami kang dala (gaya ng diving gear), mas madali ang sariling sasakyan o pick-up ng resort.",
+        faq_q7: "Puwede bang mag-book ng resort dito sa website?",
+        faq_a7: "Hindi pa. Pinapatakbo ito ng Municipal Tourism Office para tulungan kang makahanap ng pupuntahan; hindi ito tumatanggap ng booking o bayad. Buksan ang page ng resort (pindutin ang Explore) para makita ang contact number, saka direktang mag-reserve at kumpirmahin ang presyo sa resort.",
+        faq_q8: "May bayad ba sa pagpasok o environmental fee?",
+        faq_a8: "May sariling entrance o day-use fee ang mga resort, at may hiwalay na bayad ang ilang dive site at marine sanctuary para sa pangangalaga nito. Maaaring magbago ang halaga, kaya kumpirmahin muna sa resort, dive operator o sa MTO. Makikita ang fee sa page ng bawat lugar kung na-post na ito ng MTO.",
+        faq_q9: "Ano ang dapat dalhin sa beach o dive trip?",
+        faq_a9: "Magdala ng reef-safe sunscreen, sombrero, inuming tubig, reusable na bote, dry bag, water shoes, cash para sa maliliit na tindahan at tricycle, at valid ID. Dalhin ng mga diver ang certification card at logbook. Iuwi ang sariling basura: nakasalalay dito ang mga bahura at dalampasigan ng Bauan.",
+        faq_q10: "Ano ang mga patakaran sa mga marine sanctuary?",
+        faq_a10: "Huwag hawakan, tapakan o kunin ang mga coral, kabibe o hayop-dagat, at huwag pakainin ang mga isda. Bawal ang pangingisda at spearfishing sa loob ng sanctuary. Sundin ang dive guide, panatilihin ang tamang buoyancy, at gumamit ng mooring buoy sa halip na mag-angkla sa bahura.",
+        faq_q11: "Anong lokal na pagkain ang dapat tikman?",
+        faq_a11: "Tikman ang lomi ng Batangas, bulalo, goto, tapang Taal, at isang tasa ng matapang na kapeng barako. Madaling makahanap ng sariwang seafood malapit sa baybayin, at magandang puntahan ang pamilihang bayan ng Bauan para sa pasalubong.",
+        faq_q12: "Maganda ba ang Bauan para sa pamilyang may kasamang bata?",
+        faq_a12: "Oo. Maraming resort ang may pool at mababaw na bahagi, at bagay sa mga bata ang maiikling lakad gaya ng beach day, pagbisita sa simbahan at food stop. Mabato o biglang lumalalim ang ilang bahagi ng dagat, kaya magdala ng water shoes, bantayan ang mga bata, at itanong sa resort kung saan ligtas lumangoy.",
+        faq_q13: "Sino ang tatawagan kapag may emergency o kailangan ng tulong?",
+        faq_a13: "Para sa emergency, tumawag sa 911. Para sa impormasyon, nawawalang gamit, o reklamo tungkol sa isang tourism establishment, kontakin ang Municipal Tourism Office ng Bauan sa Contact page. Maaari ring itanong sa front desk ng resort ang pinakamalapit na pulis o ospital.",
         gallery_heading: "Gallery ng Larawan",
         gallery_subheading: "Mga visual na highlight na nagpapakita ng ganda ng Bauan.",
         gallery_tag: "Mga Sandali",
@@ -402,20 +464,13 @@ document.addEventListener('click', (e) => {
     e.preventDefault();
     const targetId = btn.getAttribute('data-target');
     if (!targetId) return;
+    if (targetId === 'discover') { showSitePage('discover', true); return; }
 
     const targetView = document.getElementById(targetId);
     if (!targetView) return;
 
-    if (targetView.classList.contains('home-section')) {
-        document.querySelectorAll('.window-view').forEach(win => win.classList.remove('active-view'));
-        document.getElementById('home').classList.add('active-view');
-        mainNav.classList.add('solid-nav');
-        targetView.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        document.querySelectorAll('.nav-btn').forEach(nav => nav.classList.remove('active-link'));
-        document.querySelectorAll(`nav .nav-links a[data-target="${targetId}"]`).forEach(link => {
-            link.classList.add('active-link');
-        });
-        syncMoreHighlight();
+    if (targetView.classList.contains('home-section') || targetId === 'home') {
+        showSitePage(targetId, true);
         return;
     }
 
@@ -429,8 +484,51 @@ document.addEventListener('click', (e) => {
     });
     syncMoreHighlight();
 
-    if (targetId === 'home') mainNav.classList.remove('solid-nav');
-    else mainNav.classList.add('solid-nav');
+    document.body.dataset.page = targetId;
+    mainNav.classList.add('solid-nav');
+    if (location.hash) history.replaceState(null, '', location.pathname + location.search);
+});
+
+// --- SEPARATE PAGES ---
+// Home shows only the destination carousel. About (with the video and Mission/Vision),
+// Destinations, Gallery, Reviews and Contact each open as their own page, with their own
+// address (#about, #gallery...) so the browser Back button and shared links work.
+// "Discover" is one page holding About (video, Mission/Vision), Destinations, Gallery and Reviews.
+const DISCOVER_SECTIONS = ['about', 'destinations', 'gallery', 'reviews'];
+const SITE_PAGES = ['home', 'discover', 'contact'].concat(DISCOVER_SECTIONS);
+function showSitePage(id, push) {
+    if (SITE_PAGES.indexOf(id) < 0) id = 'home';
+    const page = DISCOVER_SECTIONS.indexOf(id) > -1 ? 'discover' : id;
+    document.querySelectorAll('.window-view').forEach(win => win.classList.remove('active-view'));
+    document.getElementById('home').classList.add('active-view');
+    document.body.dataset.page = page;
+    document.querySelectorAll('.home-section').forEach(sec => sec.classList.toggle('page-current',
+        page === 'discover' ? DISCOVER_SECTIONS.indexOf(sec.id) > -1 : sec.id === page));
+    document.querySelectorAll('.nav-btn').forEach(nav => nav.classList.remove('active-link'));
+    document.querySelectorAll(`nav .nav-links a[data-target="${page}"], .menu-links a[data-target="${page}"]`).forEach(link => link.classList.add('active-link'));
+    syncMoreHighlight();
+    if (page === 'home') mainNav.classList.remove('solid-nav'); else mainNav.classList.add('solid-nav');
+    window.scrollTo({ top: 0, behavior: 'auto' });
+    // a link to one part of Discover (e.g. the footer's "Gallery") jumps to that part
+    if (page === 'discover' && id !== 'discover' && id !== 'about') {
+        const sec = document.getElementById(id);
+        if (sec) setTimeout(() => window.scrollTo({ top: sec.getBoundingClientRect().top + window.scrollY - 70, behavior: 'smooth' }), 60);
+    }
+    if (push) {
+        const url = location.pathname + location.search + (id === 'home' ? '' : '#' + id);
+        if (url !== location.pathname + location.search + location.hash) history.pushState({ page: id }, '', url);
+    }
+    // let scroll-reveal effects notice the newly shown page
+    setTimeout(() => window.dispatchEvent(new Event('scroll')), 50);
+}
+window.showSitePage = showSitePage;
+window.addEventListener('popstate', () => {
+    const id = (location.hash || '#home').slice(1);
+    if (SITE_PAGES.indexOf(id) > -1) showSitePage(id, false);
+});
+document.addEventListener('DOMContentLoaded', () => {
+    const id = (location.hash || '').slice(1);
+    showSitePage(SITE_PAGES.indexOf(id) > -1 ? id : 'home', false);
 });
 
 windows.forEach(win => {
@@ -443,12 +541,14 @@ windows.forEach(win => {
 });
 
 // --- 3. SLIDESHOW LOGIC ---
-const slides = document.querySelectorAll('.slide');
-const dots = document.querySelectorAll('.dot');
+// (the hero now uses the destination carousel in public_home.html; this only runs if old .slide markup is present)
+const slides = document.querySelectorAll('.hero-section .slide');
+const dots = document.querySelectorAll('.hero-dots .dot');
 let currentSlide = 0;
-let slideInterval = setInterval(nextSlide, 5000);
+let slideInterval = slides.length > 1 && dots.length === slides.length ? setInterval(nextSlide, 5000) : null;
 
 function nextSlide() {
+    if (!slides.length || dots.length !== slides.length) return;
     slides[currentSlide].classList.remove('active-slide');
     dots[currentSlide].classList.remove('active-dot');
     currentSlide = (currentSlide + 1) % slides.length;
@@ -488,6 +588,7 @@ function resetAboutTimer() {
 }
 
 function currentSlideManual(index) {
+    if (!slides.length || dots.length !== slides.length) return;
     clearInterval(slideInterval);
     slides[currentSlide].classList.remove('active-slide');
     dots[currentSlide].classList.remove('active-dot');
@@ -696,18 +797,218 @@ function openDirectResortNavigation() {
 }
 
 // --- 6. ITINERARY BUILDER LOGIC ---
+// Each style has a full-day plan for a day trip, and three days for longer stays
+// (arrival day, main day, going-home day). A 2-day trip uses the first and last.
+const ITINERARY_STYLES = {
+    adventure: {
+        title: 'Adventure & Diving',
+        oneDay: [
+            ['6:30 AM', 'Arrive at a dive resort in Brgy. San Pablo or Sampaguita; quick breakfast and gear check.'],
+            ['8:00 AM', 'First boat dive or guided snorkel at a Bauan dive site (book with a certified operator ahead of time).'],
+            ['10:30 AM', 'Surface interval: rest, hydrate, and log your dive.'],
+            ['11:30 AM', 'Second dive in the marine sanctuary area: look for turtles, reef fish and macro critters.'],
+            ['1:00 PM', 'Late lunch: hot Batangas lomi or grilled seafood.'],
+            ['3:00 PM', 'Easy swim or kayak along the shore while you off-gas.'],
+            ['5:00 PM', 'Head home before dark. Wait at least 18 hours after diving before flying.'],
+        ],
+        days: [
+            [['Morning', 'Travel to Bauan and check in at a dive resort in San Pablo or Sampaguita.'],
+             ['Afternoon', 'Check-out dive or refresher with your dive operator; set up gear.'],
+             ['Evening', 'Sunset by the water and a seafood dinner. Early night.']],
+            [['7:00 AM', 'Two morning boat dives at Bauan dive sites and sanctuaries.'],
+             ['12:30 PM', 'Lunch and rest (surface interval).'],
+             ['2:30 PM', 'Afternoon dive or snorkeling; non-divers can kayak or swim.'],
+             ['Evening', 'Night dive if offered, or a relaxed dinner and dive-log session.']],
+            [['Morning', 'Last shallow dive or snorkel, then rinse and pack gear.'],
+             ['Lunch', 'Bulalo or lomi in town before the drive home.'],
+             ['Afternoon', 'Pasalubong stop: kapeng barako and local delicacies.']],
+        ],
+        tips: ['Book dives ahead, especially on weekends and from March to May.', 'Bring your certification card and logbook.', 'Do not touch corals or feed the fish inside sanctuaries.'],
+    },
+    relax: {
+        title: 'Relaxed Beach & Food Trip',
+        oneDay: [
+            ['8:00 AM', 'Breakfast of kapeng barako and pandesal on the way.'],
+            ['9:30 AM', 'Day-use at a beach resort in Brgy. Sampaguita: swim and lounge.'],
+            ['12:00 NN', 'Lunch: grilled seafood, sinigang or a big bowl of Batangas lomi.'],
+            ['2:00 PM', 'Nap, pool time, or a slow walk along the coast.'],
+            ['4:30 PM', 'Merienda and photos as the light turns golden.'],
+            ['5:45 PM', 'Watch the sunset over Batangas Bay, then head home.'],
+        ],
+        days: [
+            [['Afternoon', 'Check in at a beachfront resort in Sampaguita or La Liga Locloc.'],
+             ['Late afternoon', 'Swim, then catch the sunset by the shore.'],
+             ['Dinner', 'Seafood dinner at the resort or a nearby eatery.']],
+            [['Morning', 'Slow breakfast, then beach and pool time.'],
+             ['Lunch', 'Food trip: lomi, bulalo, goto or tapang Taal.'],
+             ['Afternoon', 'Massage, nap, or a short trip to another beach resort.'],
+             ['Evening', 'Bonfire or stargazing if the resort allows it.']],
+            [['Morning', 'Final swim and late check-out.'],
+             ['Lunch', 'One last bowl of lomi in town.'],
+             ['Afternoon', 'Pasalubong at the public market: kapeng barako, panutsa and local sweets.']],
+        ],
+        tips: ['Bring reef-safe sunscreen and water shoes.', 'Weekends get crowded: arrive early for a good spot.', 'Ask the resort about day-use rates before you go.'],
+    },
+    family: {
+        title: 'Family Trip with Kids',
+        oneDay: [
+            ['8:00 AM', 'Leave early to beat the heat; breakfast on the road.'],
+            ['10:00 AM', 'Day-use at a resort with a pool and shallow area in Sampaguita.'],
+            ['12:00 NN', 'Family lunch: lomi, fried chicken and rice, fresh fruit.'],
+            ['1:30 PM', 'Rest and shade time; light snacks and water for the kids.'],
+            ['3:00 PM', 'Pool and beach games, sand castles, shell spotting (look, don\'t take).'],
+            ['5:00 PM', 'Quick stop at Immaculate Conception Parish, then head home.'],
+        ],
+        days: [
+            [['Afternoon', 'Check in at a family-friendly resort with a pool.'],
+             ['Late afternoon', 'Pool time and an easy walk on the beach.'],
+             ['Evening', 'Early dinner and movie or game night.']],
+            [['Morning', 'Beach morning while the sun is still mild.'],
+             ['Lunch', 'Lomi or seafood lunch; rest in the room after.'],
+             ['3:00 PM', 'Snorkeling in shallow water with life vests, or pool games.'],
+             ['Evening', 'Sunset walk and dinner.']],
+            [['Morning', 'Visit Immaculate Conception Parish in the town proper.'],
+             ['Lunch', 'Family lunch in town.'],
+             ['Afternoon', 'Pasalubong shopping, then the trip home.']],
+        ],
+        tips: ['Pack life vests or ask if the resort lends them.', 'Some shores are rocky: bring water shoes for the kids.', 'Plan swims before 10 AM and after 3 PM to avoid the strongest sun.'],
+    },
+    heritage: {
+        title: 'Heritage, Faith & Culture',
+        oneDay: [
+            ['8:00 AM', 'Arrive in the town proper; breakfast with kapeng barako.'],
+            ['9:00 AM', 'Visit Immaculate Conception Parish (Bauan Church) and admire its old stone architecture.'],
+            ['10:30 AM', 'Walk around the town plaza and municipal center.'],
+            ['11:30 AM', 'Browse the Bauan public market for local produce and snacks.'],
+            ['12:30 PM', 'Lunch: Batangas lomi, goto or bulalo.'],
+            ['2:30 PM', 'Drive to the coast and visit a beach in Sampaguita for the afternoon.'],
+            ['5:30 PM', 'Sunset by Batangas Bay before going home.'],
+        ],
+        days: [
+            [['Afternoon', 'Check in, then visit Immaculate Conception Parish.'],
+             ['Late afternoon', 'Stroll around the plaza and town center.'],
+             ['Evening', 'Dinner with local Batangueño dishes.']],
+            [['Morning', 'Attend Mass or visit the church in the quiet morning hours.'],
+             ['10:00 AM', 'Public market visit: local produce, snacks and pasalubong ideas.'],
+             ['Lunch', 'Lomi, goto or bulalo.'],
+             ['Afternoon', 'Beach time in Sampaguita and sunset by the bay.']],
+            [['Morning', 'Ask the MTO about any fiesta or event happening during your visit.'],
+             ['Lunch', 'Last local lunch in town.'],
+             ['Afternoon', 'Pasalubong shopping and trip home.']],
+        ],
+        tips: ['Dress modestly when visiting the church.', 'Check the MTO Programs and Events for festivals during your dates.', 'Keep quiet and respectful during Masses and services.'],
+    },
+    couple: {
+        title: 'Couples & Sunset Escape',
+        oneDay: [
+            ['9:00 AM', 'Coffee date with kapeng barako on the way to Bauan.'],
+            ['10:30 AM', 'Arrive at a quiet beach resort; swim and relax.'],
+            ['12:30 PM', 'Seafood lunch by the water.'],
+            ['2:00 PM', 'Snorkeling together or a kayak along the shore.'],
+            ['4:00 PM', 'Photos at a viewpoint resort such as Binukbok View Point in San Pablo.'],
+            ['5:45 PM', 'Sunset over Batangas Bay, then dinner before heading home.'],
+        ],
+        days: [
+            [['Afternoon', 'Check in at a quiet resort with a sea view.'],
+             ['5:30 PM', 'Sunset watching from the shore or a viewpoint.'],
+             ['Evening', 'Candle-lit or seaside dinner.']],
+            [['Morning', 'Slow breakfast and a swim.'],
+             ['10:00 AM', 'Discover scuba or snorkeling with a dive operator.'],
+             ['Afternoon', 'Massage or nap, then photos around the resort.'],
+             ['Evening', 'Stargazing by the beach.']],
+            [['Morning', 'Sunrise walk and a last swim.'],
+             ['Lunch', 'Lomi or bulalo in town.'],
+             ['Afternoon', 'Pasalubong and a relaxed drive home.']],
+        ],
+        tips: ['Weekdays are quieter than weekends.', 'Ask the resort for sea-view rooms when you book.', 'Bring a light jacket for windy evenings by the sea.'],
+    },
+    budget: {
+        title: 'Budget Barkada Trip',
+        oneDay: [
+            ['6:00 AM', 'Meet up early; bring packed breakfast and water to save money.'],
+            ['8:30 AM', 'Arrive at a day-use beach resort in Sampaguita; split a cottage with the group.'],
+            ['12:00 NN', 'Boodle-style lunch: grilled liempo, fish, rice and fruit you brought or bought at the market.'],
+            ['2:00 PM', 'Swimming, beach games and group photos.'],
+            ['4:00 PM', 'Merienda of lomi in town (cheap, filling, and very Batangas).'],
+            ['5:30 PM', 'Sunset, then head home together.'],
+        ],
+        days: [
+            [['Afternoon', 'Check in at an overnight resort; share a big room or cottage.'],
+             ['Late afternoon', 'Swim and sunset.'],
+             ['Evening', 'Group dinner: buy fish and meat at the public market and grill (ask the resort first).']],
+            [['Morning', 'Beach and pool time.'],
+             ['Lunch', 'Lomi or goto in town.'],
+             ['Afternoon', 'Snorkeling (rent gear as a group) or beach games.'],
+             ['Evening', 'Videoke or a bonfire if the resort allows it.']],
+            [['Morning', 'Last swim, then clean up and check out on time.'],
+             ['Lunch', 'Budget lunch in town.'],
+             ['Afternoon', 'Pasalubong: kapeng barako and panutsa, then ride home.']],
+        ],
+        tips: ['Ask resorts about corkage and grilling rules before you bring food.', 'Bring cash for tricycles and small stores.', 'Bring trash bags and take your trash home.'],
+    },
+};
+
+const TRAVEL_NOTES = {
+    car: ['Getting there', 'From Metro Manila take SLEX and the STAR Tollway, exit toward Batangas City, then follow the national road to Bauan (about 2 to 3 hours without heavy traffic).'],
+    commute: ['Getting there', 'Take a bus from Cubao or Buendia to the Batangas City Grand Terminal, then a jeepney to Bauan town proper. Tricycles go from town to the coastal resorts; agree on the fare first.'],
+};
+
+function escapeHtml(t) {
+    return String(t).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
 function generateItinerary() {
-    const duration = document.getElementById('durationSelect').value;
-    const style = document.getElementById('styleSelect').value;
+    const duration = parseInt(document.getElementById('durationSelect').value, 10) || 1;
+    const styleKey = document.getElementById('styleSelect').value;
+    const travelSel = document.getElementById('travelSelect');
+    const travel = travelSel ? travelSel.value : 'car';
+    const style = ITINERARY_STYLES[styleKey] || ITINERARY_STYLES.relax;
     const output = document.getElementById('itineraryResult');
 
-    let html = '';
-    if (duration === '1' && style === 'adventure') {
-        html = `<h4>1-Day Extreme Adventure Itinerary</h4><ul><li><strong>07:00 AM:</strong> Arrival in Bauan & local breakfast.</li><li><strong>09:00 AM:</strong> Scuba diving session at Bauan Sanctuaries.</li><li><strong>12:30 PM:</strong> Lunch featuring Batangas Lomi.</li><li><strong>03:00 PM:</strong> Island hopping & speedboating.</li></ul>`;
-    } else {
-        html = `<h4>Customized Itinerary Generated</h4><ul><li><strong>Day 1:</strong> Scenic beach arrival, resort relaxation, and local culinary tour.</li><li><strong>Day 2:</strong> Heritage landmarks exploration and coastal sunset stroll.</li></ul>`;
-    }
+    const days = duration === 1 ? [style.oneDay] : duration === 2 ? [style.days[0], style.days[2]] : style.days;
+    const lengthLabel = duration === 1 ? '1-Day Trip' : duration === 2 ? '2-Day Weekend' : '3-Day Long Weekend';
+    const note = TRAVEL_NOTES[travel] || TRAVEL_NOTES.car;
+
+    let html = `<div class="it-head"><h4>${escapeHtml(lengthLabel)}: ${escapeHtml(style.title)}</h4>`
+        + `<div class="it-chips"><span>${duration} ${duration === 1 ? 'day' : 'days'}</span><span>${escapeHtml(style.title)}</span><span>${travel === 'commute' ? 'Bus & commute' : 'Private car'}</span></div></div>`;
+    html += `<p class="it-travel"><strong>${escapeHtml(note[0])}:</strong> ${escapeHtml(note[1])}</p>`;
+    days.forEach((day, i) => {
+        html += `<div class="it-day">${days.length > 1 ? `<h5>Day ${i + 1}${i === 0 ? ' · Arrival' : i === days.length - 1 ? ' · Going home' : ''}</h5>` : ''}<ol class="it-list">`;
+        day.forEach(([time, what]) => { html += `<li><span class="it-time">${escapeHtml(time)}</span><span>${escapeHtml(what)}</span></li>`; });
+        html += '</ol></div>';
+    });
+    html += `<div class="it-tips"><strong>Tips</strong><ul>${style.tips.map(t => `<li>${escapeHtml(t)}</li>`).join('')}</ul></div>`;
+    html += '<p class="it-note">Times are suggestions. Confirm rates, schedules and bookings directly with the resort or dive operator.</p>';
+    html += '<div class="it-actions"><button type="button" class="it-btn" id="itAskBot"><i class="fa-solid fa-comment-dots"></i> Ask Tourist Bot to adjust this plan</button>'
+        + '<button type="button" class="it-btn ghost" id="itCopy"><i class="fa-regular fa-copy"></i> Copy plan</button>'
+        + '<button type="button" class="it-btn ghost" id="itPrint"><i class="fa-solid fa-print"></i> Print</button></div>';
     output.innerHTML = html;
+    output.classList.remove('it-show'); void output.offsetWidth; output.classList.add('it-show');
+
+    const plainText = () => {
+        const lines = [`${lengthLabel}: ${style.title} (${travel === 'commute' ? 'bus & commute' : 'private car'})`, `${note[0]}: ${note[1]}`];
+        days.forEach((day, i) => { if (days.length > 1) lines.push('', `Day ${i + 1}`); day.forEach(([t, w]) => lines.push(`${t} - ${w}`)); });
+        lines.push('', 'Tips:', ...style.tips.map(t => '- ' + t));
+        return lines.join('\n');
+    };
+    document.getElementById('itAskBot').addEventListener('click', () => {
+        const win = document.getElementById('chatWindow'); if (win) win.classList.add('open');
+        sendMessage(`Help me adjust a ${duration}-day ${style.title.toLowerCase()} itinerary in Bauan (${travel === 'commute' ? 'by commute' : 'by car'}).`);
+    });
+    document.getElementById('itCopy').addEventListener('click', (e) => {
+        const btn = e.currentTarget;
+        const done = () => { btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied'; setTimeout(() => { btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy plan'; }, 2000); };
+        if (navigator.clipboard) navigator.clipboard.writeText(plainText()).then(done, () => window.prompt('Copy your plan:', plainText()));
+        else window.prompt('Copy your plan:', plainText());
+    });
+    document.getElementById('itPrint').addEventListener('click', () => {
+        const w = window.open('', '_blank'); if (!w) return;
+        w.document.write('<!doctype html><title>Bauan itinerary</title><style>body{font:15px/1.6 Arial,sans-serif;margin:32px;color:#111}h1{font-size:20px}h2{font-size:16px;margin-top:18px}li{margin:4px 0}</style>');
+        w.document.write('<h1>' + escapeHtml(lengthLabel + ': ' + style.title) + '</h1>' + output.querySelector('.it-travel').outerHTML);
+        output.querySelectorAll('.it-day').forEach(d => { w.document.write(d.innerHTML.replace(/<h5>/g, '<h2>').replace(/<\/h5>/g, '</h2>')); });
+        w.document.write(output.querySelector('.it-tips').outerHTML + '<p><small>Municipal Tourism Office of Bauan, Batangas</small></p>');
+        w.document.close(); w.focus(); w.print();
+    });
 }
 
 // --- 7. FAQ ACCORDION LOGIC ---
@@ -716,6 +1017,31 @@ document.querySelectorAll('.faq-question').forEach(question => {
         question.parentElement.classList.toggle('active');
     });
 });
+
+// FAQ search: filters questions and answers as you type
+(function () {
+    const box = document.getElementById('faqSearch');
+    const list = document.getElementById('faqList');
+    if (!box || !list) return;
+    const empty = document.getElementById('faqEmpty');
+    box.addEventListener('input', () => {
+        const words = box.value.toLowerCase().trim().split(/\s+/).filter(Boolean);
+        let shown = 0;
+        list.querySelectorAll('.faq-item').forEach(item => {
+            const text = item.textContent.toLowerCase();
+            const hit = words.every(w => text.includes(w));
+            item.hidden = !hit; if (hit) shown++;
+            item.classList.toggle('active', hit && words.length > 0 && shown <= 2);
+        });
+        if (empty) empty.hidden = shown > 0;
+    });
+    const ask = document.getElementById('faqAskBot');
+    if (ask) ask.addEventListener('click', (e) => {
+        e.preventDefault();
+        const win = document.getElementById('chatWindow'); if (win) win.classList.add('open');
+        if (box.value.trim()) sendMessage(box.value.trim());
+    });
+})();
 
 // --- 8. TOURIST BOT (Claude via /api/chat/, keyword replies as offline fallback) ---
 const chatBtn = document.getElementById('chatBtn');

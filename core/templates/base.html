@@ -76,6 +76,7 @@ input.pw-has-eye { padding-right: 2.9rem !important; }
       {% if user.role == 'admin' %}
         <div class="sidebar-section">Admin</div>
         <a href="{% url 'manage_users' %}" class="sidebar-link {% if current == 'manage_users' %}active{% endif %}">Manage Users</a>
+        <a href="{% url 'password_requests' %}" class="sidebar-link {% if current == 'password_requests' %}active{% endif %}">Password Requests</a>
         <a href="{% url 'activity_log' %}" class="sidebar-link {% if current == 'activity_log' %}active{% endif %}">Activity Log</a>
         <a href="{% url 'admin_resorts' %}" class="sidebar-link {% if current == 'admin_resorts' or current == 'resort_add' or current == 'resort_edit' %}active{% endif %}">Manage Resorts</a>
         <a href="{% url 'admin_rooms' %}" class="sidebar-link {% if current == 'admin_rooms' %}active{% endif %}">Manage Rooms</a>

@@ -18,18 +18,12 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth import logout as auth_logout
 from django.contrib.auth import views as auth_views
 from django.contrib.auth.decorators import login_required, user_passes_test
-from django.contrib.auth.forms import PasswordResetForm
-from django.contrib.auth.tokens import default_token_generator
-from django.contrib.auth.views import PasswordResetDoneView
 from django.core.cache import cache
-from django.core.mail import send_mail
 from django.db.models import Count, Q, Sum
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse_lazy
 from django.utils.crypto import get_random_string
-from django.utils.encoding import force_bytes, force_str
-from django.utils.http import urlsafe_base64_decode
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
@@ -55,6 +49,7 @@ from .models import (
     BotQuestion,
     ContactMessage,
     Destination,
+    PasswordRequest,
     Report,
     Resort,
     Room,
@@ -195,67 +190,63 @@ def register_view(request):
     return render(request, "register.html", {"form": form})
 
 
+def _create_password_request(user, reason=""):
+    """Open a password request for the Admin, unless one is already pending.
+    Returns True when a new request was created."""
+    if PasswordRequest.objects.filter(user=user, status="pending").exists():
+        return False
+    PasswordRequest.objects.create(user=user, reason=reason[:255])
+    log_activity(user, "Requested a password change from Admin")
+    return True
+
+
 def forgot_password_view(request):
-    """Step 1: user enters their email/username; we generate a reset link and
-    send it via email (or display it on screen when DEBUG is on, for testing)."""
+    """The user enters their username or email. Instead of emailing a reset
+    link, this sends a request to the Admin, who sets the new password."""
+    ident = (request.POST.get("username") or request.GET.get("username") or "").strip()
     if request.method == "POST":
-        email = (request.POST.get("email") or "").strip()
-        username = (request.POST.get("username") or "").strip()
-        user = None
-        if email:
-            user = SystemUser.objects.filter(email=email).first()
-        if not user and username:
-            user = SystemUser.objects.filter(username=username).first()
+        reason = (request.POST.get("reason") or "").strip()
+        if not ident:
+            return render(request, "forgot_password.html", {"error": "Please enter your username or email.", "ident": ident, "reason": reason})
+        user = SystemUser.objects.filter(Q(username__iexact=ident) | Q(email__iexact=ident), is_active=True).first()
         if user:
-            token = default_token_generator.make_token(user)
-            uidb64 = force_bytes(user.pk)
-            from urllib.parse import quote as urlquote
-            uid = urlquote(uidb64.decode())
-            reset_url = request.build_absolute_uri(f"/reset/{uid}/{token}/")
-            subject = "Password reset request — Bauan Tourism Portal"
-            body = (
-                f"Hello {user.username},\n\n"
-                f"We received a request to reset your password for the Bauan Tourism Portal.\n\n"
-                f"Click the link below to choose a new password:\n{reset_url}\n\n"
-                f"If you did not request this, you can ignore this email.\n\n"
-                f"— Municipal Tourism Office, Bauan, Batangas"
-            )
-            try:
-                send_mail(subject, body, settings.DEFAULT_FROM_EMAIL, [user.email], fail_silently=False)
-            except Exception:
-                pass
-            log_activity(user, "requested password reset")
-            return render(request, "forgot_password.html", {"sent": True, "email": email or username})
-        else:
-            return render(request, "forgot_password.html", {"error": "No account found with that email or username.", "email": email or username})
-    return render(request, "forgot_password.html")
+            _create_password_request(user, reason or "Forgot password")
+        # Same message whether or not the account exists, so nobody can probe for usernames.
+        return render(request, "forgot_password.html", {"sent": True})
+    return render(request, "forgot_password.html", {"ident": ident})
 
 
-def reset_password_view(request, uidb64, token):
-    """Step 2: the link from the email lands here. If the token is valid, show
-    the new-password form; otherwise show an error."""
-    try:
-        uid = force_str(urlsafe_base64_decode(uidb64))
-        user = SystemUser.objects.get(pk=uid)
-    except (TypeError, ValueError, OverflowError, SystemUser.DoesNotExist):
-        user = None
-
-    valid = user is not None and default_token_generator.check_token(user, token)
+@login_required
+@role_required("admin")
+def password_requests(request):
+    """Admin: see password requests from users and set their new password."""
+    from django.utils import timezone
 
     if request.method == "POST":
-        new_password1 = request.POST.get("new_password1", "")
-        new_password2 = request.POST.get("new_password2", "")
-        if not valid:
-            return render(request, "reset_password.html", {"valid": False})
-        if new_password1 != new_password2:
-            return render(request, "reset_password.html", {"valid": True, "error": "The two passwords do not match."})
-        user.set_password(new_password1)
-        user.save()
-        log_activity(user, "reset password")
-        messages.success(request, "Your password has been reset. You can now log in with the new password.")
-        return redirect("login")
+        req = get_object_or_404(PasswordRequest, id=request.POST.get("request_id"), status="pending")
+        action = request.POST.get("action")
+        if action == "set_password":
+            form = UserPasswordForm(request.POST)
+            if form.is_valid():
+                req.user.set_password(form.cleaned_data["new_password1"])
+                req.user.save()
+                req.status, req.handled_by, req.handled_at = "done", request.user, timezone.now()
+                req.save()
+                log_activity(request.user, "Set new password from request", req.user.username)
+                messages.success(request, f"New password set for {req.user.username}. Give it to them directly.")
+            else:
+                errors = "; ".join(e for errs in form.errors.values() for e in errs)
+                messages.error(request, f"Password not changed: {errors}")
+        elif action == "reject":
+            req.status, req.handled_by, req.handled_at = "rejected", request.user, timezone.now()
+            req.save()
+            log_activity(request.user, "Rejected password request", req.user.username)
+            messages.success(request, f"Request from {req.user.username} was rejected.")
+        return redirect("password_requests")
 
-    return render(request, "reset_password.html", {"valid": valid, "uidb64": uidb64, "token": token})
+    pending = PasswordRequest.objects.filter(status="pending").select_related("user", "user__resort").order_by("created_at")
+    handled = PasswordRequest.objects.exclude(status="pending").select_related("user", "handled_by")[:30]
+    return render(request, "password_requests.html", {"pending": pending, "handled": handled, "password_form": UserPasswordForm()})
 
 
 @login_required
@@ -270,6 +261,7 @@ def dashboard(request):
     if request.user.role == "admin":
         stats = {
             "pending": SystemUser.objects.filter(status="pending").count(),
+            "password_requests": PasswordRequest.objects.filter(status="pending").count(),
             "users": SystemUser.objects.filter(status="approved").exclude(role="admin").count(),
             "resorts": Resort.objects.filter(status="active").count(),
             "rooms": Room.objects.filter(is_archived=False).count(),
@@ -721,25 +713,24 @@ def user_profile(request, user_id):
     from .models import SystemUser
 
     target = get_object_or_404(SystemUser, id=user_id)
+    profile_form = UserProfileForm(instance=target)
+    password_form = UserPasswordForm()
     if request.method == "POST":
         if "save_profile" in request.POST:
-            form = UserProfileForm(request.POST, instance=target)
+            form = profile_form = UserProfileForm(request.POST, instance=target)
             if form.is_valid():
                 form.save()
                 log_activity(request.user, "Updated user profile", target.username)
                 messages.success(request, "Profile updated.")
                 return redirect("user_profile", user_id=target.id)
         elif "save_password" in request.POST:
-            form = UserPasswordForm(request.POST)
+            form = password_form = UserPasswordForm(request.POST)
             if form.is_valid():
                 target.set_password(form.cleaned_data["new_password1"])
                 target.save()
                 log_activity(request.user, "Reset password for user", target.username)
                 messages.success(request, "Password updated.")
                 return redirect("user_profile", user_id=target.id)
-    else:
-        profile_form = UserProfileForm(instance=target)
-        password_form = UserPasswordForm()
     return render(
         request,
         "user_profile.html",
@@ -753,29 +744,37 @@ def my_profile(request):
     from .forms import UserProfileForm, UserPasswordForm
 
     user = request.user
+    profile_form = UserProfileForm(instance=user)
+    password_form = UserPasswordForm()
     if request.method == "POST":
         if "save_profile" in request.POST:
-            form = UserProfileForm(request.POST, instance=user)
+            form = profile_form = UserProfileForm(request.POST, instance=user)
             if form.is_valid():
                 form.save()
                 log_activity(user, "Updated own profile")
                 messages.success(request, "Profile updated.")
                 return redirect("my_profile")
-        elif "save_password" in request.POST:
-            form = UserPasswordForm(request.POST)
+        elif "request_password" in request.POST and user.role != "admin":
+            if _create_password_request(user, (request.POST.get("reason") or "").strip() or "Wants to change password"):
+                messages.success(request, "Your request was sent to the Admin. They will give you your new password.")
+            else:
+                messages.info(request, "You already have a pending request. Please wait for the Admin.")
+            return redirect("my_profile")
+        elif "save_password" in request.POST and user.role == "admin":
+            form = password_form = UserPasswordForm(request.POST)
             if form.is_valid():
                 user.set_password(form.cleaned_data["new_password1"])
                 user.save()
                 log_activity(user, "Changed own password")
                 messages.success(request, "Password updated. Please log in again.")
                 return redirect("logout")
-    else:
-        profile_form = UserProfileForm(instance=user)
-        password_form = UserPasswordForm()
     return render(
         request,
         "user_profile.html",
-        {"target": user, "profile_form": profile_form, "password_form": password_form, "self": True},
+        {
+            "target": user, "profile_form": profile_form, "password_form": password_form, "self": True,
+            "pending_request": PasswordRequest.objects.filter(user=user, status="pending").first(),
+        },
     )
 
 
@@ -1469,11 +1468,6 @@ def session_ping(request):
     request.session['last_activity'] = now
     return JsonResponse({'remaining': limit, 'limit': limit})
 
-from django.contrib.auth import views as _auth_views
-ThrottledPasswordResetView = _auth_views.PasswordResetView
-ResetDoneView = _auth_views.PasswordResetDoneView
-ResetConfirmView = _auth_views.PasswordResetConfirmView
-ResetCompleteView = _auth_views.PasswordResetCompleteView
 
 
 # ---------------------------------------------------------------- Destinations (what Tourist Bot knows)

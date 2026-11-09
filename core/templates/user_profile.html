@@ -50,6 +50,21 @@
   <div class="card shadow-sm">
     <div class="card-header bg-light"><strong>Change Password</strong></div>
     <div class="card-body">
+      {% if self and target.role != 'admin' %}
+      {% if pending_request %}
+        <div class="alert alert-info small mb-0">You sent a request on {{ pending_request.created_at|date:"M d, Y H:i" }}. Please wait for the Admin to give you your new password.</div>
+      {% else %}
+      <p class="small text-muted">Password changes are done by the Admin. Send a request and the Admin will set a new password and give it to you.</p>
+      <form method="post">
+        {% csrf_token %}
+        <label class="form-label">Note for the Admin (optional)</label>
+        <input type="text" name="reason" class="form-control" maxlength="255" placeholder="e.g. I want to change my password">
+        <div class="mt-3">
+          <button type="submit" name="request_password" class="btn btn-outline-primary btn-sm">Request Password Change</button>
+        </div>
+      </form>
+      {% endif %}
+      {% else %}
       <form method="post">
         {% csrf_token %}
         <div class="row g-3">
@@ -72,6 +87,7 @@
           <button type="submit" name="save_password" class="btn btn-outline-danger btn-sm">Update Password</button>
         </div>
       </form>
+      {% endif %}
     </div>
   </div>
 </div>

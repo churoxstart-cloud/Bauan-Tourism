@@ -1,7 +1,6 @@
 from django.urls import path, include
 from django.contrib.auth import views as auth_views
 from django.urls import reverse_lazy
-from .forms import StaffPasswordResetForm
 
 from . import views
 from .chat import api_chat
@@ -17,18 +16,6 @@ urlpatterns = [
     path("api/chat/", api_chat, name="api_chat"),
         path("session/status/", views.session_status, name="session_status"),
     path("session/ping/", views.session_ping, name="session_ping"),
-    path("forgot-password/", views.ThrottledPasswordResetView.as_view(
-        template_name="auth/password_reset_form.html",
-        form_class=StaffPasswordResetForm,
-        email_template_name="auth/password_reset_email.txt",
-        subject_template_name="auth/password_reset_subject.txt",
-        success_url=reverse_lazy("password_reset_done"),
-    ), name="password_reset"),
-    path("forgot-password/sent/", views.ResetDoneView.as_view(template_name="auth/password_reset_done.html"), name="password_reset_done"),
-    path("reset/<uidb64>/<token>/", views.ResetConfirmView.as_view(
-        template_name="auth/password_reset_confirm.html", success_url=reverse_lazy("password_reset_complete"),
-    ), name="password_reset_confirm"),
-    path("reset/done/", views.ResetCompleteView.as_view(template_name="auth/password_reset_complete.html"), name="password_reset_complete"),
 
     # ---------- sign in ----------
     path("login/", views.login_view, name="login"),
@@ -38,7 +25,6 @@ urlpatterns = [
 
     # ---------- password reset ----------
     path("forgot-password/", views.forgot_password_view, name="forgot_password"),
-    path("reset/<uidb64>/<token>/", views.reset_password_view, name="reset_password"),
 
     # ---------- profile ----------
     path("profile/", views.my_profile, name="my_profile"),
@@ -85,6 +71,7 @@ urlpatterns = [
 
     # ---------- admin only: /admin-panel/... ----------
     path("admin-panel/users/", views.manage_users, name="manage_users"),
+    path("admin-panel/password-requests/", views.password_requests, name="password_requests"),
     path("admin-panel/activity-log/", views.activity_log, name="activity_log"),
     path("admin-panel/resorts/", views.admin_resorts, name="admin_resorts"),
     path("admin-panel/resorts/add/", views.resort_form, name="resort_add"),

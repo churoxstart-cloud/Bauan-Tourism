@@ -1,6 +1,5 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.forms import PasswordResetForm
 from django.db.models import Count, Q
 
 from .models import (
@@ -244,23 +243,6 @@ class UserProfileForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Username uniqueness check is done in the view so we can show a friendly error.
-
-class StaffPasswordResetForm(PasswordResetForm):
-    """Forgot-password form that accepts the username OR the email on the account.
-    The reset link is always sent to the email saved on the account."""
-
-    email = forms.CharField(
-        label="Username or email",
-        max_length=254,
-        widget=forms.TextInput(attrs={"autocomplete": "username", "autofocus": True}),
-    )
-
-    def get_users(self, email):
-        ident = (email or "").strip()
-        matches = SystemUser.objects.filter(
-            Q(username__iexact=ident) | Q(email__iexact=ident), is_active=True
-        ).exclude(email="")
-        return (u for u in matches if u.has_usable_password())
 
 class DestinationForm(forms.ModelForm):
     class Meta:

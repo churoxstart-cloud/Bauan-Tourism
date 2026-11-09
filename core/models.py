@@ -351,3 +351,25 @@ class BotQuestion(models.Model):
         if updated or cls.objects.count() >= cls.MAX_ROWS:
             return
         cls.objects.create(question=clean, key=key, lang=lang if lang in ("en", "tl") else "en", reason=reason[:80])
+
+
+class PasswordRequest(models.Model):
+    """A user asks the Admin to set a new password for them (forgot password,
+    or wants to change it). The Admin sets the password from the admin panel."""
+
+    STATUS_CHOICES = [("pending", "Pending"), ("done", "Done"), ("rejected", "Rejected")]
+
+    user = models.ForeignKey(SystemUser, on_delete=models.CASCADE, related_name="password_requests")
+    reason = models.CharField(max_length=255, blank=True)
+    status = models.CharField(max_length=10, choices=STATUS_CHOICES, default="pending")
+    created_at = models.DateTimeField(auto_now_add=True)
+    handled_by = models.ForeignKey(
+        SystemUser, on_delete=models.SET_NULL, null=True, blank=True, related_name="+"
+    )
+    handled_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ["-created_at"]
+
+    def __str__(self):
+        return f"{self.user} - {self.status} ({self.created_at:%Y-%m-%d %H:%M})"

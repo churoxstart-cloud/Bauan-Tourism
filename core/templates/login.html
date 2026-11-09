@@ -164,7 +164,7 @@
       {% endif %}
       {% if locked %}
         <div class="alert alert-danger py-2 small">Too many wrong passwords for <b>{{ locked_username }}</b>. Login is paused for {{ lock_minutes }} minutes.
-          <a href="{% url 'password_reset' %}?username={{ locked_username|urlencode }}">Reset your password</a> to continue now.</div>
+          <a href="{% url 'forgot_password' %}?username={{ locked_username|urlencode }}">Ask the Admin for a new password</a> to continue now.</div>
       {% endif %}
       {% if attempts_left %}
         <div class="alert alert-warning py-2 small">{{ attempts_left }} attempt{{ attempts_left|pluralize }} left before login is paused for a while.</div>
@@ -187,7 +187,7 @@
         <div class="mb-3">
                     <div class="d-flex justify-content-between align-items-baseline">
             <label class="form-label" for="id_password">Password</label>
-            <a href="{% url 'password_reset' %}" class="small">Forgot password?</a>
+            <a href="{% url 'forgot_password' %}" class="small">Forgot password?</a>
           </div>
           <div class="field password">
             <span class="field-ico"></span>

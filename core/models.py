@@ -420,3 +420,7 @@ class PasswordRequest(models.Model):
 
     def __str__(self):
         return f"{self.user} ({self.status})"
+
+
+# Tourist photo submissions (Gallery) - reviewed by the Admin before they go public
+from .gallery_models import GalleryPhoto  # noqa: E402,F401

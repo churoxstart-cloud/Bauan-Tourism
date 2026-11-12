@@ -121,3 +121,6 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 # Email backend (console for dev; switch to SMTP in production)
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = "Bauan Tourism Portal <noreply@bauan-tourism.local>"
+
+# Big resorts: the Daily Log form has ~11 boxes per room
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10000

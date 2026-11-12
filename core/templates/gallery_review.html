@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+<style>
+  .gr-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+  .gr-tab { padding: 7px 14px; border-radius: 999px; border: 1px solid var(--line, #e1e8ea); text-decoration: none; font-weight: 600; font-size: .9rem;
+            color: var(--text, #1f2a2e) !important; background: var(--surface, #fff); }
+  .gr-tab.on { background: var(--brand-teal, #0f766e); border-color: var(--brand-teal, #0f766e); color: #fff !important; }
+  .gr-tab .n { display: inline-block; min-width: 22px; margin-left: 6px; padding: 0 6px; border-radius: 999px; background: rgba(0,0,0,.08); font-size: .8rem; text-align: center; }
+  .gr-tab.on .n { background: rgba(255,255,255,.22); }
+  .gr-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+  .gr-card { background: var(--surface, #fff); border: 1px solid var(--line, #e1e8ea); border-radius: 14px; overflow: hidden; display: flex; flex-direction: column; }
+  .gr-img { display: block; aspect-ratio: 4 / 3; background: var(--surface-2, #f4f7f7); }
+  .gr-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .gr-body { padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+  .gr-cap { font-weight: 600; color: var(--text, #1f2a2e); overflow-wrap: anywhere; }
+  .gr-meta { font-size: .8rem; color: var(--text-muted, #5b6b70); }
+  .gr-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 8px; }
+  .gr-actions form { margin: 0; }
+  .gr-empty { padding: 40px 20px; text-align: center; color: var(--text-muted, #5b6b70); border: 1px dashed var(--line, #e1e8ea); border-radius: 14px; }
+</style>
+<div class="container-fluid">
+  <h4 class="mb-1">Gallery photos</h4>
+  <p class="text-muted mb-3">Photos sent by tourists from the website's Gallery. They appear on the website only after you approve them.
+    Check that the photo is from Bauan, is appropriate, and does not show private information.</p>
+
+  {% for m in messages %}<div class="alert alert-success py-2">{{ m }}</div>{% endfor %}
+
+  <div class="gr-tabs">
+    <a class="gr-tab {% if status == 'pending' %}on{% endif %}" href="?status=pending">Pending<span class="n">{{ counts.pending }}</span></a>
+    <a class="gr-tab {% if status == 'approved' %}on{% endif %}" href="?status=approved">On the website<span class="n">{{ counts.approved }}</span></a>
+    <a class="gr-tab {% if status == 'rejected' %}on{% endif %}" href="?status=rejected">Rejected<span class="n">{{ counts.rejected }}</span></a>
+  </div>
+
+  {% if photos %}
+  <div class="gr-grid">
+    {% for p in photos %}
+    <div class="gr-card">
+      <a class="gr-img" href="{% url 'gallery_photo_image' p.id %}" target="_blank" rel="noopener" title="Open full size">
+        <img src="{% url 'gallery_photo_image' p.id %}" alt="{{ p.caption }}" loading="lazy">
+      </a>
+      <div class="gr-body">
+        <div class="gr-cap">{{ p.caption }}</div>
+        <div class="gr-meta">
+          By {{ p.submitted_by|default:"(no name)" }} &middot; {{ p.created_at|date:"M j, Y g:i A" }}
+          {% if p.width %}&middot; {{ p.width }}&times;{{ p.height }}{% endif %}
+        </div>
+        {% if p.reviewed_by %}<div class="gr-meta">{{ p.get_status_display }} by {{ p.reviewed_by.username }} &middot; {{ p.reviewed_at|date:"M j, Y g:i A" }}{% if p.review_note %} &middot; &ldquo;{{ p.review_note }}&rdquo;{% endif %}</div>{% endif %}
+        <div class="gr-actions">
+          {% if p.status != 'approved' %}
+          <form method="post" action="{% url 'gallery_review_action' p.id %}">{% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button class="btn btn-sm btn-success" name="action" value="approve">Approve</button>
+          </form>
+          {% endif %}
+          {% if p.status != 'rejected' %}
+          <form method="post" action="{% url 'gallery_review_action' p.id %}">{% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button class="btn btn-sm btn-outline-secondary" name="action" value="reject">{% if p.status == 'approved' %}Remove from website{% else %}Reject{% endif %}</button>
+          </form>
+          {% endif %}
+          <form method="post" action="{% url 'gallery_review_action' p.id %}" onsubmit="return confirm('Delete this photo permanently?');">{% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <button class="btn btn-sm btn-outline-danger" name="action" value="delete">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="gr-empty">
+    {% if status == 'pending' %}No photos waiting for review.{% elif status == 'approved' %}No approved photos yet.{% else %}No rejected photos.{% endif %}
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% include "_favicon.html" %}
     <title>{{ title }} | Discover Bauan, Batangas</title>
     <meta name="description" content="{{ description|truncatechars:155 }}">
     <meta property="og:title" content="{{ title }} | Discover Bauan, Batangas">
@@ -10,7 +11,7 @@
     {% if photo %}<meta property="og:image" content="{{ photo }}">{% endif %}
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="{% static 'core/css/consent.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/consent.css' %}?v=20261112d">
     <style>
         :root {
             --bg: #07141d; --surface: #0e222e; --surface-2: #132c3a; --line: rgba(255, 255, 255, .09);
@@ -268,7 +269,7 @@
     <div class="toast" id="pdToast" role="status" aria-live="polite"></div>
 
     {% include "_consent_modals.html" %}
-    <script src="{% static 'core/js/consent.js' %}"></script>
+    <script src="{% static 'core/js/consent.js' %}?v=20261112d"></script>
     <script>
     (function () {
         var nav = document.getElementById('pdNav');

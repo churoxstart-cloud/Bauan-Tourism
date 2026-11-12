@@ -1,0 +1,33 @@
+{# Browser-tab icon (favicon): the MTO Bauan seal, cut into a circle. Put the logo at core/static/img/mto-logo.png (square PNG works best). #}
+<link rel="icon" type="image/png" href="/static/img/mto-logo.png" id="siteFavicon">
+<link rel="apple-touch-icon" href="/static/img/mto-logo.png">
+<meta name="theme-color" content="#0b3d4f">
+<script>
+  /* Draws the logo inside a circle (transparent corners) and uses that as the tab icon.
+     Uses static/img/mto-logo.png; if that file is missing, falls back to the seal shown on the public site. */
+  (function () {
+    var LOCAL = '/static/img/mto-logo.png';
+    var REMOTE = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcStfb1LD4WvgZ2qoeMg55h-DRWd53v5XGky3ucEhBZlXJflc1r1-LQKTEM&s=10';
+    function setIcon(href) {
+      document.querySelectorAll('link[rel="icon"]').forEach(function (l) { l.href = href; });
+    }
+    function makeRound(src, onFail) {
+      var img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = function () {
+        try {
+          var S = 64, c = document.createElement('canvas'); c.width = c.height = S;
+          var x = c.getContext('2d');
+          var side = Math.min(img.naturalWidth, img.naturalHeight);
+          x.beginPath(); x.arc(S / 2, S / 2, S / 2, 0, Math.PI * 2); x.closePath(); x.clip();
+          x.fillStyle = '#ffffff'; x.fillRect(0, 0, S, S);
+          x.drawImage(img, (img.naturalWidth - side) / 2, (img.naturalHeight - side) / 2, side, side, 0, 0, S, S);
+          setIcon(c.toDataURL('image/png'));
+        } catch (e) { setIcon(src); }       /* image not allowed on a canvas: still show it, just square */
+      };
+      img.onerror = onFail;
+      img.src = src;
+    }
+    makeRound(LOCAL, function () { makeRound(REMOTE, function () { setIcon(REMOTE); }); });
+  })();
+</script>

@@ -6,6 +6,7 @@ from . import views
 from .chat import api_chat
 
 urlpatterns = [
+    path("", include("core.gallery_urls")),  # Gallery photo review
     # ---------- public ----------
     path("", views.landing_view, name="landing"),
     path("places/<int:pk>/", views.place_detail, name="place_detail_short"),

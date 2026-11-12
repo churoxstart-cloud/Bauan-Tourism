@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  {% include "_favicon.html" %}
     <title data-i18n="page_title">Bauan | Batangas Tourism</title>
     
     <!-- Google Fonts -->
@@ -13,8 +14,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- External CSS Link -->
-    <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
-    <link rel="stylesheet" href="{% static 'core/css/consent.css' %}">
+    <link rel="stylesheet" href="{% static 'core/css/style.css' %}?v=20261112d">
+    <link rel="stylesheet" href="{% static 'core/css/consent.css' %}?v=20261112d">
 
     <!-- Updated Styles: Enhanced UI with Full-Width Atmospheric Navbar Background & Polish -->
     <style>
@@ -981,6 +982,120 @@
         }
         .chat-greet-x:hover { background: #eef3f3; color: #14434b; }
 
+        /* ---------- stronger presence ---------- */
+        .chat-btn { width: 74px; height: 74px; }
+        /* turning teal-to-orange ring around the bot */
+        .bot-ring { position: absolute; inset: -7px; border-radius: 50%; pointer-events: none;
+            background: conic-gradient(from 0deg, #2ec4b6, #5ff5e0, #fdba74, #f97316, #2ec4b6);
+            -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 3.5px), #000 calc(100% - 3px));
+                    mask: radial-gradient(farthest-side, transparent calc(100% - 3.5px), #000 calc(100% - 3px));
+            animation: botRing 5s linear infinite; filter: drop-shadow(0 0 6px rgba(249,115,22,.55)); }
+        @keyframes botRing { to { transform: rotate(360deg); } }
+        /* two soft waves going out, one teal and one orange */
+        .chat-btn::before { display: none; }
+        .bot-wave { position: absolute; inset: -7px; border-radius: 50%; pointer-events: none; border: 2px solid rgba(46,196,182,.75);
+            animation: botWave 3s cubic-bezier(.2,.6,.3,1) infinite; }
+        .bot-wave.w2 { border-color: rgba(249,115,22,.7); animation-delay: 1.5s; }
+        @keyframes botWave { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(1.7); opacity: 0; } }
+        /* "1" message badge until the chat is opened; then the green online dot shows */
+        .bot-badge { position: absolute; top: -4px; right: -4px; z-index: 2; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px;
+            display: grid; place-items: center; background: linear-gradient(135deg, #ff6b4a, #f43f5e); color: #fff;
+            font: 700 .74rem/1 'Poppins', sans-serif; border: 2.5px solid #fff; box-shadow: 0 4px 10px rgba(244,63,94,.5);
+            transform: scale(0); transition: transform .4s cubic-bezier(.34,1.56,.64,1); }
+        .chat-btn.has-badge .bot-badge { transform: scale(1); animation: badgeBeat 2.4s ease-in-out 1s infinite; }
+        .chat-btn.has-badge::after { opacity: 0; }
+        @keyframes badgeBeat { 0%, 70%, 100% { transform: scale(1); } 80% { transform: scale(1.22); } 90% { transform: scale(.95); } }
+        /* waving hand + hop + wink every so often */
+        .bot-hand { position: absolute; left: -10px; top: 6px; z-index: 2; font-size: 1.25rem; opacity: 0; transform-origin: 70% 80%; pointer-events: none;
+            filter: drop-shadow(0 2px 3px rgba(0,0,0,.3)); }
+        .chat-btn.nudge { animation: botHop .9s cubic-bezier(.3,1.4,.5,1) 1; }
+        .chat-btn.nudge .bot-hand { animation: botHandWave 1.6s ease-in-out 1; }
+        .chat-btn.nudge .bot-eye.r { animation: botWink .9s ease 1; }
+        @keyframes botHop { 0% { translate: 0 0; } 30% { translate: 0 -12px; rotate: -6deg; } 55% { translate: 0 0; rotate: 4deg; } 75% { translate: 0 -4px; rotate: -2deg; } 100% { translate: 0 0; rotate: 0deg; } }
+        @keyframes botHandWave { 0% { opacity: 0; transform: translate(6px, 6px) rotate(0); } 15% { opacity: 1; transform: translate(0, 0) rotate(-15deg); }
+            30% { transform: rotate(20deg); } 45% { transform: rotate(-15deg); } 60% { transform: rotate(20deg); } 80% { opacity: 1; transform: rotate(0); } 100% { opacity: 0; transform: translate(6px, 6px); } }
+        @keyframes botWink { 0%, 100% { transform: translate(var(--lx, 0px), var(--ly, 0px)) scaleY(1); } 35%, 60% { transform: translate(var(--lx, 0px), var(--ly, 0px)) scaleY(.12); } }
+        .chat-widget.pos-left .bot-hand { left: auto; right: -10px; transform-origin: 30% 80%; }
+        /* greeting bubble: "typing..." dots first, then the message */
+        .greet-dots { display: none; gap: 4px; padding: 4px 0; }
+        .greet-dots i { width: 7px; height: 7px; border-radius: 50%; background: #2ec4b6; animation: greetDot 1s ease-in-out infinite; }
+        .greet-dots i:nth-child(2) { animation-delay: .15s; } .greet-dots i:nth-child(3) { animation-delay: .3s; }
+        @keyframes greetDot { 0%, 100% { transform: translateY(0); opacity: .4; } 50% { transform: translateY(-4px); opacity: 1; } }
+        .chat-greet.typing .greet-dots { display: inline-flex; }
+        .chat-greet.typing { width: auto; padding: 12px 18px; }
+        .chat-greet.typing .chat-greet-x { display: none; }
+        .chat-greet.typing strong, .chat-greet.typing > span:not(.greet-dots) { display: none; }
+        .chat-greet { border-top: 3px solid #2ec4b6; }
+        .chat-widget:has(.chat-window.open) .bot-ring,
+        .chat-widget:has(.chat-window.open) .bot-wave,
+        .chat-widget:has(.chat-window.open) .bot-badge,
+        .chat-widget:has(.chat-window.open) .bot-hand { display: none; }
+        @media (max-width: 600px) { .chat-btn { width: 64px; height: 64px; } .bot-ring, .bot-wave { inset: -6px; } }
+        @media (prefers-reduced-motion: reduce) {
+            .bot-ring, .bot-wave, .chat-btn.has-badge .bot-badge, .chat-btn.nudge, .chat-btn.nudge .bot-hand, .chat-btn.nudge .bot-eye.r, .greet-dots i { animation: none !important; }
+            .bot-wave { display: none; }
+        }
+
+        /* ===== Tourist Bot look v2: glossier face, cheeks, same character everywhere ===== */
+        .chat-btn { background: radial-gradient(circle at 30% 22%, #2fb7a8 0%, #0f766e 45%, #0b3d4f 100%) !important; }
+        .bot-face { background: linear-gradient(180deg, #ffffff 0%, #e6f7f4 70%, #cdeee8 100%); }
+        .bot-face::after { content: ""; position: absolute; left: 6px; top: 3px; width: 14px; height: 5px; border-radius: 6px;   /* glossy highlight */
+            background: rgba(255,255,255,.95); transform: rotate(-12deg); pointer-events: none; }
+        .bot-cheek { position: absolute; bottom: 7px; width: 6px; height: 3.5px; border-radius: 50%; background: #ff8fa3; opacity: .85; filter: blur(.3px); z-index: 1; }
+        .bot-cheek.l { left: 7px; } .bot-cheek.r { right: 7px; }
+        .bot-face::before { background: linear-gradient(180deg, #0f3a44, #071f27) !important; }
+        /* scaled copies of the bot for the chat header and next to each reply */
+        .bot-av { position: relative; display: grid !important; place-items: center; overflow: visible;
+            background: radial-gradient(circle at 30% 22%, #2fb7a8 0%, #0f766e 50%, #0b3d4f 100%) !important; border: 2px solid #fff !important; }
+        .bot-av .bot { transform: scale(var(--bs, .6)); margin: 0; flex: 0 0 auto; }
+        .bot-av .bot-antenna::before { animation: none; }
+        .chat-header-avatar.bot-av { width: 46px !important; height: 46px !important; --bs: .66; box-shadow: 0 6px 16px rgba(0,0,0,.25); }
+        .bot-msg-avatar.bot-av { width: 34px !important; height: 34px !important; --bs: .48; box-shadow: 0 3px 8px rgba(11,61,79,.25); }
+        .av-online { position: absolute; right: -1px; bottom: 0; width: 12px; height: 12px; border-radius: 50%; background: #34d399; border: 2.5px solid #0f766e; }
+        /* "thinking" eyes while the reply is loading */
+        .bot-msg-wrapper.is-typing .bot-eye { animation: botThink 1.4s ease-in-out infinite !important; }
+        @keyframes botThink { 0%, 100% { transform: translateX(-2px); } 50% { transform: translateX(2px); } }
+
+        /* chat window */
+        .chat-window { border-radius: 24px !important; border: 1px solid rgba(255,255,255,.6) !important; background: #f4f9f9 !important;
+            box-shadow: 0 24px 60px rgba(4, 30, 40, .35), 0 2px 6px rgba(0,0,0,.08) !important; transform-origin: bottom right; }
+        .chat-header { position: relative; overflow: hidden; padding: 14px 16px 14px 18px !important; border-bottom: 0 !important;
+            background: linear-gradient(125deg, #0b3d4f 0%, #0f766e 60%, #14a394 100%) !important; }
+        .chat-header::after { content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 14px; pointer-events: none;   /* little wave edge */
+            background: radial-gradient(12px 8px at 12px 0, transparent 98%, #f4f9f9 100%) repeat-x; background-size: 24px 14px; }
+        .chat-title-group { gap: 12px !important; }
+        .chat-title-name { font: 700 1.05rem 'Poppins', sans-serif !important; letter-spacing: .01em; }
+        .chat-title-subtitle { display: inline-flex; align-items: center; gap: 6px; font-size: .74rem !important; opacity: .92 !important; }
+        .online-dot { width: 7px; height: 7px; border-radius: 50%; background: #34d399; box-shadow: 0 0 0 3px rgba(52,211,153,.25); }
+        .close-btn { width: 34px; height: 34px; border-radius: 50%; border: 1px solid rgba(255,255,255,.3) !important; background: rgba(255,255,255,.1) !important;
+            color: #fff !important; display: grid; place-items: center; font-size: 1rem !important; cursor: pointer; transition: background .2s, transform .2s; }
+        .close-btn:hover { background: rgba(255,255,255,.22) !important; transform: rotate(90deg); }
+        .chat-body { background: #f4f9f9 radial-gradient(rgba(15,118,110,.07) 1px, transparent 1px) 0 0 / 16px 16px !important; padding: 18px 14px 12px !important; gap: 12px !important; }
+        .chat-day-chip { align-self: center; padding: 4px 12px; border-radius: 999px; background: rgba(15,118,110,.08); color: #0f766e; font: 600 .7rem 'Poppins', sans-serif; letter-spacing: .04em; }
+        .bot-msg-wrapper, .chat-message.msg-user { animation: msgIn .35s cubic-bezier(.2,.8,.2,1); }
+        @keyframes msgIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+        .chat-message { font-size: .9rem !important; line-height: 1.5 !important; padding: 11px 14px !important; }
+        .msg-bot { background: #fff !important; border: 1px solid #e3eeee !important; border-radius: 18px 18px 18px 6px !important;
+            box-shadow: 0 4px 14px rgba(11,61,79,.07) !important; color: #1f2d33 !important; }
+        .msg-user { background: linear-gradient(135deg, #14a394 0%, #0f766e 100%) !important; border-radius: 18px 18px 6px 18px !important;
+            box-shadow: 0 6px 16px rgba(15,118,110,.3) !important; }
+        .chat-chips { margin-left: 44px !important; }
+        .chat-chip { border-radius: 999px !important; border: 1.5px solid #0f766e !important; color: #0f766e !important; background: #fff !important;
+            font-weight: 600 !important; box-shadow: 0 2px 6px rgba(15,118,110,.08); }
+        .chat-chip:hover { background: #0f766e !important; color: #fff !important; }
+        .chat-footer { flex-direction: column; align-items: stretch !important; gap: 6px !important; padding: 10px 12px 10px !important; background: #fff !important; border-top: 1px solid #e3eeee !important; }
+        .chat-input-wrap { display: flex; align-items: center; gap: 6px; padding: 4px 4px 4px 14px; border-radius: 999px; background: #f2f6f7; border: 1.5px solid #e1e8ea;
+            transition: border-color .2s, box-shadow .2s, background .2s; }
+        .chat-input-wrap:focus-within { border-color: #14a394; background: #fff; box-shadow: 0 0 0 4px rgba(20,163,148,.14); }
+        .chat-input-wrap input { flex: 1 1 auto; min-width: 0; border: 0 !important; background: transparent !important; box-shadow: none !important; padding: 9px 0 !important; height: auto !important; outline: none; }
+        .chat-input-wrap button { flex: 0 0 40px !important; width: 40px !important; height: 40px !important; border-radius: 50% !important;
+            background: linear-gradient(135deg, #fb923c, #f97316) !important; color: #fff !important; box-shadow: 0 4px 12px rgba(249,115,22,.4) !important; }
+        .chat-input-wrap button:hover { transform: scale(1.06) rotate(-8deg) !important; }
+        .chat-input-wrap button:disabled { opacity: .55; transform: none !important; }
+        .chat-disclaimer { margin: 0; text-align: center; font-size: .66rem; color: #7a8a90; }
+        @media (max-width: 1024px) { .chat-input-wrap input { font-size: 16px !important; } }
+        @media (prefers-reduced-motion: reduce) { .bot-msg-wrapper, .chat-message.msg-user { animation: none; } .close-btn:hover { transform: none; } }
+
         /* while the chat is open: calm the button down, hide the extras */
         .chat-widget:has(.chat-window.open) .chat-btn { animation: none; }
         .chat-widget:has(.chat-window.open) .chat-btn::before,
@@ -989,7 +1104,7 @@
 
         @media (max-width: 600px) {
             .chat-widget { right: 16px !important; bottom: 18px !important; }
-            .chat-btn { width: 62px; height: 62px; }
+            .chat-btn { width: 64px; height: 64px; }
             .bot { transform: scale(0.92); }
         }
         @media (prefers-reduced-motion: reduce) {
@@ -1306,6 +1421,111 @@
         body[data-page]:not([data-page="home"]) .hero-carousel .overlay { background: rgba(4, 12, 20, .72); }
         body[data-page]:not([data-page="home"]):not([data-page="discover"]) .home-section.page-current { padding-top: 96px !important; min-height: calc(100vh - 60px); }
         body[data-page="discover"] .home-section.page-current { min-height: 0; }
+        /* the top bar keeps the same size on every page, so the logo never jumps */
+        nav.solid-nav { padding: 14px 32px; }
+        @media (max-width: 900px) { nav.solid-nav { padding: 10px 14px; } }
+        /* language picker (custom dropdown) */
+        .lang-selector-wrapper { position: relative; }
+        .lang-selector-wrapper select.lang-native { position: absolute !important; width: 1px !important; height: 1px !important; opacity: 0 !important; pointer-events: none !important; padding: 0 !important; border: 0 !important; }
+        .lang-btn { display: inline-flex; align-items: center; gap: 8px; height: 40px; padding: 0 14px; border-radius: 999px; cursor: pointer;
+            background: linear-gradient(135deg, #111827 0%, #1f2937 100%); color: #fff; border: 1px solid rgba(255,255,255,.15);
+            font: 500 .88rem 'Poppins', sans-serif; transition: border-color .2s, box-shadow .2s, background .2s; }
+        .lang-btn:hover, .lang-btn[aria-expanded="true"] { border-color: var(--accent-orange); box-shadow: 0 0 0 3px rgba(249,115,22,.18); }
+        .lang-btn:focus-visible { outline: 2px solid var(--accent-orange); outline-offset: 2px; }
+        .lang-btn .fa-globe { color: #fdba74; font-size: .95rem; }
+        .lang-btn-code { display: none; font-weight: 700; letter-spacing: .04em; }
+        .lang-caret { font-size: .65rem; opacity: .8; transition: transform .2s; }
+        .lang-btn[aria-expanded="true"] .lang-caret { transform: rotate(180deg); }
+        .lang-menu { position: absolute; right: 0; top: calc(100% + 10px); z-index: 4000; min-width: 220px; margin: 0; padding: 6px; list-style: none;
+            background: #0d1620; border: 1px solid rgba(255,255,255,.12); border-radius: 14px;
+            box-shadow: 0 18px 40px rgba(0,0,0,.45); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            transform-origin: top right; animation: langIn .16s ease-out; }
+        .lang-menu[hidden] { display: none; }
+        @keyframes langIn { from { opacity: 0; transform: translateY(-6px) scale(.98); } to { opacity: 1; transform: none; } }
+        .lang-head { padding: 8px 10px 6px; font: 700 .66rem 'Poppins', sans-serif; letter-spacing: .12em; text-transform: uppercase; color: rgba(255,255,255,.5); }
+        .lang-opt { display: flex; align-items: center; gap: 12px; padding: 9px 10px; border-radius: 10px; cursor: pointer; color: #e5e7eb; outline: none; transition: background .15s; }
+        .lang-opt:hover, .lang-opt.focus { background: rgba(255,255,255,.08); }
+        .lang-code { flex: 0 0 34px; height: 26px; border-radius: 7px; display: grid; place-items: center; font: 700 .72rem 'Poppins', sans-serif; letter-spacing: .04em;
+            background: rgba(255,255,255,.08); color: #fff; border: 1px solid rgba(255,255,255,.12); }
+        .lang-name { flex: 1; display: flex; flex-direction: column; font: 600 .9rem/1.2 'Poppins', sans-serif; }
+        .lang-name small { font-weight: 400; font-size: .72rem; color: rgba(255,255,255,.55); }
+        .lang-check { color: var(--accent-orange); font-size: .85rem; opacity: 0; }
+        .lang-opt[aria-selected="true"] { background: rgba(249,115,22,.12); }
+        .lang-sep { height: 1px; margin: 6px 8px; background: rgba(255,255,255,.1); }
+        .lang-menu { max-height: min(70vh, 460px); overflow-y: auto; }
+        .lang-name small { white-space: nowrap; }
+        .lang-opt[aria-selected="true"] .lang-code { background: var(--accent-orange); border-color: var(--accent-orange); }
+        .lang-opt[aria-selected="true"] .lang-check { opacity: 1; }
+        @media (max-width: 900px) {
+            .lang-btn { height: 36px; padding: 0 11px; gap: 6px; font-size: .8rem; }
+            .lang-btn-full { display: none; }
+            .lang-btn-code { display: inline; }
+            .lang-menu { min-width: 200px; }
+        }
+
+        /* live weather card */
+        .wx-card { display: flex; flex-direction: column; gap: 14px; }
+        .wx-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .wx-head h3 { margin: 0 !important; }
+        .wx-live { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: #ecfdf3; color: #05603a;
+            font: 700 .7rem 'Poppins', sans-serif; letter-spacing: .08em; border: 1px solid #abefc6; }
+        .wx-live .dot { width: 7px; height: 7px; border-radius: 50%; background: #12b76a; box-shadow: 0 0 0 0 rgba(18,183,106,.6); animation: wxPulse 2s infinite; }
+        .wx-live.off { background: #f2f4f7; color: #475467; border-color: #d0d5dd; }
+        .wx-live.off .dot { background: #98a2b3; animation: none; }
+        @keyframes wxPulse { 70% { box-shadow: 0 0 0 7px rgba(18,183,106,0); } 100% { box-shadow: 0 0 0 0 rgba(18,183,106,0); } }
+        .wx-now { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; padding: 18px 20px; border-radius: 14px; color: #fff;
+            background: linear-gradient(135deg, #0f766e 0%, #0b4f5f 55%, #0b3d4f 100%); box-shadow: 0 10px 24px rgba(11, 61, 79, .18); }
+        .wx-now-main { display: flex; align-items: center; gap: 16px; }
+        .wx-now-icon { width: 64px; height: 64px; flex: 0 0 64px; border-radius: 50%; display: grid; place-items: center; background: rgba(255,255,255,.14); font-size: 1.9rem; color: #fde68a; }
+        .wx-temp { font: 700 2.6rem/1 'Poppins', sans-serif; letter-spacing: -.02em; }
+        .wx-desc { margin-top: 4px; font-weight: 600; font-size: 1rem; }
+        .wx-feels { font-size: .82rem; opacity: .85; }
+        .wx-now-place { text-align: right; display: flex; flex-direction: column; gap: 3px; font-size: .88rem; font-weight: 500; }
+        .wx-now-place i { color: #fdba74; margin-right: 4px; }
+        .wx-now-place small { opacity: .8; font-size: .76rem; }
+        .wx-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+        .wx-stat { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 12px; background: #f8fafc; border: 1px solid #e5e9f0; }
+        .wx-stat > i { width: 36px; height: 36px; flex: 0 0 36px; border-radius: 10px; display: grid; place-items: center; background: #fff1e6; color: #ea580c; font-size: .95rem; }
+        .wx-stat small { display: block; font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; color: #667085; font-weight: 600; }
+        .wx-stat b { display: block; font-size: 1.02rem; color: #101828; font-weight: 700; }
+        .wx-forecast-head { font-size: .72rem; letter-spacing: .1em; text-transform: uppercase; color: #667085; font-weight: 700; margin-top: 2px; }
+        .wx-forecast { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+        .wx-day { display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 4px; border-radius: 12px; background: #f8fafc; border: 1px solid #e5e9f0; text-align: center; }
+        .wx-day span { font-size: .76rem; font-weight: 600; color: #475467; }
+        .wx-day i { font-size: 1.15rem; color: #0f766e; margin: 2px 0; }
+        .wx-day b { font-size: .92rem; color: #101828; }
+        .wx-day small { font-size: .74rem; color: #667085; }
+        .wx-day .rain { font-size: .68rem; color: #1570ef; font-weight: 600; }
+        .wx-day.today { background: #ecfdf3; border-color: #abefc6; }
+        /* map card stretches to the same height as the weather card */
+        .info-grid { align-items: stretch; }
+        .info-grid > .widget-card:has(.map-container) { display: flex; flex-direction: column; }
+        .info-grid .map-container { flex: 1 1 auto; min-height: 320px; height: auto !important; }
+        .info-grid .map-container iframe { height: 100% !important; min-height: 320px; }
+        .wx-retry { margin-top: 8px; padding: 6px 12px; border-radius: 999px; border: 1px solid rgba(255,255,255,.5); background: rgba(255,255,255,.12);
+            color: #fff; font: 600 .78rem 'Poppins', sans-serif; cursor: pointer; }
+        .wx-retry:hover { background: rgba(255,255,255,.22); }
+        .wx-retry[hidden] { display: none; }
+        .wx-source { margin: auto 0 0; padding-top: 4px; font-size: .76rem; color: #475467 !important; }
+        .wx-source a { color: #c2410c; font-weight: 600; }
+        @media (max-width: 520px) {
+            .wx-now { padding: 16px; }
+            .wx-now-place { text-align: left; }
+            .wx-temp { font-size: 2.2rem; }
+            .wx-forecast { gap: 5px; }
+            .wx-day { padding: 8px 2px; }
+        }
+
+        /* gallery upload: review note + result message */
+        .gallery-note { margin: 4px 0 14px; font-size: .86rem; color: #5b6472; }
+        .gallery-note i { color: var(--accent-orange); margin-right: 4px; }
+        .gallery-status { margin: 12px 0 0; padding: 10px 14px; border-radius: 10px; font-size: .92rem; font-weight: 500; }
+        .gallery-status.ok { background: #ecfdf3; color: #05603a; border: 1px solid #abefc6; }
+        .gallery-status.err { background: #fef3f2; color: #b42318; border: 1px solid #fecdca; }
+        #galleryUploadForm .form-row { gap: 10px; }
+        .travel-card .gal-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 26px 12px 10px; color: #fff; font-size: .85rem; line-height: 1.3;
+            background: linear-gradient(0deg, rgba(0,0,0,.75), rgba(0,0,0,0)); }
+        .travel-card .gal-cap small { display: block; opacity: .8; font-size: .75rem; }
         .home-section.page-current { animation: pageIn .45s cubic-bezier(.2, .8, .2, 1); }
         @keyframes pageIn { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
         @media (prefers-reduced-motion: reduce) { .home-section.page-current { animation: none; } }
@@ -1339,11 +1559,44 @@
             </div>
 
             <!-- Multi-Language Dropdown Toggle -->
-            <div class="lang-selector-wrapper">
-                <select id="langToggle" class="lang-select" onchange="switchLanguage(this.value)">
+            <div class="lang-selector-wrapper" id="langPicker">
+                <!-- the real select stays (the rest of the site reads it); the button + menu below are the visible picker -->
+                <select id="langToggle" class="lang-select lang-native" onchange="switchLanguage(this.value)" tabindex="-1" aria-hidden="true">
                     <option value="en">English</option>
                     <option value="tl">Tagalog</option>
+                    <option value="btg">Batangueño</option>
+                    <option value="ko">한국어</option>
+                    <option value="zh">简体中文</option>
+                    <option value="ja">日本語</option>
                 </select>
+                <button type="button" class="lang-btn" id="langBtn" aria-haspopup="listbox" aria-expanded="false" aria-label="Language: English">
+                    <i class="fa-solid fa-globe" aria-hidden="true"></i>
+                    <span class="lang-btn-full" id="langBtnFull">English</span>
+                    <span class="lang-btn-code" id="langBtnCode">EN</span>
+                    <i class="fa-solid fa-chevron-down lang-caret" aria-hidden="true"></i>
+                </button>
+                <ul class="lang-menu" id="langMenu" role="listbox" aria-label="Choose language" hidden>
+                    <li class="lang-head" role="presentation">Language / Wika</li>
+                    <li class="lang-opt" role="option" data-value="en" data-label="English" aria-selected="true" tabindex="-1">
+                        <span class="lang-code">EN</span><span class="lang-name">English<small>Default language</small></span><i class="fa-solid fa-check lang-check" aria-hidden="true"></i>
+                    </li>
+                    <li class="lang-opt" role="option" data-value="tl" data-label="Tagalog" aria-selected="false" tabindex="-1">
+                        <span class="lang-code">TL</span><span class="lang-name">Tagalog<small>Wikang Filipino</small></span><i class="fa-solid fa-check lang-check" aria-hidden="true"></i>
+                    </li>
+                    <li class="lang-opt" role="option" data-value="btg" data-label="Batangueño" aria-selected="false" tabindex="-1">
+                        <span class="lang-code">BTG</span><span class="lang-name">Batangueño<small>Tagalog ng Batangas, ala eh!</small></span><i class="fa-solid fa-check lang-check" aria-hidden="true"></i>
+                    </li>
+                    <li class="lang-sep" role="presentation"></li>
+                    <li class="lang-opt" role="option" data-value="ko" data-label="한국어" aria-selected="false" tabindex="-1" lang="ko">
+                        <span class="lang-code">KO</span><span class="lang-name">한국어<small>Korean</small></span><i class="fa-solid fa-check lang-check" aria-hidden="true"></i>
+                    </li>
+                    <li class="lang-opt" role="option" data-value="zh" data-label="简体中文" aria-selected="false" tabindex="-1" lang="zh-Hans">
+                        <span class="lang-code">中</span><span class="lang-name">简体中文<small>Chinese (Simplified)</small></span><i class="fa-solid fa-check lang-check" aria-hidden="true"></i>
+                    </li>
+                    <li class="lang-opt" role="option" data-value="ja" data-label="日本語" aria-selected="false" tabindex="-1" lang="ja">
+                        <span class="lang-code">JA</span><span class="lang-name">日本語<small>Japanese</small></span><i class="fa-solid fa-check lang-check" aria-hidden="true"></i>
+                    </li>
+                </ul>
             </div>
 
             <!-- Hamburger Button for Mobile -->
@@ -1790,19 +2043,42 @@
             <span class="section-tag" data-i18n="guide_weather_tag">Location & Climate</span>
             <h2 data-px="0.06" class="section-title" data-i18n="guide_weather_title">Live Weather & Map Directory</h2>
             <div class="info-grid">
-                <div class="widget-card">
-                    <h3><i class="fa-solid fa-cloud-sun"></i> <span data-i18n="weather_card_title">Bauan Weather Status</span></h3>
-                    <div class="weather-info">
-                        <div>
-                            <div class="weather-temp">30°C</div>
-                            <p style="color: #9ca3af;" data-i18n="weather_desc">Partly Cloudy</p>
+                <div class="widget-card wx-card">
+                    <div class="wx-head">
+                        <h3><i class="fa-solid fa-cloud-sun"></i> <span data-i18n="weather_card_title">Bauan Weather Status</span></h3>
+                        <span class="wx-live" id="wxLive"><span class="dot"></span>LIVE</span>
+                    </div>
+                    <!-- live weather for Bauan from Open-Meteo (free, no API key), filled in by script.js -->
+                    <div class="wx-now" id="weatherBox" aria-live="polite">
+                        <div class="wx-now-main">
+                            <span class="wx-now-icon"><i class="fa-solid fa-cloud-sun" id="wxIcon"></i></span>
+                            <div>
+                                <div class="wx-temp" id="wxTemp">--°C</div>
+                                <div class="wx-desc" id="wxDesc">Loading weather...</div>
+                                <div class="wx-feels" id="wxFeels"></div>
+                                <button type="button" class="wx-retry" id="wxRetry" hidden><i class="fa-solid fa-rotate-right"></i> Try again</button>
+                            </div>
                         </div>
-                        <div style="text-align: left; color: #d1d5db; font-size: 0.95rem;">
-                            <p><i class="fa-solid fa-droplet" style="color:var(--accent-orange);"></i> <span data-i18n="weather_humidity">Humidity</span>: 72%</p>
-                            <p><i class="fa-solid fa-wind" style="color:var(--accent-orange);"></i> <span data-i18n="weather_wind">Wind</span>: 12 km/h</p>
-                            <p><i class="fa-solid fa-calendar-days" style="color:var(--accent-orange);"></i> <span data-i18n="weather_best">Best time</span>: Nov - May</p>
+                        <div class="wx-now-place">
+                            <span><i class="fa-solid fa-location-dot"></i> Bauan, Batangas</span>
+                            <small id="wxUpdated"></small>
                         </div>
                     </div>
+                    <div class="wx-stats">
+                        <div class="wx-stat"><i class="fa-solid fa-droplet"></i><div><small data-i18n="weather_humidity">Humidity</small><b id="wxHum">--</b></div></div>
+                        <div class="wx-stat"><i class="fa-solid fa-wind"></i><div><small data-i18n="weather_wind">Wind</small><b id="wxWind">--</b></div></div>
+                        <div class="wx-stat"><i class="fa-solid fa-umbrella"></i><div><small data-i18n="weather_rain">Rain chance</small><b id="wxRain">--</b></div></div>
+                        <div class="wx-stat"><i class="fa-solid fa-calendar-check"></i><div><small data-i18n="weather_best">Best time</small><b>Nov &ndash; May</b></div></div>
+                    </div>
+                    <div class="wx-forecast-head" data-i18n="weather_forecast">5-day forecast</div>
+                    <div class="wx-forecast" id="wxForecast">
+                        <div class="wx-day"><span>--</span><i class="fa-solid fa-cloud"></i><b>--°</b><small>--°</small></div>
+                        <div class="wx-day"><span>--</span><i class="fa-solid fa-cloud"></i><b>--°</b><small>--°</small></div>
+                        <div class="wx-day"><span>--</span><i class="fa-solid fa-cloud"></i><b>--°</b><small>--°</small></div>
+                        <div class="wx-day"><span>--</span><i class="fa-solid fa-cloud"></i><b>--°</b><small>--°</small></div>
+                        <div class="wx-day"><span>--</span><i class="fa-solid fa-cloud"></i><b>--°</b><small>--°</small></div>
+                    </div>
+                    <p class="wx-source" id="wxSource">Live data from <a href="https://open-meteo.com/" target="_blank" rel="noopener">Open-Meteo</a>. For storm and sea advisories, check <a href="https://www.pagasa.dost.gov.ph/" target="_blank" rel="noopener">PAGASA</a>.</p>
                 </div>
                 
                 <div class="widget-card">
@@ -1921,13 +2197,16 @@
                 <h3 data-i18n="gallery_upload_heading"><i class="fa-solid fa-camera"></i> Add Your Photo to the Gallery</h3>
                 <form id="galleryUploadForm" onsubmit="handleGalleryUpload(event)">
                     <div class="form-row">
-                        <input type="text" id="galleryPhotoCaption" placeholder="Caption (e.g., Sunset at Bauan Beach)" required>
+                        <input type="text" id="galleryPhotoCaption" maxlength="150" placeholder="Caption (e.g., Sunset at Bauan Beach)" required>
+                        <input type="text" id="galleryPhotoName" maxlength="80" placeholder="Your name (optional)">
                     </div>
                     <div class="form-row image-upload-row">
                         <label for="galleryPhotoFile"><i class="fa-solid fa-image"></i> Choose Photo</label>
-                        <input type="file" id="galleryPhotoFile" accept="image/*" required>
+                        <input type="file" id="galleryPhotoFile" accept="image/jpeg,image/png,image/webp" required>
                     </div>
+                    <p class="gallery-note"><i class="fa-solid fa-shield-halved"></i> <span data-i18n="gallery_review_note">Photos appear in the gallery after the Municipal Tourism Office reviews them. Please share only your own photos of Bauan.</span></p>
                     <button type="submit" class="btn-primary" data-i18n="gallery_upload_submit">Add to Gallery</button>
+                    <p class="gallery-status" id="galleryStatus" role="status" aria-live="polite" hidden></p>
                 </form>
             </div>
 
@@ -2224,18 +2503,24 @@
 
     <div class="chat-widget">
         <div class="chat-btn" id="chatBtn" title="Chat with Tourist Bot" role="button" tabindex="0" aria-label="Chat with Tourist Bot">
+            <span class="bot-ring" aria-hidden="true"></span>
+            <span class="bot-wave" aria-hidden="true"></span><span class="bot-wave w2" aria-hidden="true"></span>
+            <span class="bot-badge" id="botBadge" aria-hidden="true">1</span>
+            <span class="bot-hand" aria-hidden="true">👋</span>
             <span class="bot" aria-hidden="true">
                 <span class="bot-antenna"></span>
                 <span class="bot-ear l"></span><span class="bot-ear r"></span>
                 <span class="bot-face">
                     <span class="bot-eye l"></span><span class="bot-eye r"></span>
                     <span class="bot-smile"></span>
+                    <span class="bot-cheek l"></span><span class="bot-cheek r"></span>
                 </span>
             </span>
             <span class="chat-label" aria-hidden="true">Ask Tourist Bot</span>
         </div>
         <div class="chat-greet" id="chatGreet" role="status" aria-live="polite">
             <button type="button" class="chat-greet-x" id="chatGreetX" aria-label="Dismiss">&times;</button>
+            <span class="greet-dots" aria-hidden="true"><i></i><i></i><i></i></span>
             <strong>Kumusta! 👋</strong>
             <span>Need help planning your Bauan trip? Ask me about resorts, food and things to do.</span>
         </div>
@@ -2243,20 +2528,19 @@
         <div class="chat-window" id="chatWindow">
             <div class="chat-header">
                 <div class="chat-title-group">
-                    <div class="chat-header-avatar"><i class="fa-solid fa-compass"></i></div>
+                    <div class="chat-header-avatar bot-av"><span class="bot" aria-hidden="true"><span class="bot-antenna"></span><span class="bot-ear l"></span><span class="bot-ear r"></span><span class="bot-face"><span class="bot-eye l"></span><span class="bot-eye r"></span><span class="bot-smile"></span><span class="bot-cheek l"></span><span class="bot-cheek r"></span></span></span><span class="av-online" aria-hidden="true"></span></div>
                     <div class="chat-title-text">
                         <span class="chat-title-name">Tourist Bot</span>
-                        <span class="chat-title-subtitle" data-i18n="chat_subtitle">Your Bauan Travel Buddy</span>
+                        <span class="chat-title-subtitle"><span class="online-dot" aria-hidden="true"></span><span data-i18n="chat_subtitle">Your Bauan Travel Buddy</span></span>
                     </div>
                 </div>
-                <span class="close-btn" id="closeChatBtn">&times;</span>
+                <button type="button" class="close-btn" id="closeChatBtn" aria-label="Close chat"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
             <div class="chat-body" id="chatBody">
+                <div class="chat-day-chip" aria-hidden="true">Tourist Bot &middot; Bauan MTO</div>
                 <div class="bot-msg-wrapper">
-                    <div class="bot-msg-avatar">
-                        <i class="fa-solid fa-compass"></i>
-                    </div>
+                    <div class="bot-msg-avatar bot-av"><span class="bot" aria-hidden="true"><span class="bot-antenna"></span><span class="bot-ear l"></span><span class="bot-ear r"></span><span class="bot-face"><span class="bot-eye l"></span><span class="bot-eye r"></span><span class="bot-smile"></span><span class="bot-cheek l"></span><span class="bot-cheek r"></span></span></span></div>
                     <div class="chat-message msg-bot" data-i18n="chat_welcome">
                         🧭 Mabuhay! I'm Tourist Bot, your friendly Bauan travel buddy. Ask me about resorts, food, activities, festivals, or trip planning!
                     </div>
@@ -2264,15 +2548,61 @@
             </div>
             
             <div class="chat-footer">
-                <input type="text" id="userInput" data-i18n-placeholder="chat_input_placeholder" placeholder="Ask Tourist Bot..." autocomplete="off">
-                <button id="sendBtn"><i class="fa-solid fa-paper-plane"></i></button>
+                <div class="chat-input-wrap">
+                    <input type="text" id="userInput" data-i18n-placeholder="chat_input_placeholder" placeholder="Ask Tourist Bot..." autocomplete="off" aria-label="Message Tourist Bot">
+                    <button id="sendBtn" aria-label="Send"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
+                <p class="chat-disclaimer">Tourist Bot can make mistakes. Confirm fees and schedules with the resort or the MTO.</p>
             </div>
         </div>
     </div>
 
     <!-- External JavaScript File Link -->
-    <script src="{% static 'core/js/script.js' %}"></script>
-    <script src="{% static 'core/js/consent.js' %}"></script>
+    <script src="{% static 'core/js/script.js' %}?v=20261112d"></script>
+    <script src="{% static 'core/js/consent.js' %}?v=20261112d"></script>
+
+    <!-- Language picker: opens the menu, keeps the hidden select (and switchLanguage) in charge -->
+    <script>
+    (function () {
+      var sel = document.getElementById('langToggle'), btn = document.getElementById('langBtn'), menu = document.getElementById('langMenu');
+      if (!sel || !btn || !menu) return;
+      var opts = Array.prototype.slice.call(menu.querySelectorAll('.lang-opt'));
+      function sync() {
+        var v = sel.value || 'en', label = 'English';
+        opts.forEach(function (o) { var on = o.dataset.value === v; o.setAttribute('aria-selected', on); if (on) label = o.dataset.label; });
+        document.getElementById('langBtnFull').textContent = label;
+        var cur = opts.filter(function (o) { return o.dataset.value === v; })[0];
+        document.getElementById('langBtnCode').textContent = cur ? cur.querySelector('.lang-code').textContent : v.toUpperCase();
+        btn.setAttribute('aria-label', 'Language: ' + label);
+      }
+      function open() {
+        menu.hidden = false; btn.setAttribute('aria-expanded', 'true');
+        var cur = opts.filter(function (o) { return o.getAttribute('aria-selected') === 'true'; })[0] || opts[0];
+        focusOpt(cur);
+      }
+      function close(back) { menu.hidden = true; btn.setAttribute('aria-expanded', 'false'); opts.forEach(function (o) { o.classList.remove('focus'); }); if (back) btn.focus(); }
+      function focusOpt(o) { opts.forEach(function (x) { x.classList.toggle('focus', x === o); }); o.focus(); }
+      function choose(o) {
+        if (sel.value !== o.dataset.value) { sel.value = o.dataset.value; sel.dispatchEvent(new Event('change', { bubbles: true })); }
+        sync(); close(true);
+      }
+      btn.addEventListener('click', function (e) { e.stopPropagation(); menu.hidden ? open() : close(); });
+      btn.addEventListener('keydown', function (e) { if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); open(); } });
+      opts.forEach(function (o, i) {
+        o.addEventListener('click', function (e) { e.stopPropagation(); choose(o); });
+        o.addEventListener('keydown', function (e) {
+          if (e.key === 'ArrowDown') { e.preventDefault(); focusOpt(opts[(i + 1) % opts.length]); }
+          else if (e.key === 'ArrowUp') { e.preventDefault(); focusOpt(opts[(i - 1 + opts.length) % opts.length]); }
+          else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); choose(o); }
+          else if (e.key === 'Escape' || e.key === 'Tab') { close(e.key === 'Escape'); }
+        });
+      });
+      document.addEventListener('click', function (e) { if (!menu.hidden && !e.target.closest('#langPicker')) close(); });
+      document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !menu.hidden) close(true); });
+      sel.addEventListener('change', sync);
+      sync();
+    })();
+    </script>
 
     <!-- Hero destination carousel: tap a card (or wait) and the whole hero changes to that place -->
     <script>
@@ -2290,7 +2620,7 @@
       var MS = 7000, cur = 0, timer = null, paused = false, swapT = null;
       hero.style.setProperty('--hc-ms', MS + 'ms');
 
-      function lang() { return langSel && langSel.value === 'tl' ? 'tl' : 'en'; }
+      function lang() { return langSel && (langSel.value === 'tl' || langSel.value === 'btg') ? 'tl' : 'en'; }
       function descOf(c) { return (lang() === 'tl' && c.dataset.descTl) ? c.dataset.descTl : c.dataset.desc; }
       function loadBg(i) { var b = bgs[i]; if (b && !b.style.backgroundImage) b.style.backgroundImage = "url('" + b.dataset.bg.replace(/'/g, "%27") + "')"; }
       function pad(n) { return (n < 9 ? '0' : '') + (n + 1); }
@@ -2702,10 +3032,33 @@
       function seen() { try { return sessionStorage.getItem('bauanBotGreet') === '1'; } catch (e) { return false; } }
       function mark() { try { sessionStorage.setItem('bauanBotGreet', '1'); } catch (e) {} }
       function hide() { greet.classList.remove('show'); mark(); }
+      // "1" badge until the visitor opens the chat (once per browser session)
+      function opened() { try { return sessionStorage.getItem('bauanBotOpened') === '1'; } catch (e) { return false; } }
+      if (!opened()) setTimeout(function () { if (!win || !win.classList.contains('open')) btn.classList.add('has-badge'); }, 2500);
+      btn.addEventListener('click', function () { btn.classList.remove('has-badge'); try { sessionStorage.setItem('bauanBotOpened', '1'); } catch (e) {} });
+
+      // every ~15 s while idle: hop, wave and wink (stops after a few times so it never gets annoying)
+      if (!reduce) {
+        var nudges = 0, hovering = false;
+        btn.addEventListener('pointerenter', function () { hovering = true; });
+        btn.addEventListener('pointerleave', function () { hovering = false; });
+        function nudge() {
+          if (nudges >= 6 || hovering || document.hidden || (win && win.classList.contains('open')) || document.querySelector('.chat-widget.dragging')) return;
+          nudges++; btn.classList.remove('nudge'); void btn.offsetWidth; btn.classList.add('nudge');
+          setTimeout(function () { btn.classList.remove('nudge'); }, 1700);
+        }
+        setTimeout(nudge, 3200);
+        setInterval(nudge, 15000);
+      }
+
       if (greet) {
         if (!seen()) {
-          setTimeout(function () { if (!win || !win.classList.contains('open')) greet.classList.add('show'); }, 4500);
-          setTimeout(hide, 14000);
+          setTimeout(function () {
+            if (win && win.classList.contains('open')) return;
+            greet.classList.add('typing', 'show');
+            setTimeout(function () { greet.classList.remove('typing'); }, reduce ? 0 : 1300);
+          }, 4500);
+          setTimeout(hide, 15000);
         }
         x.addEventListener('click', function (e) { e.stopPropagation(); hide(); });
         greet.addEventListener('click', function () { hide(); if (win && !win.classList.contains('open')) btn.click(); });

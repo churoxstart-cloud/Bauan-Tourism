@@ -1,0 +1,41 @@
+﻿resort,year,month,mun_m,mun_f,prov_m,prov_f,other_m,other_f,foreign_m,foreign_f,checked_in,guest_nights,rooms_occupied,nationality,check
+Bauan Plaza Hotel,2026,1,19,25,6,7,38,30,22,12,159,231,159,"American, Japanese, Australian, South African, Chinese",
+Bauan Plaza Hotel,2026,2,25,33,7,8,62,49,0,0,103,234,136,,foreign: faint/erased numbers on paper - left as 0
+Bauan Plaza Hotel,2026,3,5,6,12,22,23,16,0,0,96,164,91,,foreign: faint/erased numbers on paper - left as 0
+Bauan Plaza Hotel,2026,4,44,59,22,33,94,79,63,39,77,123,84,"Canadian, Chinese, Malaysian, American",
+Bauan Plaza Hotel,2026,5,7,7,16,26,37,16,13,5,127,195,121,"American, Chinese, Italian",nationality month assumed
+Bauan Plaza Hotel,2026,6,63,84,45,65,165,118,0,0,125,314,131,,
+Bauan Plaza Hotel,2026,7,73,98,48,70,179,133,0,0,70,99,54,,
+Bauan Plaza Hotel,2026,8,0,8,3,3,15,13,5,0,54,119,74,"Australian, Malaysian, Italian",nationality month assumed
+Bauan Plaza Hotel,2026,9,13,20,10,9,16,10,3,1,82,105,63,"American, Japanese",nationality month assumed
+Bauan Plaza Hotel,2026,10,0,5,1,2,21,14,12,3,63,196,99,"American, Japanese, Chinese, Canadian",nationality month assumed
+Debbie and Khrys Beach Resort,2026,1,16,20,16,28,18,21,0,0,23,23,5,,
+Debbie and Khrys Beach Resort,2026,2,34,41,32,29,16,18,0,0,9,9,3,,
+Debbie and Khrys Beach Resort,2026,3,29,24,42,35,34,21,0,0,16,16,4,,
+Debbie and Khrys Beach Resort,2026,4,115,105,85,45,89,95,0,0,75,75,11,,
+Debbie and Khrys Beach Resort,2026,5,65,48,189,58,233,125,0,0,105,165,22,,
+Debbie and Khrys Beach Resort,2026,6,0,0,0,0,0,0,0,0,0,0,0,,
+Debbie and Khrys Beach Resort,2026,7,0,0,0,0,0,0,0,0,0,0,0,,
+Debbie and Khrys Beach Resort,2026,8,0,0,0,0,0,0,0,0,0,0,0,,
+Debbie and Khrys Beach Resort,2026,9,0,0,0,0,0,0,0,0,0,0,0,,
+Debbie and Khrys Beach Resort,2026,10,4,8,12,8,0,0,0,0,0,0,0,,
+Dalawampu Beach Resort,2026,1,80,89,132,124,37,47,0,0,60,60,13,,
+Dalawampu Beach Resort,2026,2,89,87,74,83,37,47,0,0,55,55,15,,
+Dalawampu Beach Resort,2026,3,85,65,79,85,105,75,0,0,68,95,15,,
+Dalawampu Beach Resort,2026,4,328,355,288,315,69,71,0,0,481,481,72,,
+Dalawampu Beach Resort,2026,5,347,308,243,259,94,102,0,0,637,637,82,,
+Dalawampu Beach Resort,2026,6,0,0,0,0,0,0,0,0,0,0,0,,
+Dalawampu Beach Resort,2026,7,0,0,0,0,0,0,0,0,0,0,0,,
+Dalawampu Beach Resort,2026,8,0,0,0,0,0,0,0,0,0,0,0,,
+Dalawampu Beach Resort,2026,9,0,0,0,0,0,0,0,0,0,0,0,,
+Dalawampu Beach Resort,2026,10,5,8,4,5,0,0,0,0,15,15,3,,
+Alexis Beach Resort,2026,1,24,20,40,50,51,43,0,0,15,15,3,,
+Alexis Beach Resort,2026,2,18,22,172,171,76,76,0,0,30,30,5,,
+Alexis Beach Resort,2026,3,75,75,93,61,46,40,0,0,90,90,16,,
+Alexis Beach Resort,2026,4,364,464,604,527,210,153,0,0,486,486,57,,
+Alexis Beach Resort,2026,5,139,139,257,217,173,125,0,0,186,186,35,,
+Alexis Beach Resort,2026,6,11,8,38,26,77,57,0,0,42,42,7,,
+Alexis Beach Resort,2026,7,11,12,33,26,29,19,0,0,18,18,3,,
+Alexis Beach Resort,2026,8,0,0,0,0,0,0,0,0,0,0,0,,
+Alexis Beach Resort,2026,9,0,0,0,0,0,0,0,0,0,0,0,,
+Alexis Beach Resort,2026,10,17,13,23,31,37,36,0,0,36,36,6,,
